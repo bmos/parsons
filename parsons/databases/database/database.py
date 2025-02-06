@@ -29,7 +29,8 @@ class DatabaseCreateStatement:
 
     # This will allow child classes to modify how these columns are handled.
     def _rename_reserved_word(self, col, index=None):
-        """Return the renamed column.
+        """
+        Return the renamed column.
 
         `Args`:
             col: str
@@ -43,7 +44,8 @@ class DatabaseCreateStatement:
         return f"{col}_"
 
     def _rename_duped(self, col, index):
-        """Return the renamed column.
+        """
+        Return the renamed column.
 
         `Args`:
             col: str
@@ -57,7 +59,8 @@ class DatabaseCreateStatement:
         return f"{col}_{index}"
 
     def get_bigger_int(self, int1, int2):
-        """Return the bigger of the two ints.
+        """
+        Return the bigger of the two ints.
 
         `Args`:
             int1: str
@@ -78,7 +81,8 @@ class DatabaseCreateStatement:
         return int1 if WEIGHTS.get(int1, -1) >= WEIGHTS.get(int2, -1) else int2
 
     def is_valid_sql_num(self, val):
-        """Check whether val is a valid sql number.
+        """
+        Check whether val is a valid sql number.
 
         `Args`:
             val: any
@@ -112,7 +116,8 @@ class DatabaseCreateStatement:
             return False
 
     def detect_data_type(self, value, cmp_type=None):
-        """Detect the higher of value's type cmp_type.
+        """
+        Detect the higher of value's type cmp_type.
 
         1. check if it's a string
         2. check if it's a number
@@ -171,7 +176,8 @@ class DatabaseCreateStatement:
         return result
 
     def format_column(self, col, index="", replace_chars=None, col_prefix="_"):
-        """Format the column to meet database contraints.
+        """
+        Format the column to meet database contraints.
 
         Formats the columns as follows:
             1. Coverts to lowercase (if case insensitive)
@@ -219,7 +225,8 @@ class DatabaseCreateStatement:
         return col
 
     def format_columns(self, cols, **kwargs):
-        """Format the columns to meet database contraints.
+        """
+        Format the columns to meet database contraints.
 
         This method relies on ``format_column`` to handle most changes. It
         only handles duplicated columns. Options to ``format_column`` can be

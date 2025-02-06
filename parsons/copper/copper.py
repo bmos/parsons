@@ -127,7 +127,6 @@ class Copper(object):
                 * people_socials
                 * people_websites
         """  # noqa: E501,E261
-
         return self.get_standard_object("people", filters=filters, tidy=tidy)
 
     def get_companies(self, filters=None, tidy=False):
@@ -152,7 +151,6 @@ class Copper(object):
                 * companies_socials
                 * companies_websites
         """  # noqa: E501,E261
-
         return self.get_standard_object("companies", filters=filters, tidy=tidy)
 
     def get_activities(self, filters=None, tidy=False):
@@ -172,7 +170,6 @@ class Copper(object):
             List of dicts of Parsons Tables:
                 * activities
         """  # noqa: E501,E261
-
         return self.get_standard_object("activities", filters=filters, tidy=tidy)
 
     def get_opportunities(self, filters=None, tidy=False):
@@ -193,7 +190,6 @@ class Copper(object):
                 * opportunities
                 * opportunities_custom_fields
         """  # noqa: E501,E261
-
         return self.get_standard_object("opportunities", filters=filters, tidy=tidy)
 
     def get_standard_object(self, object_name, filters=None, tidy=False):
@@ -219,7 +215,6 @@ class Copper(object):
                 * custom_fields_available
                 * custom_fields_options
         """  # noqa: E501,E261
-
         logger.info("Retrieving custom fields.")
         blob = self.paginate_request("/custom_field_definitions/", req_type="GET")
         return self.process_custom_fields(blob)
@@ -237,7 +232,6 @@ class Copper(object):
             List of dicts of Parsons Tables:
                 * activitiy_types
         """  # noqa: E501,E261
-
         logger.info("Retrieving activity types.")
 
         response = self.paginate_request("/activity_types/", req_type="GET")
@@ -261,7 +255,6 @@ class Copper(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """  # noqa: E501,E261
-
         response = self.paginate_request("/contact_types/", req_type="GET")
         return Table(response)
 

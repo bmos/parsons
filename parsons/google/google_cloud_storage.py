@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 class GoogleCloudStorage(object):
-    """Google Cloud Storage connector utility
+    """
+    Google Cloud Storage connector utility
 
     This class requires application credentials in the form of a
     json or google oauth2 Credentials object. It can be passed in the
@@ -91,7 +92,6 @@ class GoogleCloudStorage(object):
         `Returns:`
             List of buckets
         """
-
         buckets = [b.name for b in self.client.list_buckets()]
         logger.info(f"Found {len(buckets)}.")
         return buckets
@@ -106,7 +106,6 @@ class GoogleCloudStorage(object):
         `Returns:`
             boolean
         """
-
         if bucket_name in self.list_buckets():
             logger.debug(f"{bucket_name} exists.")
             return True
@@ -124,7 +123,6 @@ class GoogleCloudStorage(object):
         `Returns:`
             GoogleCloud Storage bucket
         """
-
         if self.client.lookup_bucket(bucket_name):
             bucket = self.client.get_bucket(bucket_name)
         else:
@@ -143,7 +141,6 @@ class GoogleCloudStorage(object):
         `Returns:`
             ``None``
         """
-
         # TODO: Allow user to set all of the bucket parameters
 
         self.client.create_bucket(bucket_name)
@@ -162,7 +159,6 @@ class GoogleCloudStorage(object):
         `Returns:`
             ``None``
         """
-
         bucket = self.get_bucket(bucket_name)
         bucket.delete(force=delete_blobs)
         logger.info(f"{bucket_name} bucket deleted.")
@@ -196,7 +192,6 @@ class GoogleCloudStorage(object):
         `Returns:`
             A list of blob names (or `Blob` objects if `include_file_details` is invoked)
         """
-
         blobs = self.client.list_blobs(
             bucket_name, max_results=max_results, prefix=prefix, match_glob=match_glob
         )
@@ -222,7 +217,6 @@ class GoogleCloudStorage(object):
         `Returns:`
             boolean
         """
-
         if blob_name in self.list_blobs(bucket_name):
             logger.debug(f"{blob_name} exists.")
             return True
@@ -242,7 +236,6 @@ class GoogleCloudStorage(object):
         `Returns:`
             A Google Storage blob object
         """
-
         bucket = self.get_bucket(bucket_name)
         blob = bucket.get_blob(blob_name)
         logger.debug(f"Got {blob_name} object from {bucket_name} bucket.")
@@ -262,7 +255,6 @@ class GoogleCloudStorage(object):
         `Returns:`
             ``None``
         """
-
         bucket = self.get_bucket(bucket_name)
         blob = storage.Blob(blob_name, bucket)
 
@@ -288,7 +280,6 @@ class GoogleCloudStorage(object):
             str
                 The path of the downloaded file
         """
-
         if not local_path:
             local_path = files.create_temp_file_for_path("TEMPTHING")
 
@@ -314,7 +305,6 @@ class GoogleCloudStorage(object):
         `Returns:`
             ``None``
         """
-
         blob = self.get_blob(bucket_name, blob_name)
         blob.delete()
         logger.info(f"{blob_name} blob in {bucket_name} bucket deleted.")
@@ -387,7 +377,6 @@ class GoogleCloudStorage(object):
             url:
                 A link to download the object
         """
-
         bucket = self.client.bucket(bucket_name)
         blob = bucket.blob(blob_name)
         url = blob.generate_signed_url(
@@ -601,7 +590,6 @@ class GoogleCloudStorage(object):
         `Returns`:
             String representation of decompressed GCS URI
         """
-
         compression_params = {
             "zip": {
                 "file_extension": ".zip",
@@ -643,7 +631,6 @@ class GoogleCloudStorage(object):
         Handles `.gzip` decompression and streams blob contents
         to a decompressed storage object
         """
-
         compressed_filepath = kwargs.pop("compressed_filepath")
         decompressed_blob_name = kwargs.pop("decompressed_blob_name")
         bucket_name = kwargs.pop("bucket_name")
@@ -659,7 +646,6 @@ class GoogleCloudStorage(object):
         Handles `.zip` decompression and streams blob contents
         to a decompressed storage object
         """
-
         compressed_filepath = kwargs.pop("compressed_filepath")
         decompressed_blob_name = kwargs.pop("decompressed_blob_name")
         decompressed_blob_in_archive = decompressed_blob_name.split("/")[-1]

@@ -19,7 +19,6 @@ def create_archive(archive_path, file_path, file_name=None, if_exists="replace")
     `Returns:`
         Zip archive path
     """
-
     if if_exists == "append":
         write_type = "a"
     else:

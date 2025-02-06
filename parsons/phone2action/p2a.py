@@ -87,7 +87,6 @@ class Phone2Action(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         return self.capitol_canary.get_campaigns(
             state, zip, include_generic, include_private, include_content
         )

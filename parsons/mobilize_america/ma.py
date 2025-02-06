@@ -92,7 +92,6 @@ class MobilizeAmerica(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         return Table(
             self._request_paginate(
                 self.uri + "organizations",
@@ -157,7 +156,6 @@ class MobilizeAmerica(object):
         `Returns`
             :ref:`parsons.Table <parsons-table>`, dict, list[:ref:`parsons.Table <parsons-table>`]
         """
-
         if isinstance(organization_id, (str, int)):
             organization_id = [organization_id]
 
@@ -262,7 +260,6 @@ class MobilizeAmerica(object):
         `Returns`
             :ref:`parsons.Table <parsons-table>`, dict, list[:ref:`parsons.Table <parsons-table>`]
         """
-
         args = {
             "updated_since": date_to_timestamp(updated_since),
             "timeslot_start": self._time_parse(timeslot_start),
@@ -313,7 +310,6 @@ class MobilizeAmerica(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if isinstance(organization_id, (str, int)):
             organization_id = [organization_id]
 

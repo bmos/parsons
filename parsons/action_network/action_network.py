@@ -572,7 +572,6 @@ class ActionNetwork(object):
         `Documentation Reference`:
             https://actionnetwork.org/docs/v2/events
         """
-
         data = {"title": title}
 
         if start_date:
@@ -1926,10 +1925,12 @@ class ActionNetwork(object):
             per_page: The number of unique ID lists to return per page. Default is 25.
             page: The specific page of unique ID lists to return.
             filter: The filter criteria to apply when retrieving unique ID lists.
+
         Returns:
             A JSON response with the unique ID lists.
         Documentation Reference:
             https://actionnetwork.org/docs/v2/unique_id_lists
+
         """
         if page:
             return self._get_page("unique_id_lists", page, per_page, filter)

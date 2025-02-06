@@ -155,7 +155,6 @@ class CrowdTangle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         args = {
             "startDate": start_date,
             "endDate": end_date,
@@ -199,7 +198,6 @@ class CrowdTangle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         args = {
             "startDate": start_date,
             "endDate": end_date,
@@ -244,7 +242,6 @@ class CrowdTangle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         args = {
             "link": link,
             "startDate": start_date,

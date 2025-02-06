@@ -18,7 +18,6 @@ class Universes:
             parsons.Table
                 A Parsons table of all the data.
         """
-
         return self._request(self.url_universes, limit=limit)
 
     def get_universe(self, id: str):

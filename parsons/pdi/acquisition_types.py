@@ -8,7 +8,8 @@ class AcquisitionTypes:
         super().__init__()
 
     def get_acquisition_types(self, limit: int = None):
-        """Get a list of Acquisition Types.
+        """
+        Get a list of Acquisition Types.
         `Args:`
             limit: int
                 Specify limit to return.

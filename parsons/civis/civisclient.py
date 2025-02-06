@@ -54,7 +54,6 @@ class CivisClient(object):
             Parsons Table or ``civis.CivisFuture``
                 See :ref:`parsons-table` for output options.
         """
-
         fut = civis.io.query_civis(
             sql,
             self.db,
@@ -120,7 +119,6 @@ class CivisClient(object):
         `Returns`
             ``None`` or ``civis.CivisFuture``
         """  # noqa: E501,E261
-
         fut = civis.io.dataframe_to_civis(
             table_obj.to_dataframe(),
             database=self.db,

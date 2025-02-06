@@ -55,7 +55,6 @@ class Person:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if search_id_type in ["smartvan", "votebuilder", "voter"] and state is None:
             raise KeyError("Search ID type '{}' requires state kwarg".format(search_id_type))
 
@@ -160,7 +159,6 @@ class Person:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if (latitude is None or longitude is None) and address is None:
             raise ValueError("Lat/Long or Address required")
 
@@ -213,7 +211,6 @@ class Person:
         `Returns:`
             See :ref:`parsons-table` for output options.
         """
-
         url = self.connection.uri + "person/phone-search"
 
         args = {"phones": list(petl.values(table.table, 0))}
@@ -276,7 +273,6 @@ class Service:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if search_type == "zip" and None in [zip5, zip4]:
             raise ValueError("Search type 'zip' requires 'zip5' and 'zip4' arguments")
 
@@ -361,7 +357,6 @@ class Voter(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         url = self.connection.uri + "voter/voter-registration-check"
 
         if None in [first_name, last_name, state]:

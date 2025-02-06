@@ -3,7 +3,8 @@ import datetime
 
 
 def date_to_timestamp(value, tzinfo=datetime.timezone.utc):
-    """Convert any date value into a Unix timestamp.
+    """
+    Convert any date value into a Unix timestamp.
 
     `Args:`
         value: int or str or datetime
@@ -13,7 +14,6 @@ def date_to_timestamp(value, tzinfo=datetime.timezone.utc):
     `Returns:`
         Unix timestamp (int)
     """
-
     parsed_date = parse_date(value)
 
     if not parsed_date:
@@ -29,7 +29,6 @@ def convert_unix_to_readable(ts):
     """
     Converts UNIX timestamps to readable timestamps.
     """
-
     ts = datetime.utcfromtimestamp(int(ts) / 1000)
     ts = ts.strftime("%Y-%m-%d %H:%M:%S UTC")
 
@@ -37,7 +36,8 @@ def convert_unix_to_readable(ts):
 
 
 def parse_date(value, tzinfo=datetime.timezone.utc):
-    """Parse an arbitrary date value into a Python datetime.
+    """
+    Parse an arbitrary date value into a Python datetime.
 
     If no value is provided (i.e., the value is None or empty), then the return value will be
     None.
@@ -50,7 +50,6 @@ def parse_date(value, tzinfo=datetime.timezone.utc):
     `Returns:`
         datetime.datetime or None
     """
-
     if not value:
         return None
 

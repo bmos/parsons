@@ -122,7 +122,6 @@ class Hustle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self._request(f"groups/{group_id}/agents"))
         logger.info(f"Got {tbl.num_rows} agents from {group_id} group.")
         return tbl
@@ -137,7 +136,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         r = self._request(f"agents/{agent_id}")
         logger.info(f"Got {agent_id} agent.")
         return r
@@ -162,7 +160,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         agent = {
             "name": name,
             "fullName": full_name,
@@ -195,7 +192,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         agent = {"name": name, "fullName": full_name, "sendInvite": send_invite}
 
         # Remove empty args in dictionary
@@ -212,7 +208,6 @@ class Hustle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self._request("organizations"))
         logger.info(f"Got {tbl.num_rows} organizations.")
         return tbl
@@ -227,7 +222,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         r = self._request(f"organizations/{organization_id}")
         logger.info(f"Got {organization_id} organization.")
         return r
@@ -242,7 +236,6 @@ class Hustle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self._request(f"organizations/{organization_id}/groups"))
         logger.info(f"Got {tbl.num_rows} groups.")
         return tbl
@@ -255,7 +248,6 @@ class Hustle(object):
             group_id: str
                 The group id.
         """
-
         r = self._request(f"groups/{group_id}")
         logger.info(f"Got {group_id} group.")
         return r
@@ -270,7 +262,6 @@ class Hustle(object):
             lead_id: str
                 The lead id.
         """
-
         return self._request(
             f"groups/{group_id}/memberships",
             req_type="POST",
@@ -287,7 +278,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         r = self._request(f"leads/{lead_id}")
         logger.info(f"Got {lead_id} lead.")
         return r
@@ -306,7 +296,6 @@ class Hustle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if organization_id is None and group_id is None:
             raise ValueError("Either organization_id or group_id required.")
 
@@ -363,7 +352,6 @@ class Hustle(object):
         `Returns:`
                 ``None``
         """
-
         lead = {
             "firstName": first_name,
             "lastName": last_name,
@@ -412,7 +400,6 @@ class Hustle(object):
         `Returns:`
             A table of created ids with associated lead id.
         """
-
         table.map_columns(LEAD_COLUMN_MAP)
 
         arg_list = [
@@ -486,7 +473,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         lead = {
             "leadId": lead_id,
             "firstName": first_name,
@@ -515,7 +501,6 @@ class Hustle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self._request(f"organizations/{organization_id}/tags"))
         logger.info(f"Got {tbl.num_rows} tags for {organization_id} organization.")
         return tbl
@@ -530,7 +515,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         r = self._request(f"tags/{tag_id}")
         logger.info(f"Got {tag_id} tag.")
         return r

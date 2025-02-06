@@ -65,7 +65,6 @@ class BillCom(object):
         `Returns:`
             A dictionary containing the JSON response from the post request.
         """
-
         if action == "Read":
             url = "%sCrud/%s/%s.json" % (self.api_url, action, object_name)
         elif action == "Create":
@@ -115,7 +114,6 @@ class BillCom(object):
             object_name: str
                 Name of the object being listed
         """
-
         r_table = Table(response)
         max_ct = data["max"]
 

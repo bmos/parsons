@@ -105,7 +105,6 @@ class ActionBuilder(object):
         `Returns:`
             Parsons Table of full set of tags available in Action Builder.
         """
-
         return self._get_all_records(
             campaign, "tags", limit=limit, per_page=per_page, filter=filter
         )
@@ -122,7 +121,6 @@ class ActionBuilder(object):
         `Returns:`
             Parsons Table of data found on tag in Action Builder from searching by name.
         """
-
         filter = f"name eq '{tag_name}'"
 
         return self.get_campaign_tags(campaign=campaign, filter=filter)
@@ -144,7 +142,6 @@ class ActionBuilder(object):
         `Returns:`
             Dict containing Action Builder tag data.
         """
-
         campaign = self._campaign_check(campaign)
         url = f"campaigns/{campaign}/tags"
 
@@ -183,7 +180,6 @@ class ActionBuilder(object):
         `Returns:`
             Dict containing Action Builder entity data.
         """  # noqa: E501
-
         name_keys = ("name", "action_builder:name", "given_name")
         error = "Must provide data with name or given_name when inserting new record"
         if not isinstance(data, dict):
@@ -225,7 +221,6 @@ class ActionBuilder(object):
         `Returns:`
             Dict containing Action Builder entity data.
         """  # noqa: E501
-
         campaign = self._campaign_check(campaign)
 
         if isinstance(identifier, str):
@@ -260,7 +255,6 @@ class ActionBuilder(object):
         `Returns:`
             Dict with HTTP response.
         """
-
         campaign = self._campaign_check(campaign)
 
         url = f"campaigns/{campaign}/people/{identifier}"
@@ -285,7 +279,6 @@ class ActionBuilder(object):
         `Returns:`
             Dict containing Action Builder entity data of the entity being tagged.
         """
-
         tag_data = [
             {
                 "action_builder:name": tag,
@@ -334,7 +327,6 @@ class ActionBuilder(object):
             API response JSON which contains `{'message': 'Tag has been removed from Taggable
             Logbook'}` if successful.
         """
-
         if {tag_name, tag_id} == {None}:
             raise ValueError("Please supply a tag_name or tag_id!")
 
@@ -402,7 +394,6 @@ class ActionBuilder(object):
         `Returns:`
             Dict containing Action Builder connection data.
         """  # noqa: E501
-
         # Check that there are exactly two identifiers and that campaign is provided first
         if not isinstance(identifiers, list):
             raise ValueError("Must provide identifiers as a list")
@@ -461,7 +452,6 @@ class ActionBuilder(object):
         `Returns:`
             Dict containing Action Builder connection data.
         """
-
         # Check that either connection or second entity identifier are provided
         if {connection_identifier, to_identifier} == {None}:
             raise ValueError("Must provide a connection ID or an ID for the second entity")

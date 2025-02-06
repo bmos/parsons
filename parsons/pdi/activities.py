@@ -7,7 +7,8 @@ class Activities:
         super().__init__()
 
     def get_activities(self, limit: int = None):
-        """Get a list of Activities.
+        """
+        Get a list of Activities.
         `Args:`
             limit: int
                 Specify limit to return.

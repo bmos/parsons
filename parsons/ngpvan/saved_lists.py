@@ -25,7 +25,6 @@ class SavedLists(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("savedLists", params={"folderId": folder_id}))
         logger.info(f"Found {tbl.num_rows} saved lists.")
         return tbl
@@ -40,7 +39,6 @@ class SavedLists(object):
         `Returns:`
             dict
         """
-
         r = self.connection.get_request(f"savedLists/{saved_list_id}")
         logger.info(f"Found saved list {saved_list_id}.")
         return r
@@ -56,7 +54,6 @@ class SavedLists(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         ej = ExportJobs(self.connection)
         job = ej.export_job_create(saved_list_id)
 
@@ -288,7 +285,6 @@ class Folders(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("folders"))
         logger.info(f"Found {tbl.num_rows} folders.")
         return tbl
@@ -304,7 +300,6 @@ class Folders(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         r = self.connection.get_request(f"folders/{folder_id}")
         logger.info(f"Found folder {folder_id}.")
         return r
@@ -322,7 +317,6 @@ class ExportJobs(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("exportJobTypes"))
         logger.info(f"Found {tbl.num_rows} export job types.")
         return tbl
@@ -346,7 +340,6 @@ class ExportJobs(object):
             dict
                 The export job object
         """
-
         json = {
             "savedListId": str(list_id),
             "type": str(export_type),
@@ -368,7 +361,6 @@ class ExportJobs(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         r = self.connection.get_request(f"exportJobs/{export_job_id}")
         logger.info(f"Found export job {export_job_id}.")
         return r

@@ -272,6 +272,7 @@ class RockTheVote:
     ):
         """
         Checks state eligibility and provides state specific fields information.
+
         Args:
             lang: str
                 Required. Language. Represented by an abbreviation. 'en', 'es', etc
@@ -286,6 +287,7 @@ class RockTheVote:
         Returns:
             Parsons.Table
                 A single row table with the response json
+
         """
         requirements_url = "state_requirements.json"
 

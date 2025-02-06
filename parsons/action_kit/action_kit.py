@@ -103,7 +103,6 @@ class ActionKit(object):
         `Returns`:
             User json object
         """
-
         return self._base_get(
             endpoint="user", entity_id=user_id, exception_message="User not found"
         )
@@ -116,7 +115,6 @@ class ActionKit(object):
         `Returns`:
             List of user fields
         """
-
         resp = self._base_get(endpoint="user/schema")
 
         return list(resp["fields"].keys())
@@ -135,7 +133,6 @@ class ActionKit(object):
         `Returns:`
             User json object
         """
-
         return self._base_post(
             endpoint="user",
             exception_message="Could not create user",
@@ -175,7 +172,6 @@ class ActionKit(object):
         `Returns:`
             ``None``
         """
-
         resp = self.conn.delete(self._base_endpoint("actionfield", actionfield_id))
         logger.info(f"{resp.status_code}: {actionfield_id}")
 
@@ -193,7 +189,6 @@ class ActionKit(object):
         `Returns:`
             ``HTTP response from the patch request``
         """
-
         resp = self.conn.patch(self._base_endpoint("user", user_id), data=json.dumps(kwargs))
         logger.info(f"{resp.status_code}: {user_id}")
 
@@ -212,14 +207,14 @@ class ActionKit(object):
         `Returns:`
             ``HTTP response from the patch request``
         """
-
         resp = self.conn.patch(self._base_endpoint("phone", phone_id), data=json.dumps(kwargs))
         logger.info(f"{resp.status_code}: {phone_id}")
 
         return resp
 
     def get_event(self, event_id):
-        """Get an event.
+        """
+        Get an event.
 
         `Args:`
             event_id: int
@@ -232,7 +227,8 @@ class ActionKit(object):
         return self._base_get(f"event/{event_id}")
 
     def get_events(self, limit=None, **kwargs):
-        """Get multiple events.
+        """
+        Get multiple events.
 
         `Args:`
             limit: int
@@ -269,7 +265,6 @@ class ActionKit(object):
         `Returns:`
             ``None``
         """
-
         resp = self.conn.patch(self._base_endpoint("event", event_id), data=json.dumps(kwargs))
         logger.info(f"{resp.status_code}: {event_id}")
 
@@ -334,7 +329,6 @@ class ActionKit(object):
             Parsons.Table
                 The blackholed email data.
         """
-
         return self.paginated_get("blackholedemail", email=email)
 
     def blackhole_email(self, email):
@@ -349,7 +343,6 @@ class ActionKit(object):
         `Returns:`
             API location of new resource
         """
-
         return self._base_post(
             endpoint="blackholedemail",
             exception_message="Could not blackhole email",
@@ -370,7 +363,6 @@ class ActionKit(object):
         `Returns:`
             API location of anonymized user
         """
-
         return self._base_post(
             endpoint="eraser",
             exception_message="Could not delete user data",
@@ -388,7 +380,6 @@ class ActionKit(object):
         `Returns:`
             ``None``
         """
-
         resp = self.conn.delete(self._base_endpoint("user", user_id))
         logger.info(f"{resp.status_code}: {user_id}")
 
@@ -402,7 +393,6 @@ class ActionKit(object):
         `Returns`:
             Campaign json object
         """
-
         return self._base_get(
             endpoint="campaign",
             entity_id=campaign_id,
@@ -417,7 +407,6 @@ class ActionKit(object):
         `Returns`:
             List of campaign fields
         """
-
         resp = self._base_get(endpoint="campaign/schema")
         return list(resp["fields"].keys())
 
@@ -435,7 +424,6 @@ class ActionKit(object):
         `Returns`:
             API location of new resource
         """
-
         return self._base_post(
             endpoint="campaign",
             exception_message="Could not create campaign",
@@ -520,7 +508,6 @@ class ActionKit(object):
         `Returns`:
             Event create page json object
         """
-
         return self._base_get(
             endpoint="eventcreatepage",
             entity_id=event_create_page_id,
@@ -535,7 +522,6 @@ class ActionKit(object):
         `Returns`:
             List of event create page fields
         """
-
         resp = self._base_get(endpoint="eventcreatepage/schema")
         return list(resp["fields"].keys())
 
@@ -557,7 +543,6 @@ class ActionKit(object):
         `Returns`:
             API location of new resource
         """
-
         return self._base_post(
             endpoint="eventcreatepage",
             exception_message="Could not create event create page",
@@ -577,7 +562,6 @@ class ActionKit(object):
         `Returns`:
             Event create form json object
         """
-
         return self._base_get(
             endpoint="eventcreateform",
             entity_id=event_create_form_id,
@@ -592,7 +576,6 @@ class ActionKit(object):
         `Returns`:
             List of event create form fields
         """
-
         resp = self._base_get(endpoint="eventcreateform/schema")
         return list(resp["fields"].keys())
 
@@ -612,7 +595,6 @@ class ActionKit(object):
         `Returns:`
             API location of new resource
         """
-
         return self._base_post(
             endpoint="eventcreateform",
             exception_message="Could not event create form",
@@ -631,7 +613,6 @@ class ActionKit(object):
         `Returns`:
             Event signup page json object
         """
-
         return self._base_get(
             endpoint="eventsignuppage",
             entity_id=event_signup_page_id,
@@ -646,7 +627,6 @@ class ActionKit(object):
         `Returns`:
             List of event signup page fields
         """
-
         resp = self._base_get(endpoint="eventsignuppage/schema")
         return list(resp["fields"].keys())
 
@@ -668,7 +648,6 @@ class ActionKit(object):
         `Returns`:
             API location of new resource
         """
-
         return self._base_post(
             endpoint="eventsignuppage",
             exception_message="Could not create signup page",
@@ -688,7 +667,6 @@ class ActionKit(object):
         `Returns`:
             Event signup form json object
         """
-
         return self._base_get(
             endpoint="eventsignupform",
             entity_id=event_signup_form_id,
@@ -703,7 +681,6 @@ class ActionKit(object):
         `Returns`:
             List of event signup form fields
         """
-
         resp = self._base_get(endpoint="eventsignupform/schema")
         return list(resp["fields"].keys())
 
@@ -723,7 +700,6 @@ class ActionKit(object):
         `Returns:`
             API location of new resource
         """
-
         return self._base_post(
             endpoint="eventsignupform",
             exception_message="Could not event create signup form",
@@ -748,7 +724,6 @@ class ActionKit(object):
         `Returns:`
             ``None``
         """
-
         resp = self.conn.patch(
             self._base_endpoint("eventsignup", event_signup_id), data=json.dumps(kwargs)
         )
@@ -764,7 +739,6 @@ class ActionKit(object):
         `Returns`:
             Mailer json object
         """
-
         return self._base_get(endpoint="mailer", entity_id=entity_id)
 
     def create_mailer(self, **kwargs):
@@ -779,7 +753,6 @@ class ActionKit(object):
         `Returns:`
             URI of new mailer
         """
-
         return self._base_post(
             endpoint="mailer", exception_message="Could not create mailer", **kwargs
         )
@@ -806,7 +779,6 @@ class ActionKit(object):
         `Returns:`
             ``HTTP response from the patch request``
         """
-
         resp = self.conn.patch(self._base_endpoint("mailer", mailer_id), data=json.dumps(kwargs))
         logger.info(f"{resp.status_code}: {mailer_id}")
         return resp
@@ -821,7 +793,6 @@ class ActionKit(object):
         `Returns:`
             URI to poll for progress
         """
-
         return self._base_post(
             endpoint="mailer/" + str(mailing_id) + "/rebuild",
             exception_message="Could not rebuild mailer",
@@ -837,14 +808,14 @@ class ActionKit(object):
         `Returns:`
             URI to poll for progress
         """
-
         return self._base_post(
             endpoint="mailer/" + str(mailing_id) + "/queue",
             exception_message="Could not queue mailer",
         )
 
     def paginated_get(self, object_type, limit=None, **kwargs):
-        """Get multiple objects of a given type.
+        """
+        Get multiple objects of a given type.
 
         `Args:`
             object_type: string
@@ -894,7 +865,8 @@ class ActionKit(object):
         ascdesc="asc",
         **kwargs,
     ):
-        """Get multiple objects of a given type, stopping based on the value of a field.
+        """
+        Get multiple objects of a given type, stopping based on the value of a field.
 
         `Args:`
             object_type: string
@@ -966,7 +938,6 @@ class ActionKit(object):
         `Returns`:
             User json object
         """
-
         return self._base_get(
             endpoint="order", entity_id=order_id, exception_message="Order not found"
         )
@@ -985,7 +956,6 @@ class ActionKit(object):
         `Returns:`
             ``None``
         """
-
         resp = self.conn.patch(self._base_endpoint("order", order_id), data=json.dumps(kwargs))
         logger.info(f"{resp.status_code}: {order_id}")
 
@@ -1002,7 +972,6 @@ class ActionKit(object):
         `Returns:`
             ``HTTP response from the patch request``
         """
-
         resp = self.conn.patch(
             self._base_endpoint("orderuserdetail", user_detail_id), data=json.dumps(kwargs)
         )
@@ -1020,7 +989,6 @@ class ActionKit(object):
         `Returns`:
             User json object
         """
-
         return self._base_get(
             endpoint="orderrecurring",
             entity_id=orderrecurring_id,
@@ -1037,7 +1005,6 @@ class ActionKit(object):
         `Returns:`
             ``None``
         """
-
         resp = self.conn.post(self._base_endpoint("orderrecurring", str(recurring_id) + "/cancel"))
         logger.info(f"{resp.status_code}: {recurring_id}")
         return resp
@@ -1056,7 +1023,6 @@ class ActionKit(object):
         `Returns:`
             ``None``
         """
-
         resp = self.conn.patch(
             self._base_endpoint("orderrecurring", orderrecurring_id),
             data=json.dumps(kwargs),
@@ -1064,7 +1030,8 @@ class ActionKit(object):
         logger.info(f"{resp.status_code}: {orderrecurring_id}")
 
     def get_orders(self, limit=None, **kwargs):
-        """Get multiple orders.
+        """
+        Get multiple orders.
 
         `Args:`
             limit: int
@@ -1101,7 +1068,6 @@ class ActionKit(object):
         `Returns:`
             ``HTTP response``
         """
-
         resp = self.conn.patch(
             self._base_endpoint("paymenttoken", paymenttoken_id),
             data=json.dumps(kwargs),
@@ -1119,7 +1085,6 @@ class ActionKit(object):
         `Returns`:
             Page followup json object
         """
-
         return self._base_get(
             endpoint="pagefollowup",
             entity_id=page_followup_id,
@@ -1134,7 +1099,6 @@ class ActionKit(object):
         `Returns`:
             List of page followup fields
         """
-
         resp = self._base_get(endpoint="pagefollowup/schema")
         return list(resp["fields"].keys())
 
@@ -1154,7 +1118,6 @@ class ActionKit(object):
         `Returns`:
             API location of new resource
         """
-
         return self._base_post(
             endpoint="pagefollowup",
             exception_message="Could not create page followup",
@@ -1173,7 +1136,6 @@ class ActionKit(object):
         `Returns`:
             Survey question json object
         """
-
         return self._base_get(
             endpoint="surveyquestion",
             entity_id=survey_question_id,
@@ -1196,7 +1158,6 @@ class ActionKit(object):
         `Returns:`
             ``None``
         """
-
         resp = self.conn.patch(
             self._base_endpoint("surveyquestion", survey_question_id),
             data=json.dumps(kwargs),
@@ -1213,7 +1174,6 @@ class ActionKit(object):
         `Returns:`
             Transaction json object
         """
-
         return self._base_post(
             endpoint="transaction",
             exception_message="Could not create transaction",
@@ -1234,14 +1194,14 @@ class ActionKit(object):
         `Returns:`
             ``None``
         """
-
         resp = self.conn.patch(
             self._base_endpoint("transaction", transaction_id), data=json.dumps(kwargs)
         )
         logger.info(f"{resp.status_code}: {transaction_id}")
 
     def get_transactions(self, limit=None, **kwargs):
-        """Get multiple transactions.
+        """
+        Get multiple transactions.
 
         `Args:`
             limit: int
@@ -1283,7 +1243,6 @@ class ActionKit(object):
             dict
                 The response json
         """  # noqa: E501,E261
-
         if not email or ak_id:
             raise ValueError("One of email or ak_id is required.")
 
@@ -1309,7 +1268,6 @@ class ActionKit(object):
         `Returns:`
             ``HTTP response from the patch request``
         """
-
         resp = self.conn.patch(
             self._base_endpoint("importaction", action_id), data=json.dumps(kwargs)
         )
@@ -1354,7 +1312,6 @@ class ActionKit(object):
                 progress_url: an API URL to get progress on upload processing
                 res: requests http response object
         """  # noqa: E501,E261
-
         # self.conn defaults to JSON, but this has to be form/multi-part....
         upload_client = self._conn({"accepts": "application/json"})
         if isinstance(csv_file, str):
@@ -1423,7 +1380,6 @@ class ActionKit(object):
                 results: [dict] -- This is a list of the full results.
                          progress_url and res for any results
         """  # noqa: E501,E261
-
         import_page = check_env.check("ACTION_KIT_IMPORTPAGE", import_page)
         upload_tables = self._split_tables_no_empties(
             table, no_overwrite_on_empty, set_only_columns

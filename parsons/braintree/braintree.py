@@ -513,6 +513,7 @@ class Braintree(object):
         disbursement_date={'between': ['2020-03-20', '2020-03-27']}
         merchant_account_id={'in_list': [123, 456]}
         created_at={'greater_than_or_equal': '2020-03-10'}
+
         """
         queries = []
         for node, filters in queryparams.items():

@@ -189,7 +189,8 @@ class Donorbox(object):
         return Table(data)
 
     def _check_date_helper(self, params):
-        """Searches through params for a date parameter and if found, calls format helper.
+        """
+        Searches through params for a date parameter and if found, calls format helper.
 
         params: dictionary
             Required. Dictionary of parameters to be passed to endpoint.
@@ -203,7 +204,8 @@ class Donorbox(object):
             self._date_format_helper(params["date_to"])
 
     def _date_format_helper(self, date_string):
-        """Checks date format and warns if invalid (internal)
+        """
+        Checks date format and warns if invalid (internal)
 
         Valid formats: YYYY-mm-dd YYYY/mm/dd YYYYmmdd dd-mm-YYYY
 

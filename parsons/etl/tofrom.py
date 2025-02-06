@@ -27,7 +27,6 @@ class ToFrom(object):
             dataframe
                 Pandas DataFrame object
         """
-
         return petl.todataframe(
             self.table,
             index=index,
@@ -78,7 +77,6 @@ class ToFrom(object):
             str
                 The path of the new file
         """
-
         if not local_path:
             local_path = files.create_temp_file(suffix=".html")
 
@@ -141,7 +139,6 @@ class ToFrom(object):
             str
                 The path of the new file
         """  # noqa: W605
-
         # If a zip archive.
         if files.zip_check(local_path, temp_file_compression):
             return self.to_zip_csv(
@@ -193,7 +190,6 @@ class ToFrom(object):
             str
                 The path of the file
         """  # noqa: W605
-
         petl.appendcsv(self.table, source=local_path, encoding=encoding, errors=errors, **csvargs)
         return local_path
 
@@ -240,7 +236,6 @@ class ToFrom(object):
             str
                 The path of the archive
         """  # noqa: W605
-
         if not archive_path:
             archive_path = files.create_temp_file(suffix=".zip")
 
@@ -276,7 +271,6 @@ class ToFrom(object):
             str
                 The path of the new file
         """
-
         if not local_path:
             suffix = ".json" + files.suffix_for_compression_type(temp_file_compression)
             local_path = files.create_temp_file(suffix=suffix)
@@ -316,7 +310,6 @@ class ToFrom(object):
         `Returns:`
             list
         """
-
         return list(petl.dicts(self.table))
 
     def to_sftp_csv(
@@ -360,7 +353,6 @@ class ToFrom(object):
             \**csvargs: kwargs
                 ``csv_writer`` optional arguments
         """  # noqa: W605
-
         from parsons.sftp import SFTP
 
         sftp = SFTP(host, username, password, port, rsa_private_key_file)
@@ -430,7 +422,6 @@ class ToFrom(object):
         `Returns:`
             Public url if specified. If not ``None``.
         """  # noqa: W605
-
         compression = compression or files.compression_type_for_path(key)
 
         csv_name = files.extract_file_name(key, include_suffix=False) + ".csv"
@@ -509,7 +500,6 @@ class ToFrom(object):
         `Returns:`
             Public url if specified. If not ``None``.
         """  # noqa: W605
-
         compression = compression or files.compression_type_for_path(blob_name)
 
         csv_name = files.extract_file_name(blob_name, include_suffix=False) + ".csv"
@@ -536,7 +526,7 @@ class ToFrom(object):
         else:
             return None
 
-    def to_redshift(
+    def to_redshift( # noqa D417
         self,
         table_name,
         username=None,
@@ -568,14 +558,14 @@ class ToFrom(object):
 
         Returns:
             ``None``
-        """  # noqa: W605
 
+        """  # noqa: W605
         from parsons.databases.redshift import Redshift
 
         rs = Redshift(username=username, password=password, host=host, db=db, port=port)
         rs.copy(self, table_name, **copy_args)
 
-    def to_postgres(
+    def to_postgres( # noqa D417
         self,
         table_name,
         username=None,
@@ -606,8 +596,8 @@ class ToFrom(object):
 
         Returns:
             ``None``
-        """  # noqa: W605
 
+        """  # noqa: W605
         from parsons.databases.postgres import Postgres
 
         pg = Postgres(username=username, password=password, host=host, db=db, port=port)
@@ -639,7 +629,6 @@ class ToFrom(object):
         `Returns`:
             ``None``
         """
-
         from parsons import GoogleBigQuery as BigQuery
 
         bq = BigQuery(app_creds=app_creds, project=project)
@@ -696,7 +685,6 @@ class ToFrom(object):
             wait: boolean
                 Wait for write job to complete before exiting method.
         """
-
         from parsons.civis.civisclient import CivisClient
 
         civis = CivisClient(db=db, api_key=api_key)
@@ -728,7 +716,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """  # noqa: W605
-
         remote_prefixes = ["http://", "https://", "ftp://", "s3://"]
         if any(map(local_path.startswith, remote_prefixes)):
             is_remote_file = True
@@ -754,7 +741,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         bytesio = io.BytesIO(str.encode("utf-8"))
         memory_source = petl.io.sources.MemorySource(bytesio.read())
         return cls(petl.fromcsv(memory_source, **csvargs))
@@ -773,7 +759,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         return cls(petl.fromcolumns(cols, header=header))
 
     @classmethod
@@ -795,7 +780,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if line_delimited:
             if files.is_gzip_path(local_path):
                 open_fn = gzip.open
@@ -834,7 +818,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         from parsons.databases.redshift import Redshift
 
         rs = Redshift(username=username, password=password, host=host, db=db, port=port)
@@ -856,8 +839,8 @@ class ToFrom(object):
                 Required if env variable ``PGDATABASE`` not populated
             port: int
                 Required if env variable ``PGPORT`` not populated.
-        """
 
+        """
         from parsons.databases.postgres import Postgres
 
         pg = Postgres(username=username, password=password, host=host, db=db, port=port)
@@ -893,7 +876,6 @@ class ToFrom(object):
         `Returns:`
             `parsons.Table` object
         """  # noqa: W605
-
         from parsons.aws import S3
 
         s3 = S3(aws_access_key_id, aws_secret_access_key)
@@ -941,7 +923,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         from parsons import GoogleBigQuery as BigQuery
 
         bq = BigQuery(app_creds=app_creds, project=project)
@@ -959,5 +940,4 @@ class ToFrom(object):
             include_index: boolean
                 Include index column
         """
-
         return cls(petl.fromdataframe(dataframe, include_index=include_index))

@@ -9,7 +9,8 @@ SCOPES = "https://www.googleapis.com/auth/gmail.send"
 
 
 class Gmail(SendMail):
-    """Create a Gmail object, for sending emails.
+    """
+    Create a Gmail object, for sending emails.
 
     `Args:`
         creds_path: str
@@ -52,7 +53,8 @@ class Gmail(SendMail):
         return {"raw": base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
     def _send_message(self, msg):
-        """Send an email message.
+        """
+        Send an email message.
 
         `Args:`
             message: dict

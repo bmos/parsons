@@ -1,4 +1,5 @@
-"""Implements client routine to allow execution of TargetSmart SmartMatch
+"""
+Implements client routine to allow execution of TargetSmart SmartMatch
 workflows.
 
 TargetSmart SmartMatch API doc:
@@ -68,7 +69,8 @@ def _smartmatch_download(url, writer):
 
 
 def _add_join_id(input_table):
-    """`matchback_id` is added to the raw input table so the results can later be
+    """
+    `matchback_id` is added to the raw input table so the results can later be
     joined back. Integer sequence values are used. If the column already exists
     in the raw input, it is renamed to `__matchback_id` and restored after
     result join.

@@ -70,6 +70,7 @@ class Redshift(
             Controls use of the ``AWS_SESSION_TOKEN`` environment variable for S3. Defaults
             to ``True``. Set to ``False`` in order to ignore the ``AWS_SESSION_TOKEN`` environment
             variable even if the ``aws_session_token`` argument was not passed in.
+
     """
 
     def __init__(
@@ -128,7 +129,6 @@ class Redshift(
         `Returns:`
             Psycopg2 ``connection`` object
         """
-
         # Create a psycopg2 connection and cursor
         conn = psycopg2.connect(
             user=self.username,
@@ -191,7 +191,6 @@ class Redshift(
                 See :ref:`parsons-table` for output options.
 
         """  # noqa: E501
-
         with self.connection() as connection:
             return self.query_with_connection(sql, connection, parameters=parameters)
 
@@ -217,7 +216,6 @@ class Redshift(
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         # To Do: Have it return an ordered dict to return the
         #        rows in the correct order
 
@@ -396,7 +394,6 @@ class Redshift(
             Parsons Table or ``None``
                 See :ref:`parsons-table` for output options.
         """
-
         with self.connection() as connection:
             if self._create_table_precheck(connection, table_name, if_exists):
                 if template_table:
@@ -615,7 +612,6 @@ class Redshift(
             Parsons Table or ``None``
                 See :ref:`parsons-table` for output options.
         """  # noqa: E501
-
         # Specify the columns for a copy statement.
         if specifycols or (specifycols is None and template_table):
             cols = tbl.columns
@@ -808,7 +804,7 @@ class Redshift(
 
         return self.query(statement)
 
-    def drop_and_unload(
+    def drop_and_unload( # noqa D417
         self,
         rs_table,
         bucket,
@@ -845,6 +841,7 @@ class Redshift(
 
         Returns:
             None
+
         """
         query_end = "cascade" if cascade else ""
 
@@ -908,7 +905,6 @@ class Redshift(
         `Returns:`
             ``dict`` of manifest
         """
-
         from parsons.aws import S3
 
         s3 = S3(
@@ -997,7 +993,6 @@ class Redshift(
             \**copy_args: kwargs
                 See :func:`~parsons.databases.Redshift.copy` for options.
         """  # noqa: W605
-
         if isinstance(primary_key, str):
             primary_keys = [primary_key]
         else:
@@ -1170,7 +1165,6 @@ class Redshift(
         `Returns:`
             ``None``
         """
-
         # Make the Parsons table column names match valid Redshift names
         tbl.table = petl.setheader(tbl.table, self.column_name_validate(tbl.columns))
 
@@ -1210,7 +1204,6 @@ class Redshift(
         varchar_width:
             The new width of the column if of type varchar.
         """
-
         sql = f"ALTER TABLE {table_name} ALTER COLUMN {column_name} TYPE {data_type}"
 
         if varchar_width:

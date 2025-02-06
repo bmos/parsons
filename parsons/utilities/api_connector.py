@@ -91,10 +91,12 @@ class APIConnector(object):
                 A complete and valid url for the api request
             params: dict
                 The request parameters
+            return_format: str
+                The format expected for the returned data
         Returns:
                 A requests response object
-        """
 
+        """
         r = self.request(url, "GET", params=params)
         self.validate_response(r)
 
@@ -126,7 +128,6 @@ class APIConnector(object):
         `Returns:`
             A requests response object
         """
-
         r = self.request(url, "POST", params=params, data=data, json=json)
 
         # Validate the response and lift up an errors.
@@ -153,8 +154,8 @@ class APIConnector(object):
                 The expected success codes to be returned
         Returns:
                 A requests response object or status code
-        """
 
+        """
         r = self.request(url, "DELETE", params=params)
 
         self.validate_response(r)
@@ -180,10 +181,13 @@ class APIConnector(object):
                 A data object to post
             json: dict
                 A JSON object to post
+            success_codes: Optional[list[int]]
+                A list of html status codes to consider a success.
+
         Returns:
                 A requests response object
-        """
 
+        """
         r = self.request(url, "PUT", params=params, data=data, json=json)
 
         self.validate_response(r)
@@ -212,7 +216,6 @@ class APIConnector(object):
         `Returns:`
             A requests response object
         """
-
         r = self.request(url, "PATCH", params=params, data=data, json=json)
 
         self.validate_response(r)
@@ -234,7 +237,6 @@ class APIConnector(object):
             resp: object
                 A response object
         """
-
         if resp.status_code >= 400:
             if resp.reason:
                 message = f"HTTP error occurred ({resp.status_code}): {resp.reason}"
@@ -262,7 +264,6 @@ class APIConnector(object):
             dict
                 A dictionary of data.
         """
-
         # TODO: Some response jsons are enclosed in a list. Need to deal with unpacking and/or
         # not assuming that it is going to be a dict.
 
@@ -290,7 +291,6 @@ class APIConnector(object):
         `Returns:
             boolean
         """
-
         if self.pagination_key and self.pagination_key in resp.keys():
             if resp[self.pagination_key]:
                 return True
@@ -301,7 +301,6 @@ class APIConnector(object):
         """
         Check to see if a response has a json included in it.
         """
-
         try:
             resp.json()
             return True

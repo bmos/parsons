@@ -29,6 +29,7 @@ class Postgres(PostgresCore, Alchemy, DatabaseConnector):
             Required if env variable ``PGPORT`` not populated.
         timeout: int
             Seconds to timeout if connection not established.
+
     """
 
     def __init__(self, username=None, password=None, host=None, db=None, port=5432, timeout=10):
@@ -77,7 +78,6 @@ class Postgres(PostgresCore, Alchemy, DatabaseConnector):
                 or if their size will be rounded up to account for future values being larger
                 then the current dataset. Defaults to ``False``.
         """
-
         with self.connection() as connection:
             # Auto-generate table
             if self._create_table_precheck(connection, table_name, if_exists):

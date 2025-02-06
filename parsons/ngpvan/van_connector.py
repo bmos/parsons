@@ -45,7 +45,6 @@ class VANConnector(object):
         """
         Returns the API key profile with includes permissions and other metadata.
         """
-
         return self.get_request("apiKeyProfiles")[0]
 
     @property
@@ -66,7 +65,6 @@ class VANConnector(object):
         """
         Parse the REST database name to the accepted SOAP format
         """
-
         if self.db == "MyVoters":
             return "MyVoterFile"
         if self.db == "EveryAction":

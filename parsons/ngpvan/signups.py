@@ -25,7 +25,6 @@ class Signups(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if event_id is None and event_type_id is None:
             raise ValueError("One of event_id or event_type_id must be populated")
 
@@ -52,7 +51,6 @@ class Signups(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("signups", params={"vanID": vanid}))
         logger.info(f"Found {tbl.num_rows} signups for {vanid}.")
         return self._unpack_signups(tbl)
@@ -68,7 +66,6 @@ class Signups(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("signups", params={"eventId": event_id}))
         logger.info(f"Found {tbl.num_rows} signups for event {event_id}.")
         return self._unpack_signups(tbl)
@@ -84,7 +81,6 @@ class Signups(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         r = self.connection.get_request(f"signups/{event_signup_id}")
         logger.info(f"Found sign up {event_signup_id}.")
         return r
@@ -110,7 +106,6 @@ class Signups(object):
             Int
                 The event signup id
         """
-
         signup = {
             "person": {"vanId": vanid},
             "event": {"eventId": event_id},
@@ -150,7 +145,6 @@ class Signups(object):
         `Returns:`
             ``None``
         """
-
         #  Get the signup object
         signup = self.connection.get_request(f"signups/{event_signup_id}")
 
@@ -176,7 +170,6 @@ class Signups(object):
         `Returns:`
             ``None``
         """
-
         r = self.connection.delete_request(f"signups/{event_signup_id}")
         logger.info(f"Signup {event_signup_id} deleted.")
         return r

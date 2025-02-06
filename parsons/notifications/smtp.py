@@ -5,7 +5,8 @@ from parsons.utilities.check_env import check
 
 
 class SMTP(SendMail):
-    """Create a SMTP object, for sending emails.
+    """
+    Create a SMTP object, for sending emails.
 
     `Args:`
         host: str
@@ -50,7 +51,8 @@ class SMTP(SendMail):
         return self.conn
 
     def _send_message(self, message):
-        """Send an email message.
+        """
+        Send an email message.
 
         `Args:`
             message: `MIME object <https://docs.python.org/2/library/email.mime.html>`

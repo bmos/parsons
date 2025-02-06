@@ -51,7 +51,6 @@ class TurboVote(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         url = self.uri + f"partners/{self.subdomain}.turbovote.org/users"
 
         headers = {"Authorization": f"Bearer {self._get_token()}"}

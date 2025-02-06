@@ -58,7 +58,6 @@ class Email(object):
         `Returns:`
             dict
         """
-
         params = {
             "$expand": (
                 "emailMessageContent, EmailMessageContentDistributions" if expand else None
@@ -81,7 +80,6 @@ class Email(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         email_list = []
 
         final_email_list = []

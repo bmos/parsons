@@ -21,7 +21,6 @@ class Locations(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("locations", params={"name": name}))
         logger.info(f"Found {tbl.num_rows} locations.")
         return self._unpack_loc(tbl)
@@ -36,7 +35,6 @@ class Locations(object):
         `Returns:`
             dict
         """
-
         r = self.connection.get_request(f"locations/{location_id}")
         logger.info(f"Found location {location_id}.")
         return r
@@ -70,7 +68,6 @@ class Locations(object):
                 int
                     A location id.
         """
-
         location = {
             "name": name,
             "address": {
@@ -96,7 +93,6 @@ class Locations(object):
         `Returns:`
             ``None``
         """
-
         r = self.connection.delete_request(f"locations/{location_id}")
         logger.info(f"Location {location_id} deleted.")
         return r

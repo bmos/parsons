@@ -39,7 +39,6 @@ class GoogleCivic(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         url = self.uri + "elections"
 
         return Table((self.request(url))["elections"])
@@ -68,7 +67,6 @@ class GoogleCivic(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         r = self._get_voter_info(election_id, address)
 
         return r["pollingLocations"]
@@ -89,7 +87,6 @@ class GoogleCivic(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         polling_locations = []
 
         # Iterate through the rows of the table
@@ -167,7 +164,6 @@ class GoogleCivic(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if levels is not None and not isinstance(levels, list):
             raise ValueError("levels must be a list of strings")
         if roles is not None and not isinstance(roles, list):

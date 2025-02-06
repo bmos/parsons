@@ -107,7 +107,6 @@ def map_column_headers_to_schema_field(schema_definition: list) -> list:
     `Returns`:
         List of instantiated `SchemaField` objects
     """
-
     # TODO - Better way to test for this
     if isinstance(schema_definition[0], bigquery.SchemaField):
         logger.debug("User supplied list of SchemaField objects")
@@ -149,6 +148,7 @@ class GoogleBigQuery(DatabaseConnector):
             Name of the GCS bucket that will be used for storing data during bulk transfers.
             Required if you intend to perform bulk data transfers (eg. the copy_from_gcs method),
             and env variable ``GCS_TEMP_BUCKET`` is not populated.
+
     """
 
     def __init__(
@@ -281,7 +281,6 @@ class GoogleBigQuery(DatabaseConnector):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         with self.connection() as connection:
             return self.query_with_connection(
                 sql, connection, parameters=parameters, return_values=return_values
@@ -309,7 +308,6 @@ class GoogleBigQuery(DatabaseConnector):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if not commit:
             raise ValueError(
                 """
@@ -620,7 +618,6 @@ class GoogleBigQuery(DatabaseConnector):
                 Other arguments to pass to the underlying load_table_from_uri call on the BigQuery
                 client.
         """
-
         self._validate_copy_inputs(if_exists=if_exists, data_type=data_type)
 
         job_config = self._process_job_config(
@@ -741,7 +738,6 @@ class GoogleBigQuery(DatabaseConnector):
             Parsons Table or ``None``
                 See :ref:`parsons-table` for output options.
         """
-
         # copy from S3 to GCS
         tmp_gcs_bucket = (
             tmp_gcs_bucket
@@ -1109,8 +1105,8 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns:`
             Parsons Table
                 See :ref:`parsons-table` for output options.
-        """
 
+        """
         logger.debug("Retrieving tables info.")
         sql = f"select * from {schema}.INFORMATION_SCHEMA.TABLES"
         if table_name:
@@ -1129,8 +1125,8 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns:`
             Parsons Table
                 See :ref:`parsons-table` for output options.
-        """
 
+        """
         logger.debug("Retrieving views info.")
         sql = f"""
               select
@@ -1159,7 +1155,6 @@ class GoogleBigQuery(DatabaseConnector):
             keys of the dictionary are ordered just liked the columns in the table.
             The extra info is a dict with format
         """
-
         base_query = f"""
         SELECT
             *
@@ -1194,7 +1189,6 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns:`
             A list of column names
         """
-
         first_row = self.query(f"SELECT * FROM {schema}.{table_name} LIMIT 1;")
 
         return [x for x in first_row.columns]
@@ -1216,7 +1210,6 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns:`
             Row count of the target table
         """
-
         sql = f"SELECT COUNT(*) AS row_count FROM `{schema}.{table_name}`"
         result = self.query(sql=sql)
 
@@ -1263,10 +1256,12 @@ class GoogleBigQuery(DatabaseConnector):
         return None
 
     def _generate_schema_from_parsons_table(self, tbl):
-        """BigQuery schema generation based on contents of Parsons table.
+        """
+        BigQuery schema generation based on contents of Parsons table.
 
         Not usually necessary to use this. BigQuery is able to
-        natively autodetect schema formats."""
+        natively autodetect schema formats.
+        """
         stats = tbl.get_columns_type_stats()
         fields = []
         for stat in stats:
@@ -1333,7 +1328,6 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns`:
             A `LoadJobConfig` object
         """
-
         if not job_config:
             job_config = bigquery.LoadJobConfig()
 
@@ -1457,7 +1451,7 @@ class GoogleBigQuery(DatabaseConnector):
 
         return BigQueryTable(self, table_name)
 
-    def extract(
+    def extract( # noqa D417
         self,
         dataset: str,
         table_name: str,
@@ -1477,16 +1471,21 @@ class GoogleBigQuery(DatabaseConnector):
         Extracts a BigQuery table to a Google Cloud Storage bucket.
 
         Args:
-            dataset (str): The BigQuery dataset containing the table.
-            table_name (str): The name of the table to extract.
-            gcs_bucket (str): The GCS bucket where the table will be
-              exported.
-            gcs_blob_name (str): The name of the blob in the GCS
-              bucket.
-            project (Optional[str]): The Google Cloud project ID. If
-              not provided, the default project of the client is used.
-            gzip (bool): If True, the exported file will be compressed
-              using GZIP. Defaults to False.
+            dataset: str
+                The BigQuery dataset containing the table.
+            table_name: str
+                The name of the table to extract.
+            gcs_bucket: str
+                The GCS bucket where the table will be exported.
+            gcs_blob_name: str
+                The name of the blob in the GCS bucket.
+            project: Optional[str]
+                The Google Cloud project ID. If not provided,
+                the default project of the client is used.
+            gzip: bool
+                If True, the exported file will be compressed using GZIP.
+                Defaults to False.
+
         """
         if not job_config:
             logger.info("Using default job config as none was provided...")
@@ -1553,7 +1552,6 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns:`
             None
         """
-
         from google.cloud import bigquery
         from google.cloud.exceptions import NotFound
 
@@ -1617,12 +1615,10 @@ class BigQueryTable(BaseTable):
         """
         Drop the table.
         """
-
         self.db.delete_table(self.table)
 
     def truncate(self):
         """
         Truncate the table.
         """
-
         self.db.query(f"TRUNCATE TABLE {self.table}")

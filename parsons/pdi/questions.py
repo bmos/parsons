@@ -8,7 +8,8 @@ class Questions:
         super().__init__()
 
     def get_questions(self, limit=None):
-        """Get a list of Questions.
+        """
+        Get a list of Questions.
 
         `Args:`
             limit: int

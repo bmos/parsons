@@ -154,7 +154,6 @@ class FacebookAds(object):
             Table
                 The prepared table
         """
-
         # Copy the table to avoid messing up the source table
         t = copy.deepcopy(users_table)
 
@@ -228,7 +227,6 @@ class FacebookAds(object):
         `Returns:`
             ID of the created audience
         """
-
         if not self._is_valid_data_source(data_source):
             raise KeyError("Invalid data_source provided")
 
@@ -250,7 +248,6 @@ class FacebookAds(object):
             audience_id: str
                 The ID of the custom audience to delete.
         """
-
         CustomAudience(audience_id).api_delete()
 
     @staticmethod
@@ -347,7 +344,6 @@ class FacebookAds(object):
                 Parsons table
 
         """  # noqa: E501,E261
-
         logger.info(
             f"Adding custom audience users from provided table with " f"{users_table.num_rows} rows"
         )

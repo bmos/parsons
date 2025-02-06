@@ -186,7 +186,8 @@ class Contacts:
         primary=True,
         extension=None,
     ):
-        """Add a phone number to a contact
+        """
+        Add a phone number to a contact
         `Args:`
             contact_id: int
                 Unique ID of the contact you'd like to apply the phone_number to
@@ -201,7 +202,6 @@ class Contacts:
             dict
                 Response from PDI
         """
-
         payload = {
             "phoneNumber": phone_number,
             "phoneType": phone_type,
@@ -220,7 +220,8 @@ class Contacts:
         return response
 
     def add_email(self, contact_id: int, email: str, primary=True):
-        """Add an email address to a contact
+        """
+        Add an email address to a contact
         `Args:`
             contact_id: int
                 Unique ID of the contact you'd like to apply the email to
@@ -231,7 +232,6 @@ class Contacts:
             dict
                 Response from PDI
         """
-
         payload = {"emailAddress": email, "isPrimary": primary}
 
         response = self._request(

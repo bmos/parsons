@@ -42,7 +42,6 @@ class CensusGeocoder(object):
         `Returns`:
             dict
         """
-
         geo = self.cg.onelineaddress(address, returntype=return_type)
         self._log_result(geo)
         return geo
@@ -74,7 +73,6 @@ class CensusGeocoder(object):
         `Returns:`
             dict
         """
-
         geo = self.cg.address(address_line, city=city, state=state, zipcode=zipcode)
         self._log_result(geo)
         return geo
@@ -102,7 +100,6 @@ class CensusGeocoder(object):
         `Returns:`
             A Parsons table
         """
-
         logger.info(f"Geocoding {table.num_rows} records.")
         if set(table.columns) != {"id", "street", "city", "state", "zip"}:
             msg = (
@@ -144,7 +141,6 @@ class CensusGeocoder(object):
         `Returns:`
            dict
         """
-
         geo = self.cg.coordinates(x=longitude, y=latitude)
         if len(geo["States"]) == 0:
             logger.info("Coordinate not found.")

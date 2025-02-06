@@ -104,7 +104,6 @@ class Auth0(object):
         `Returns:`
             Requests Response object
         """
-
         obj = {
             "email": email.lower(),
             "username": username,

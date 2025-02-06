@@ -73,7 +73,6 @@ def create_temp_file_for_path(path):
         str
             The path of the temp file
     """
-
     # Add the appropriate compression suffix to the file, so other libraries that check the
     # file's extension will know that it is compressed.
     # TODO Make this more robust, maybe even using the entire remote file name as the suffix.
@@ -96,7 +95,6 @@ def close_temp_file(path):
         bool
             Whether the temp file was found and closed
     """
-
     for temp_file in _temp_files:
         if temp_file.name == path:
             # Call remove explicitly to clean up, because we can't always assume that de-refencing
@@ -123,7 +121,6 @@ def cleanup_temp_directory(path):
         bool
             Whether the temp directory was found and closed
     """
-
     for temp_dir in _temp_directories:
         if temp_dir.name == path:
             # Call remove explicitly to clean up, because we can't always assume that de-refencing
@@ -216,7 +213,6 @@ def string_to_temp_file(string, suffix=None):
     Create a temporary file from a string. Currently used for packages
     that require credentials to be stored as a file.
     """
-
     temp_file_path = create_temp_file(suffix=suffix)
 
     with open(temp_file_path, "w") as f:
@@ -230,7 +226,6 @@ def zip_check(file_path, compression_type):
     Check if the file suffix or the compression type indicates that it is
     a zip file.
     """
-
     if file_path:
         if file_path.split("/")[-1].split(".")[-1] == "zip":
             return True
@@ -252,7 +247,6 @@ def extract_file_name(file_path=None, include_suffix=True):
         If True, includes full file name with suffix. If False returns the
         file name without the suffix (e.g. "myfile.zip" vs. "myfile").
     """
-
     if not file_path:
         return None
 
@@ -273,7 +267,6 @@ def has_data(file_path):
         boolean
             ``True`` if data in the file and ``False`` if not.
     """
-
     if os.stat(file_path).st_size == 0:
         return False
 

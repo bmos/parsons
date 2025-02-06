@@ -13,7 +13,8 @@ def discover_database(
         Union[Type[DatabaseConnector], List[Type[DatabaseConnector]]]
     ] = None,
 ) -> DatabaseConnector:
-    """Create an appropriate ``DatabaseConnector`` based on environmental variables.
+    """
+    Create an appropriate ``DatabaseConnector`` based on environmental variables.
 
     Will search the environmental variables for the proper credentials for the
     Redshift, MySQL, Postgres, and BigQuery connectors. See the documentation
@@ -35,6 +36,7 @@ def discover_database(
 
     Returns:
         DatabaseConnector: The database connector configured in the environment.
+
     """
     connectors = {
         "Redshift": Redshift,

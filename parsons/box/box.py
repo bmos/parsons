@@ -1,4 +1,5 @@
-"""Class for Box API.
+"""
+Class for Box API.
 
 To get authentication info (this eventually belongs in the docs for
 this connector):
@@ -33,7 +34,8 @@ DEFAULT_FOLDER_ID = "0"
 
 
 class Box(object):
-    """Box is a file storage provider.
+    """
+    Box is a file storage provider.
 
     `Args:`
         client_id: str
@@ -71,7 +73,8 @@ class Box(object):
         self.client = boxsdk.Client(oauth)
 
     def create_folder(self, path) -> str:
-        """Create a Box folder.
+        """
+        Create a Box folder.
 
         `Args`:
             path: str
@@ -90,7 +93,8 @@ class Box(object):
         return self.create_folder_by_id(folder_name, parent_folder_id=parent_folder_id)
 
     def create_folder_by_id(self, folder_name, parent_folder_id=DEFAULT_FOLDER_ID) -> str:
-        """Create a Box folder.
+        """
+        Create a Box folder.
 
         `Args`:
             folder_name: str
@@ -106,7 +110,8 @@ class Box(object):
         return subfolder.id
 
     def delete_folder(self, path) -> None:
-        """Delete a Box folder.
+        """
+        Delete a Box folder.
 
         `Args`:
             folder_id: str
@@ -116,7 +121,8 @@ class Box(object):
         self.delete_folder_by_id(folder_id=folder_id)
 
     def delete_folder_by_id(self, folder_id) -> None:
-        """Delete a Box folder.
+        """
+        Delete a Box folder.
 
         `Args`:
             folder_id: str
@@ -125,7 +131,8 @@ class Box(object):
         self.client.folder(folder_id=folder_id).delete()
 
     def delete_file(self, path) -> None:
-        """Delete a Box file.
+        """
+        Delete a Box file.
 
         `Args`:
             path: str
@@ -135,7 +142,8 @@ class Box(object):
         self.delete_file_by_id(file_id=file_id)
 
     def delete_file_by_id(self, file_id) -> None:
-        """Delete a Box file.
+        """
+        Delete a Box file.
 
         `Args`:
             file_id: str
@@ -144,7 +152,8 @@ class Box(object):
         self.client.file(file_id=file_id).delete()
 
     def list(self, path="", item_type=None) -> Table:
-        """Return a Table of Box files and/or folders found at a path.
+        """
+        Return a Table of Box files and/or folders found at a path.
 
         `Args`:
             path:str
@@ -173,7 +182,8 @@ class Box(object):
         return items
 
     def list_files_by_id(self, folder_id=DEFAULT_FOLDER_ID) -> Table:
-        """List all Box files in a folder.
+        """
+        List all Box files in a folder.
 
         `Args`:
             folder_id: str
@@ -185,7 +195,8 @@ class Box(object):
         return self.list_items_by_id(folder_id=folder_id, item_type="file")
 
     def list_folders_by_id(self, folder_id=DEFAULT_FOLDER_ID) -> Table:
-        """List all Box folders.
+        """
+        List all Box folders.
 
         `Args`:
             folder_id: str
@@ -197,7 +208,8 @@ class Box(object):
         return self.list_items_by_id(folder_id=folder_id, item_type="folder")
 
     def upload_table(self, table, path="", format="csv") -> boxsdk.object.file.File:
-        """Save the passed table to Box.
+        """
+        Save the passed table to Box.
 
         `Args`:
             table:Table
@@ -224,7 +236,8 @@ class Box(object):
     def upload_table_to_folder_id(
         self, table, file_name, folder_id=DEFAULT_FOLDER_ID, format="csv"
     ) -> boxsdk.object.file.File:
-        """Save the passed table to Box.
+        """
+        Save the passed table to Box.
 
         `Args`:
             table:Table
@@ -239,7 +252,6 @@ class Box(object):
         `Returns`: BoxFile
             A Box File object
         """
-
         if format not in self.ALLOWED_FILE_FORMATS:
             raise ValueError(
                 f"Format argument to upload_table() must be in one "
@@ -265,7 +277,8 @@ class Box(object):
         return new_file
 
     def download_file(self, path: str, local_path: str = None) -> str:
-        """Download a Box object to a local file.
+        """
+        Download a Box object to a local file.
 
         `Args`:
             path: str
@@ -293,7 +306,8 @@ class Box(object):
         return local_path
 
     def get_table(self, path, format="csv") -> Table:
-        """Get a table that has been saved to Box in csv or JSON format.
+        """
+        Get a table that has been saved to Box in csv or JSON format.
 
         `Args`:
             path: str
@@ -308,7 +322,8 @@ class Box(object):
         return self.get_table_by_file_id(file_id=file_id, format=format)
 
     def get_table_by_file_id(self, file_id, format="csv") -> Table:
-        """Get a table that has been saved to Box in csv or JSON format.
+        """
+        Get a table that has been saved to Box in csv or JSON format.
 
         `Args`:
             file_id: str
@@ -341,7 +356,8 @@ class Box(object):
             )  # pragma: no cover
 
     def get_item_id(self, path, base_folder_id=DEFAULT_FOLDER_ID) -> str:
-        """Given a path-like object, try to return the id for the file or
+        """
+        Given a path-like object, try to return the id for the file or
         folder at the end of the path.
 
         *NOTE*: This method makes one API call for each level in

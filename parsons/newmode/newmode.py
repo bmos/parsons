@@ -30,8 +30,10 @@ class NewmodeV1:
             api_version: str
                 The Newmode api version. Defaults to "v1.0" or the value of ``NEWMODE_API_VERSION``
                 env variable.
+
         Returns:
             Newmode class
+
         """
         logger.warning(
             "Newmode V1 API will be sunset in Feburary 28th, 2025. To use V2, set api_version=v2.1"
@@ -54,11 +56,14 @@ class NewmodeV1:
     def get_tools(self, params={}):
         """
         Get existing tools.
+
         Args:
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Tools information as table.
+
         """
         tools = self.client.getTools(params=params)
         if tools:
@@ -70,13 +75,16 @@ class NewmodeV1:
     def get_tool(self, tool_id, params={}):
         """
         Get specific tool.
+
         Args:
             tool_id:
                 The id of the tool to return.
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Tool information.
+
         """
         tool = self.client.getTool(tool_id, params=params)
         if tool:
@@ -100,8 +108,10 @@ class NewmodeV1:
                 matched for those coordinates.
                 - Search term: For your csv tools, this will return targets
                 matched by given valid search term.
+
         Returns:
             Targets information as table.
+
         """
         targets = self.client.lookupTargets(tool_id, search, params=params)
         if targets:
@@ -117,13 +127,16 @@ class NewmodeV1:
     def get_action(self, tool_id, params={}):
         """
         Get the action information for a given tool.
+
         Args:
             tool_id:
                 The id of the tool to return.
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Tool action information.
+
         """
         action = self.client.getAction(tool_id, params=params)
         if action:
@@ -135,6 +148,7 @@ class NewmodeV1:
     def run_action(self, tool_id, payload, params={}):
         """
         Run specific action with given payload.
+
         Args:
             tool_id:
                 The id of the tool to run.
@@ -143,8 +157,10 @@ class NewmodeV1:
                 on the stuff returned by get_action.
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Action link (if otl) or sid.
+
         """
         action = self.client.runAction(tool_id, payload, params=params)
         if action:
@@ -159,13 +175,16 @@ class NewmodeV1:
     def get_target(self, target_id, params={}):
         """
         Get specific target.
+
         Args:
             target_id:
                 The id of the target to return.
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Target information.
+
         """
         target = self.client.getTarget(target_id, params=params)
         if target:
@@ -179,13 +198,13 @@ class NewmodeV1:
         Get all targets
 
         Args:
-            params dict:
+            params: dict
                 Extra paramaters sent to New/Mode library
 
         Returns:
             Target information
-        """
 
+        """
         targets = self.client.getTargets(params=params)
 
         if targets:
@@ -198,11 +217,14 @@ class NewmodeV1:
     def get_campaigns(self, params={}):
         """
         Get existing campaigns.
+
         Args:
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Campaigns information as table.
+
         """
         campaigns = self.client.getCampaigns(params=params)
         if campaigns:
@@ -214,13 +236,16 @@ class NewmodeV1:
     def get_campaign(self, campaign_id, params={}):
         """
         Get specific campaign.
+
         Args:
             campaign_id:
                 The id of the campaign to return.
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Campaign information.
+
         """
         campaign = self.client.getCampaign(campaign_id, params=params)
         if campaign:
@@ -232,11 +257,14 @@ class NewmodeV1:
     def get_organizations(self, params={}):
         """
         Get existing organizations.
+
         Args:
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Organizations information as table.
+
         """
         organizations = self.client.getOrganizations(params=params)
         if organizations:
@@ -248,13 +276,16 @@ class NewmodeV1:
     def get_organization(self, organization_id, params={}):
         """
         Get specific organization.
+
         Args:
             organization_id:
                 The id of the organization to return.
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Organization information.
+
         """
         organization = self.client.getOrganization(organization_id, params=params)
         if organization:
@@ -266,11 +297,14 @@ class NewmodeV1:
     def get_services(self, params={}):
         """
         Get existing services.
+
         Args:
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Services information as table.
+
         """
         services = self.client.getServices(params=params)
         if services:
@@ -282,13 +316,16 @@ class NewmodeV1:
     def get_service(self, service_id, params={}):
         """
         Get specific service.
+
         Args:
             service_id:
                 The id of the service to return.
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Service information.
+
         """
         service = self.client.getService(service_id, params=params)
         if service:
@@ -300,13 +337,16 @@ class NewmodeV1:
     def get_outreaches(self, tool_id, params={}):
         """
         Get existing outreaches for a given tool.
+
         Args:
             tool_id:
                 Tool to return outreaches.
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Outreaches information as table.
+
         """
         outreaches = self.client.getOutreaches(tool_id, params=params)
         if outreaches:
@@ -318,13 +358,16 @@ class NewmodeV1:
     def get_outreach(self, outreach_id, params={}):
         """
         Get specific outreach.
+
         Args:
             outreach_id:
                 The id of the outreach to return.
             params:
                 Extra parameters sent to New/Mode library.
+
         Returns:
             Outreach information.
+
         """
         outreach = self.client.getOutreach(outreach_id, params=params)
         if outreach:
@@ -412,7 +455,6 @@ class NewmodeV2:
         override_api_version=None,
     ):
         """Internal method to make a call to the Newmode API and convert the result to a Parsons table."""
-
         client = client if client else self.default_client
         response = self.base_request(
             method=method,
@@ -547,7 +589,6 @@ class NewmodeV2:
         `Returns:`
             Parsons Table containing submit data.
         """
-
         response = self.converted_request(
             endpoint=f"campaign/{campaign_id}/submit",
             method="POST",
@@ -605,6 +646,7 @@ class Newmode:
 
         Returns:
             NewMode Class
+
         """
         api_version = check_env.check("NEWMODE_API_VERSION", api_version)
         if api_version.startswith("v2"):

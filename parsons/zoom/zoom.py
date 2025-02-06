@@ -56,7 +56,6 @@ class Zoom:
         `Returns`:
             Parsons Table of API responses
         """
-
         r = self.client.get_request(endpoint, params=params, **kwargs)
         self.client.data_key = data_key
         data = self.client.data_parse(r)
@@ -94,7 +93,6 @@ class Zoom:
         `Returns`:
             Parsons Table
         """
-
         return Table(table.unpack_list(column=column)).unpack_dict(
             column=f"{column}_0", prepend_value=f"{column}_"
         )
@@ -148,7 +146,6 @@ class Zoom:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if status not in ["active", "inactive", "pending"]:
             raise ValueError("Invalid status type provided.")
 
@@ -186,7 +183,6 @@ class Zoom:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = self._get_request(f"users/{user_id}/meetings", "meetings")
         logger.info(f"Retrieved {tbl.num_rows} meetings.")
         return tbl
@@ -202,7 +198,6 @@ class Zoom:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = self._get_request(f"past_meetings/{meeting_uuid}", None)
         logger.info(f"Retrieved meeting {meeting_uuid}.")
         return tbl
@@ -218,7 +213,6 @@ class Zoom:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = self._get_request(f"report/meetings/{meeting_id}/participants", "participants")
         logger.info(f"Retrieved {tbl.num_rows} participants.")
         return tbl
@@ -234,7 +228,6 @@ class Zoom:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = self._get_request(f"meetings/{meeting_id}/registrants", "registrants")
         logger.info(f"Retrieved {tbl.num_rows} registrants.")
         return tbl
@@ -250,7 +243,6 @@ class Zoom:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = self._get_request(f"users/{user_id}/webinars", "webinars")
         logger.info(f"Retrieved {tbl.num_rows} webinars.")
         return tbl
@@ -266,7 +258,6 @@ class Zoom:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         dic = self._get_request(endpoint=f"report/webinars/{webinar_id}", data_key=None)
         if dic:
             logger.info(f"Retrieved webinar report for webinar: {webinar_id}.")
@@ -283,7 +274,6 @@ class Zoom:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = self._get_request(f"report/webinars/{webinar_id}/participants", "participants")
         logger.info(f"Retrieved {tbl.num_rows} webinar participants.")
         return tbl
@@ -299,7 +289,6 @@ class Zoom:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = self._get_request(f"webinars/{webinar_id}/registrants", "registrants")
         logger.info(f"Retrieved {tbl.num_rows} webinar registrants.")
         return tbl
@@ -319,7 +308,6 @@ class Zoom:
         `Returns`:
             Parsons Table of all polling responses
         """
-
         endpoint = f"meetings/{meeting_id}/polls/{poll_id}"
         tbl = self._get_request(endpoint=endpoint, data_key="questions")
 
@@ -353,7 +341,6 @@ class Zoom:
         `Returns`:
             Parsons Table of all polling responses
         """
-
         endpoint = f"meetings/{meeting_id}/polls"
         tbl = self._get_request(endpoint=endpoint, data_key="polls")
 
@@ -381,7 +368,6 @@ class Zoom:
         `Returns`:
             Parsons Table of poll results
         """
-
         endpoint = f"past_meetings/{meeting_id}/polls"
         tbl = self._get_request(endpoint=endpoint, data_key="questions")
 
@@ -414,7 +400,6 @@ class Zoom:
         `Returns`:
             Parsons Table of all polling responses
         """
-
         endpoint = f"webinars/{webinar_id}/polls/{poll_id}"
         tbl = self._get_request(endpoint=endpoint, data_key="questions")
 
@@ -444,7 +429,6 @@ class Zoom:
         `Returns`:
             Parsons Table of all polling responses
         """
-
         endpoint = f"webinars/{webinar_id}/polls"
         tbl = self._get_request(endpoint=endpoint, data_key="polls")
 
@@ -472,7 +456,6 @@ class Zoom:
         `Returns`:
             Parsons Table of all polling responses
         """
-
         endpoint = f"past_webinars/{webinar_id}/polls"
         tbl = self._get_request(endpoint=endpoint, data_key="questions")
 
@@ -493,7 +476,6 @@ class Zoom:
 
         Required scopes: `report:read:admin`
         """
-
         endpoint = f"report/meetings/{meeting_id}/polls"
         tbl = self._get_request(endpoint=endpoint, data_key="questions")
 
@@ -514,7 +496,6 @@ class Zoom:
 
         Required scopes: `report:read:admin`
         """
-
         endpoint = f"report/webinars/{webinar_id}/polls"
         tbl = self._get_request(endpoint=endpoint, data_key="questions")
 

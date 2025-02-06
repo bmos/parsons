@@ -20,7 +20,6 @@ class ChangedEntities(object):
         `Returns:`
             list
         """
-
         r = self.connection.get_request("changedEntityExportJobs/resources")
         logger.info(f"Found {len(r)} changed entity resources.")
         return r
@@ -35,7 +34,6 @@ class ChangedEntities(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request(f"changedEntityExportJobs/fields/{resource_type}"))
         logger.info(f"Found {tbl.num_rows} fields for {resource_type}.")
         return tbl
@@ -75,7 +73,6 @@ class ChangedEntities(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """  # noqa: E501
-
         json = {
             "dateChangedFrom": date_from,
             "dateChangedTo": date_to,

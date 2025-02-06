@@ -178,7 +178,6 @@ class NationBuilder:
             A tuple of `created` and `person` object with the updated data. If the request fails
             the method will return a tuple of `False` and `None`.
         """
-
         _required_keys = [
             "civicrm_id",
             "county_file_id",
