@@ -67,15 +67,15 @@ class ETL(object):
         return self
 
     def remove_column(self, *columns):
-        """
+        r"""
         Remove a column from your table
 
         `Args:`
-            \*columns: str
+            *columns: str
                 Column names
         `Returns:`
             `Parsons Table` and also updates self
-        """  # noqa: W605
+        """
         self.table = petl.cutout(self.table, *columns)
 
         return self
@@ -417,18 +417,18 @@ class ETL(object):
         return [{"name": col, "type": self.get_column_types(col)} for col in self.table.columns()]
 
     def convert_table(self, *args):
-        """
+        r"""
         Transform all cells in a table via arbitrary functions, method invocations or dictionary
         translations. This method is useful for cleaning fields and data hygiene functions such
         as regex. This method leverages the petl ``convert()`` method. Example usage can be
         found `here` <https://petl.readthedocs.io/en/v0.24/transform.html#petl.convert>`_.
 
         `Args:`
-            \*args: str, method or variable
+            *args: str, method or variable
                 The update function, method, or variable to process the update. Can also
         `Returns:`
             `Parsons Table` and also updates self
-        """  # noqa: W605
+        """
         self.convert_column(self.columns, *args)
 
         return self
@@ -747,21 +747,21 @@ class ETL(object):
         return lt
 
     def cut(self, *columns):
-        """
+        r"""
         Return a table of selection of columns
 
         `Args:`
-            \*columns: str
+            *columns: str
                 Columns in the parsons table
         `Returns:`
             A new parsons table containing the selected columnns
-        """  # noqa: W605
+        """
         from parsons.etl.table import Table
 
         return Table(petl.cut(self.table, *columns))
 
     def select_rows(self, *filters):
-        """
+        r"""
         Select specific rows from a Parsons table based on the passed
         filters.
 
@@ -787,10 +787,10 @@ class ETL(object):
             >>> {'foo': 'a', 'bar': 2, 'baz': 88.1}
 
         `Args:`
-            \*filters: function or str
+            *filters: function or str
         `Returns:`
             A new parsons table containing the selected rows
-        """  # noqa: W605
+        """
         from parsons.etl.table import Table
 
         return Table(petl.select(self.table, *filters))
@@ -1006,7 +1006,7 @@ class ETL(object):
         return self
 
     def reduce_rows(self, columns, reduce_func, headers, presorted=False, **kwargs):
-        """
+        r"""
         Group rows by a column or columns, then reduce the groups to a single row.
 
         Based on the `rowreduce petl function <https://petl.readthedocs.io/en/stable/transform.html#petl.transform.reductions.rowreduce>`_.
@@ -1029,14 +1029,14 @@ class ETL(object):
             +--------------+--------------+----------------------------------------------------+
             | 'db_scratch' | 'state_fips' | '('                                                |
             +--------------+--------------+----------------------------------------------------+
-            | 'db_scratch' | 'state_fips' | '\\tstate VARCHAR(1024)   ENCODE RAW'               |
+            | 'db_scratch' | 'state_fips' | '\tstate VARCHAR(1024)   ENCODE RAW'               |
             +--------------+--------------+----------------------------------------------------+
-            | 'db_scratch' | 'state_fips' | '\\t,stusab VARCHAR(1024)   ENCODE RAW'             |
+            | 'db_scratch' | 'state_fips' | '\t,stusab VARCHAR(1024)   ENCODE RAW'             |
             +--------------+--------------+----------------------------------------------------+
 
             >>> reducer_fn = lambda columns, rows: [
             ...     f"{columns[0]}.{columns[1]}",
-            ...     '\\n'.join([row[2] for row in rows])]
+            ...     '\n'.join([row[2] for row in rows])]
             >>> ddl.reduce_rows(
             ...     ['schemaname', 'tablename'],
             ...     reducer_fn,
@@ -1047,12 +1047,12 @@ class ETL(object):
             +-------------------------+-----------------------------------------------------------------------+
             | tablename               | ddl                                                                   |
             +=========================+=======================================================================+
-            | 'db_scratch.state_fips' | '--DROP TABLE db_scratch.state_fips;\\nCREATE TABLE IF NOT EXISTS      |
-            |                         | db_scratch.state_fips\\n(\\n\\tstate VARCHAR(1024)   ENCODE RAW\\n\\t      |
-            |                         | ,db_scratch.state_fips\\n(\\n\\tstate VARCHAR(1024)   ENCODE RAW         |
-            |                         | \\n\\t,stusab VARCHAR(1024)   ENCODE RAW\\n\\t,state_name                 |
-            |                         | VARCHAR(1024)   ENCODE RAW\\n\\t,statens VARCHAR(1024)   ENCODE         |
-            |                         | RAW\\n)\\nDISTSTYLE EVEN\\n;'                                            |
+            | 'db_scratch.state_fips' | '--DROP TABLE db_scratch.state_fips;\nCREATE TABLE IF NOT EXISTS      |
+            |                         | db_scratch.state_fips\n(\n\tstate VARCHAR(1024)   ENCODE RAW\n\t      |
+            |                         | ,db_scratch.state_fips\n(\n\tstate VARCHAR(1024)   ENCODE RAW         |
+            |                         | \n\t,stusab VARCHAR(1024)   ENCODE RAW\n\t,state_name                 |
+            |                         | VARCHAR(1024)   ENCODE RAW\n\t,statens VARCHAR(1024)   ENCODE         |
+            |                         | RAW\n)\nDISTSTYLE EVEN\n;'                                            |
             +-------------------------+-----------------------------------------------------------------------+
 
         `Args:`
@@ -1071,7 +1071,7 @@ class ETL(object):
         `Returns:`
             `Parsons Table` and also updates self
 
-        """  # noqa: E501,E261
+        """
         self.table = petl.rowreduce(
             self.table,
             columns,

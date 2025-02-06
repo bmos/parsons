@@ -104,7 +104,7 @@ class ToFrom(object):
         csv_name=None,
         **csvargs,
     ):
-        """
+        r"""
         Outputs table to a CSV. Additional key word arguments are passed to ``csv.writer()``. So,
         e.g., to override the delimiter from the default CSV dialect, provide the delimiter
         keyword argument.
@@ -132,13 +132,13 @@ class ToFrom(object):
             csv_name: str
                 If ``zip`` compression (either specified or inferred), the name of csv file
                 within the archive.
-            \**csvargs: kwargs
+            **csvargs: kwargs
                 ``csv_writer`` optional arguments
 
         `Returns:`
             str
                 The path of the new file
-        """  # noqa: W605
+        """
         # If a zip archive.
         if files.zip_check(local_path, temp_file_compression):
             return self.to_zip_csv(
@@ -167,7 +167,7 @@ class ToFrom(object):
         return local_path
 
     def append_csv(self, local_path, encoding=None, errors="strict", **csvargs):
-        """
+        r"""
         Appends table to an existing CSV.
 
         Additional additional key word arguments
@@ -183,13 +183,13 @@ class ToFrom(object):
                 <https://docs.python.org/2/library/csv.html#csv.writer/>`_
             errors: str
                 Raise an Error if encountered
-            \**csvargs: kwargs
+            **csvargs: kwargs
                 ``csv_writer`` optional arguments
 
         `Returns:`
             str
                 The path of the file
-        """  # noqa: W605
+        """
         petl.appendcsv(self.table, source=local_path, encoding=encoding, errors=errors, **csvargs)
         return local_path
 
@@ -203,7 +203,7 @@ class ToFrom(object):
         if_exists="replace",
         **csvargs,
     ):
-        """
+        r"""
         Outputs table to a CSV in a zip archive. Additional key word arguments are passed to
         ``csv.writer()``. So, e.g., to override the delimiter from the default CSV dialect,
         provide the delimiter keyword argument. Use thismethod if you would like to write
@@ -229,13 +229,13 @@ class ToFrom(object):
                 Include header in output
             if_exists: str
                 If archive already exists, one of 'replace' or 'append'
-            \**csvargs: kwargs
+            **csvargs: kwargs
                 ``csv_writer`` optional arguments
 
         `Returns:`
             str
                 The path of the archive
-        """  # noqa: W605
+        """
         if not archive_path:
             archive_path = files.create_temp_file(suffix=".zip")
 
@@ -326,7 +326,7 @@ class ToFrom(object):
         rsa_private_key_file=None,
         **csvargs,
     ):
-        """
+        r"""
         Writes the table to a CSV file on a remote SFTP server
 
         `Args:`
@@ -350,9 +350,9 @@ class ToFrom(object):
             rsa_private_key_file str
                 Absolute path to a private RSA key used
                 to authenticate stfp connection
-            \**csvargs: kwargs
+            **csvargs: kwargs
                 ``csv_writer`` optional arguments
-        """  # noqa: W605
+        """
         from parsons.sftp import SFTP
 
         sftp = SFTP(host, username, password, port, rsa_private_key_file)
@@ -384,7 +384,7 @@ class ToFrom(object):
         use_env_token=True,
         **csvargs,
     ):
-        """
+        r"""
         Writes the table to an s3 object as a CSV
 
         `Args:`
@@ -417,11 +417,11 @@ class ToFrom(object):
                 Controls use of the ``AWS_SESSION_TOKEN`` environment variable for S3. Defaults
                 to ``True``. Set to ``False`` in order to ignore the ``AWS_SESSION_TOKEN`` env
                 variable even if the ``aws_session_token`` argument was not passed in.
-            \**csvargs: kwargs
+            **csvargs: kwargs
                 ``csv_writer`` optional arguments
         `Returns:`
             Public url if specified. If not ``None``.
-        """  # noqa: W605
+        """
         compression = compression or files.compression_type_for_path(key)
 
         csv_name = files.extract_file_name(key, include_suffix=False) + ".csv"
@@ -466,7 +466,7 @@ class ToFrom(object):
         public_url_expires=60,
         **csvargs,
     ):
-        """
+        r"""
         Writes the table to a Google Cloud Storage blob as a CSV.
 
         `Args:`
@@ -495,11 +495,11 @@ class ToFrom(object):
                 Create a public link to the file
             public_url_expire: 60
                 The time, in minutes, until the url expires if ``public_url`` set to ``True``.
-            \**csvargs: kwargs
+            **csvargs: kwargs
                 ``csv_writer`` optional arguments
         `Returns:`
             Public url if specified. If not ``None``.
-        """  # noqa: W605
+        """
         compression = compression or files.compression_type_for_path(blob_name)
 
         csv_name = files.extract_file_name(blob_name, include_suffix=False) + ".csv"
@@ -526,7 +526,7 @@ class ToFrom(object):
         else:
             return None
 
-    def to_redshift( # noqa D417
+    def to_redshift(  # noqa D417
         self,
         table_name,
         username=None,
@@ -536,7 +536,7 @@ class ToFrom(object):
         port=None,
         **copy_args,
     ):
-        """
+        r"""
         Write a table to a Redshift database. Note, this requires you to pass
         AWS S3 credentials or store them as environmental variables.
 
@@ -553,19 +553,19 @@ class ToFrom(object):
                 Required if env variable ``REDSHIFT_DB`` not populated
             port: int
                 Required if env variable ``REDSHIFT_PORT`` not populated. Port 5439 is typical.
-            \**copy_args: kwargs
+            **copy_args: kwargs
                 See :func:`~parsons.databases.Redshift.copy`` for options.
 
         Returns:
             ``None``
 
-        """  # noqa: W605
+        """
         from parsons.databases.redshift import Redshift
 
         rs = Redshift(username=username, password=password, host=host, db=db, port=port)
         rs.copy(self, table_name, **copy_args)
 
-    def to_postgres( # noqa D417
+    def to_postgres(  # noqa D417
         self,
         table_name,
         username=None,
@@ -575,7 +575,7 @@ class ToFrom(object):
         port=None,
         **copy_args,
     ):
-        """
+        r"""
         Write a table to a Postgres database.
 
         Args:
@@ -591,13 +591,13 @@ class ToFrom(object):
                 Required if env variable ``PGDATABASE`` not populated
             port: int
                 Required if env variable ``PGPORT`` not populated.
-            \**copy_args: kwargs
+            **copy_args: kwargs
                 See :func:`~parsons.databases.Postgres.copy`` for options.
 
         Returns:
             ``None``
 
-        """  # noqa: W605
+        """
         from parsons.databases.postgres import Postgres
 
         pg = Postgres(username=username, password=password, host=host, db=db, port=port)
@@ -703,19 +703,19 @@ class ToFrom(object):
 
     @classmethod
     def from_csv(cls, local_path, **csvargs):
-        """
+        r"""
         Create a ``parsons table`` object from a CSV file
 
         `Args:`
             local_path: obj
                 A csv formatted local path, url or ftp. If this is a
                 file path that ends in ".gz", the file will be decompressed first.
-            \**csvargs: kwargs
+            **csvargs: kwargs
                 ``csv_reader`` optional arguments
         `Returns:`
             Parsons Table
                 See :ref:`parsons-table` for output options.
-        """  # noqa: W605
+        """
         remote_prefixes = ["http://", "https://", "ftp://", "s3://"]
         if any(map(local_path.startswith, remote_prefixes)):
             is_remote_file = True
@@ -856,7 +856,7 @@ class ToFrom(object):
         aws_secret_access_key=None,
         **csvargs,
     ):
-        """
+        r"""
         Create a ``parsons table`` from a key in an S3 bucket.
 
         `Args:`
@@ -871,11 +871,11 @@ class ToFrom(object):
                 Required if not included as environmental variable.
             aws_secret_access_key: str
                 Required if not included as environmental variable.
-            \**csvargs: kwargs
+            **csvargs: kwargs
                 ``csv_reader`` optional arguments
         `Returns:`
             `parsons.Table` object
-        """  # noqa: W605
+        """
         from parsons.aws import S3
 
         s3 = S3(aws_access_key_id, aws_secret_access_key)

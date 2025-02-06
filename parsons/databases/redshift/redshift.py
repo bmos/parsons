@@ -804,7 +804,7 @@ class Redshift(
 
         return self.query(statement)
 
-    def drop_and_unload( # noqa D417
+    def drop_and_unload(  # noqa D417
         self,
         rs_table,
         bucket,
@@ -958,7 +958,7 @@ class Redshift(
         sortkey=None,
         **copy_args,
     ):
-        """
+        r"""
         Preform an upsert on an existing table. An upsert is a function in which rows
         in a table are updated and inserted at the same time.
 
@@ -990,9 +990,9 @@ class Redshift(
                 The column name of the distkey. If not provided, will default to ``primary_key``.
             sortkey: str or list
                 The column name(s) of the sortkey. If not provided, will default to ``primary_key``.
-            \**copy_args: kwargs
+            **copy_args: kwargs
                 See :func:`~parsons.databases.Redshift.copy` for options.
-        """  # noqa: W605
+        """
         if isinstance(primary_key, str):
             primary_keys = [primary_key]
         else:
