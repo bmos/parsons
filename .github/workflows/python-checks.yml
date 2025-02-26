@@ -45,7 +45,7 @@ jobs:
               uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
               with:
                 path: .pytest_cache
-                key: ${{ runner.os }}-pytest-${{ matrix.python-version }}
+                key: ${{ runner.os }}-pytest-${{ matrix.python-version }}-${{ matrix.limited-dependencies }}
 
             - name: Test with pytest
               run: |
