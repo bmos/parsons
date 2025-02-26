@@ -42,7 +42,7 @@ jobs:
                 uv pip install --system -r requirements-dev.txt
 
             - id: cache-pytest
-              uses: actions/cache@v4
+              uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
               with:
                 path: .pytest_cache
                 key: ${{ runner.os }}-pytest-${{ matrix.python-version }}
@@ -79,7 +79,7 @@ jobs:
                 uv pip install --system -r requirements-dev.txt
 
             - id: cache-ruff
-              uses: actions/cache@v4
+              uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
               with:
                 path: ruff_cache
                 key: ${{ runner.os }}-ruff-${{ matrix.python-version }}
@@ -107,7 +107,7 @@ jobs:
                 uv pip install --system -r requirements-dev.txt
 
             - id: cache-ruff
-              uses: actions/cache@v4
+              uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
               with:
                 path: ruff_cache
                 key: ${{ runner.os }}-ruff-${{ matrix.python-version }}
