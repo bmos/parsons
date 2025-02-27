@@ -2,6 +2,7 @@ import os
 import unittest
 import unittest.mock as mock
 
+import pytest
 import requests_mock
 
 from parsons import VAN, Table
@@ -191,7 +192,7 @@ class TestScores(unittest.TestCase):
         )
 
         # Test bad input
-        self.assertRaises(ValueError, self.van.update_score_status, score_update_id, "not a thing.")
+        pytest.raises(ValueError, self.van.update_score_status, score_update_id, "not a thing.")
 
         # Test good input
         assert self.van.update_score_status(score_update_id, "approved")
@@ -225,7 +226,7 @@ class TestScores(unittest.TestCase):
         m.post(self.van.connection.uri + "FileLoadingJobs", json=json, status_code=201)
 
         # Test bad delimiter
-        self.assertRaises(
+        pytest.raises(
             ValueError,
             self.van.create_file_load,
             file_name,

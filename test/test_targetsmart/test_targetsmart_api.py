@@ -205,12 +205,12 @@ class TestTargetSmartAPI(unittest.TestCase):
             )
 
     def test_district_args(self):
-        self.assertRaises(KeyError, self.ts.district, search_type="invalid_search_type")
-        self.assertRaises(ValueError, self.ts.district, search_type="address")
-        self.assertRaises(ValueError, self.ts.district, search_type="zip", zip4=9)
-        self.assertRaises(ValueError, self.ts.district, search_type="zip", zip5=0)
-        self.assertRaises(ValueError, self.ts.district, search_type="point")
-        self.assertRaises(ValueError, self.ts.district, search_type="zip")
+        pytest.raises(KeyError, self.ts.district, search_type="invalid_search_type")
+        pytest.raises(ValueError, self.ts.district, search_type="address")
+        pytest.raises(ValueError, self.ts.district, search_type="zip", zip4=9)
+        pytest.raises(ValueError, self.ts.district, search_type="zip", zip5=0)
+        pytest.raises(ValueError, self.ts.district, search_type="point")
+        pytest.raises(ValueError, self.ts.district, search_type="zip")
 
     @requests_mock.Mocker()
     def test_district_point(self, m):

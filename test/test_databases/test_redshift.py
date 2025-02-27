@@ -2,6 +2,7 @@ import os
 import re
 import unittest
 
+import pytest
 from testfixtures import LogCapture
 
 from parsons import S3, Redshift, Table
@@ -46,7 +47,7 @@ class TestRedshift(unittest.TestCase):
         assert table == "some_table"
 
         # When there are too many parts
-        self.assertRaises(ValueError, Redshift.split_full_table_name, "a.b.c")
+        pytest.raises(ValueError, Redshift.split_full_table_name, "a.b.c")
 
     def test_combine_schema_and_table_name(self):
         full_table_name = Redshift.combine_schema_and_table_name("some_schema", "some_table")
@@ -158,7 +159,7 @@ class TestRedshift(unittest.TestCase):
 
         # Assert that an error is raised by an empty table
         empty_table = Table([["Col_1", "Col_2"]])
-        self.assertRaises(ValueError, self.rs.create_statement, empty_table, "tmc.test")
+        pytest.raises(ValueError, self.rs.create_statement, empty_table, "tmc.test")
 
     def test_get_creds_kwargs(self):
         # Test passing kwargs
@@ -510,7 +511,7 @@ class TestRedshiftDB(unittest.TestCase):
 
         # Try to run it with a bad primary key
         self.rs.query(f"INSERT INTO {self.temp_schema}.test_copy VALUES (1, 'Jim')")
-        self.assertRaises(
+        pytest.raises(
             ValueError,
             self.rs.upsert,
             upsert_tbl,
@@ -538,7 +539,7 @@ class TestRedshiftDB(unittest.TestCase):
 
         # Try to run it with a bad primary key
         self.rs.query(f"INSERT INTO {self.temp_schema}.test_copy VALUES (1, 'Jim')")
-        self.assertRaises(
+        pytest.raises(
             ValueError,
             self.rs.upsert,
             upsert_tbl,
@@ -843,7 +844,7 @@ class TestRedshiftDB(unittest.TestCase):
         assert rows[0]["count"] == 3
 
         # Try with if_exists='fail'
-        self.assertRaises(
+        pytest.raises(
             ValueError,
             self.rs.populate_table_from_query,
             query,
@@ -880,7 +881,7 @@ class TestRedshiftDB(unittest.TestCase):
         assert rows[0]["count"] == 6
 
         # Try with if_exists='fail'
-        self.assertRaises(
+        pytest.raises(
             ValueError,
             self.rs.duplicate_table,
             source_table,
@@ -889,7 +890,7 @@ class TestRedshiftDB(unittest.TestCase):
         )
 
         # Try with invalid if_exists arg
-        self.assertRaises(
+        pytest.raises(
             ValueError,
             self.rs.duplicate_table,
             source_table,
