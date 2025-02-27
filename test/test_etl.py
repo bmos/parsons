@@ -602,7 +602,7 @@ class TestParsonsTable(unittest.TestCase):
         assert tbl.column_data("a") == lst
 
         # Test an invalid column
-        pytest.raises(TypeError, tbl["c"])
+        self.assertRaises(TypeError, tbl["c"])  # noqa: PT027
 
     def test_row_data(self):
         # Test a valid column
