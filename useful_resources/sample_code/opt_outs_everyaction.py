@@ -1,7 +1,7 @@
+import datetime
 import json
 import os
 import time
-from datetime import datetime
 
 import requests
 
@@ -144,7 +144,7 @@ def attempt_optout(
             raise Exception(f"Connection Error {connection_error}")
 
 
-def main():
+def main() -> None:
     # Creating empty lists where we'll log successes and errors
     success_log = []
     error_log = []
@@ -162,17 +162,15 @@ def main():
 
         logger.info(f"Working on opt outs in {committee_name} committee...")
 
-        # Here we narrow the all_opt_outs table to only the rows that correspond
-        # to this committee.
+        # Here we narrow the all_opt_outs table to only the rows that correspond to this committee.
         opt_outs = all_opt_outs.select_rows(lambda row: str(row.committeeid) == committeeid)
 
         logger.info(f"Found {opt_outs.num_rows} phones to opt out in {committee_name} committee...")
 
         # Now we actually update the records
-
         if opt_outs.num_rows > 0:
             for opt_out in opt_outs:
-                applied_at = str(datetime.now()).split(".")[0]
+                applied_at = str(datetime.datetime.now(tz=datetime.timezone.utc)).split(".")[0]
                 attempt_optout(
                     every_action,
                     opt_out,

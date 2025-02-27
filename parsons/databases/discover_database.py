@@ -13,7 +13,8 @@ def discover_database(
         Union[Type[DatabaseConnector], List[Type[DatabaseConnector]]]
     ] = None,
 ) -> DatabaseConnector:
-    """Create an appropriate ``DatabaseConnector`` based on environmental variables.
+    """
+    Create an appropriate ``DatabaseConnector`` based on environmental variables.
 
     Will search the environmental variables for the proper credentials for the
     Redshift, MySQL, Postgres, and BigQuery connectors. See the documentation
@@ -35,6 +36,7 @@ def discover_database(
 
     Returns:
         DatabaseConnector: The database connector configured in the environment.
+
     """
     connectors = {
         "Redshift": Redshift,
@@ -50,11 +52,11 @@ def discover_database(
         "GoogleBigQuery": "GOOGLE_APPLICATION_CREDENTIALS",
     }
 
-    detected = [name for name in connectors.keys() if os.getenv(password_vars[name])]
+    detected = [name for name in connectors if os.getenv(password_vars[name])]
 
     if len(detected) > 1:
         if default_connector is None:
-            raise EnvironmentError(
+            raise OSError(
                 f"Multiple database configurations detected: {detected}."
                 " Please specify a default connector."
             )
@@ -63,17 +65,11 @@ def discover_database(
             for connector in default_connector:
                 if connector.__name__ in detected:
                     return connector()
-            raise EnvironmentError(
-                f"None of the default connectors {default_connector} were detected."
-            )
-        elif default_connector.__name__ in detected:
+            raise OSError(f"None of the default connectors {default_connector} were detected.")
+        if default_connector.__name__ in detected:
             return default_connector()
-        else:
-            raise EnvironmentError(
-                f"Default connector {default_connector} not detected. Detected: {detected}."
-            )
+        raise OSError(f"Default connector {default_connector} not detected. Detected: {detected}.")
 
-    elif detected:
+    if detected:
         return connectors[detected[0]]()
-    else:
-        raise EnvironmentError("Could not find any database configuration.")
+    raise OSError("Could not find any database configuration.")

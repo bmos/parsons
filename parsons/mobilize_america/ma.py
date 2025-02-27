@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 MA_URI = "https://api.mobilize.us/v1/"
 
 
-class MobilizeAmerica(object):
+class MobilizeAmerica:
     """
     Instantiate MobilizeAmerica Class
 
@@ -39,8 +39,7 @@ class MobilizeAmerica(object):
         if auth:
             if not self.api_key:
                 raise TypeError("This method requires an api key.")
-            else:
-                header = {"Authorization": "Bearer " + self.api_key}
+            header = {"Authorization": "Bearer " + self.api_key}
 
         else:
             header = None
@@ -94,7 +93,6 @@ class MobilizeAmerica(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         return Table(
             self._request_paginate(
                 self.uri + "organizations",
@@ -159,7 +157,6 @@ class MobilizeAmerica(object):
         `Returns`
             :ref:`parsons.Table <parsons-table>`, dict, list[:ref:`parsons.Table <parsons-table>`]
         """
-
         if isinstance(organization_id, (str, int)):
             organization_id = [organization_id]
 
@@ -182,7 +179,7 @@ class MobilizeAmerica(object):
                 timeslots_tbl = tbl.long_table(["id"], "timeslots", "event_id")
                 return {"events": tbl, "timeslots": timeslots_tbl}
 
-            elif max_timeslots == 0:
+            if max_timeslots == 0:
                 tbl.remove_column("timeslots")
 
             else:
@@ -264,7 +261,6 @@ class MobilizeAmerica(object):
         `Returns`
             :ref:`parsons.Table <parsons-table>`, dict, list[:ref:`parsons.Table <parsons-table>`]
         """
-
         args = {
             "updated_since": date_to_timestamp(updated_since),
             "timeslot_start": self._time_parse(timeslot_start),
@@ -289,7 +285,7 @@ class MobilizeAmerica(object):
                 timeslots_tbl = tbl.long_table(["id"], "timeslots", "event_id")
                 return {"events": tbl, "timeslots": timeslots_tbl}
 
-            elif max_timeslots == 0:
+            if max_timeslots == 0:
                 tbl.remove_column("timeslots")
 
             else:
@@ -315,7 +311,6 @@ class MobilizeAmerica(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if isinstance(organization_id, (str, int)):
             organization_id = [organization_id]
 
@@ -347,10 +342,9 @@ class MobilizeAmerica(object):
             for id in organization_id:
                 data.concat(self.get_people(id, updated_since))
             return data
-        else:
-            url = self.uri + "organizations/" + str(organization_id) + "/people"
-            args = {"updated_since": date_to_timestamp(updated_since)}
-            return Table(self._request_paginate(url, args=args, auth=True))
+        url = self.uri + "organizations/" + str(organization_id) + "/people"
+        args = {"updated_since": date_to_timestamp(updated_since)}
+        return Table(self._request_paginate(url, args=args, auth=True))
 
     def get_attendances(self, organization_id, updated_since=None):
         """

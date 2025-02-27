@@ -8,7 +8,8 @@ PREFIX = "PRSNSENV"
 
 
 def decode_credential(credential, save_path=None, export=True, echo=False):
-    """Decode an encoded credential to a Python object.
+    """
+    Decode an encoded credential to a Python object.
 
     `Args:`
         credential: str
@@ -47,7 +48,8 @@ def decode_credential(credential, save_path=None, export=True, echo=False):
 
 
 def encode_from_json_str(credential):
-    """Encode credential(s) from a json string.
+    """
+    Encode credential(s) from a json string.
 
     `Args:`
         credential: str
@@ -65,7 +67,8 @@ def encode_from_json_str(credential):
 
 
 def encode_from_json_file(credential_file):
-    """Encode credential(s) from a json file.
+    """
+    Encode credential(s) from a json file.
 
     `Args:`
         credential_file: str
@@ -74,7 +77,7 @@ def encode_from_json_file(credential_file):
         str
             The encoded credential.
     """
-    with open(credential_file, "r") as f:
+    with open(credential_file) as f:
         data = json.load(f)
 
     json_str = json.dumps(data)
@@ -84,7 +87,8 @@ def encode_from_json_file(credential_file):
 
 
 def encode_from_env(env_variables):
-    """Encode credential(s) from the current environment.
+    """
+    Encode credential(s) from the current environment.
 
     `Args:`
         env_variables: list
@@ -104,7 +108,8 @@ def encode_from_env(env_variables):
 
 
 def encode_from_dict(credential):
-    """Encode credential(s) from a dictionary.
+    """
+    Encode credential(s) from a dictionary.
 
     `Args:`
         credential: dict
@@ -152,7 +157,8 @@ def encode_from_dict(credential):
 )
 @click.option("-s", "suppress", is_flag=True, default=False, help=("Suppress the output."))
 def main(credential, fn, is_file=False, save_path="", no_export=False, suppress=False):
-    """A command line tool to encode and decode credentials.
+    """
+    A command line tool to encode and decode credentials.
 
     Use this tool when the credentials for a service are split into multiple
     parts, and you'd rather deal with them as one variable. For example, to

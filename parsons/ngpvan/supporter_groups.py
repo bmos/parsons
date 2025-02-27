@@ -7,7 +7,7 @@ from parsons.etl.table import Table
 logger = logging.getLogger(__name__)
 
 
-class SupporterGroups(object):
+class SupporterGroups:
     def __init__(self, van_connection):
         self.connection = van_connection
 
@@ -19,7 +19,6 @@ class SupporterGroups(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("supporterGroups"))
         logger.info(f"Found {tbl.num_rows} supporter groups.")
         return tbl
@@ -34,7 +33,6 @@ class SupporterGroups(object):
         `Returns:`
             dict
         """
-
         r = self.connection.get_request(f"supporterGroups/{supporter_group_id}")
         logger.info(f"Found supporter group {supporter_group_id}.")
         return r
@@ -52,7 +50,6 @@ class SupporterGroups(object):
             Parsons Table with the newly createed supporter group id, name
             and description
         """
-
         json = {"name": name, "description": description}
         r = self.connection.post_request("supporterGroups", json=json)
         return r
@@ -67,7 +64,6 @@ class SupporterGroups(object):
         `Returns:`
             ``None``
         """
-
         r = self.connection.delete_request(f"supporterGroups/{supporter_group_id}")
         logger.info(f"Deleted supporter group {supporter_group_id}.")
         return r
@@ -84,7 +80,6 @@ class SupporterGroups(object):
         `Returns:`
             ``None``
         """
-
         r = self.connection.put_request(f"supporterGroups/{supporter_group_id}/people/{vanid}")
         logger.info(f"Added person {vanid} to {supporter_group_id} supporter group.")
         return r
@@ -101,7 +96,6 @@ class SupporterGroups(object):
         `Returns:`
             ``None``
         """
-
         r = self.connection.delete_request(f"supporterGroups/{supporter_group_id}/people/{vanid}")
         logger.info(f"Deleted person {vanid} from {supporter_group_id} supporter group.")
         return r

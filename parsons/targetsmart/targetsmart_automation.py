@@ -1,4 +1,5 @@
-"""**TargetSmart Automation**
+"""
+**TargetSmart Automation**
 
 Parsons provides methods for interacting with TargetSmart Automation Workflows,
 a solution for executing custom file processing workflows programmatically. In
@@ -42,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 # Automation matching documentation can be found here:
 # https://docs.targetsmart.com/my_tsmart/automation/developer.html.
-class TargetSmartAutomation(object):
+class TargetSmartAutomation:
     """
     * `Automation overview <https://docs.targetsmart.com/my_tsmart/automation/overview.html>`_
     * `Automation integration doc <https://docs.targetsmart.com/my_tsmart/automation/developer.html>`_
@@ -70,7 +71,8 @@ class TargetSmartAutomation(object):
         call_back=None,
         remove_files=True,
     ):
-        """Submit a file for custom data processing using the TargetSmart Automation workflow solution.
+        """
+        Submit a file for custom data processing using the TargetSmart Automation workflow solution.
 
         .. warning::
             Table Columns
@@ -110,7 +112,6 @@ class TargetSmartAutomation(object):
                 the TargetSmart SFTP upon completion or failure of match.
 
         """
-
         # Generate a match job
         job_name = job_name or str(uuid.uuid1())
 
@@ -150,7 +151,8 @@ class TargetSmartAutomation(object):
         return tbl
 
     def execute(self, *args, **kwargs):
-        """Most Automation workflows perform list matching. However, it is possible that
+        """
+        Most Automation workflows perform list matching. However, it is possible that
         a custom workflow might be provisioned for a client for other types of
         file processing. The ``execute`` method is provided as an alias for the
         ``match`` method which may be a confusing name in these cases.
@@ -208,7 +210,7 @@ class TargetSmartAutomation(object):
                 logger.info(f"Match job {job_name} configured.")
                 return True
 
-            elif f == f"{job_name}.job.xml.bad":
+            if f == f"{job_name}.job.xml.bad":
                 logger.info(f"Match job {job_name} configuration error.")
                 #  To Do: Lift up the configuration error.
                 raise ValueError(
@@ -216,8 +218,7 @@ class TargetSmartAutomation(object):
                     "address, you will be sent more details."
                 )
 
-            else:
-                pass
+            pass
 
         return False
 
@@ -240,7 +241,7 @@ class TargetSmartAutomation(object):
                         logger.info(f"Match Error: {xml['jobcontext']['errors']}")
                         raise ValueError(f"Match job failed. {xml['jobcontext']['errors']}")
 
-                    elif xml["jobcontext"]["state"] == "success":
+                    if xml["jobcontext"]["state"] == "success":
                         logger.info("Match complete.")
 
                         return True

@@ -10,7 +10,7 @@ from parsons.etl.table import Table
 from parsons.utilities.check_env import check
 
 
-class Slack(object):
+class Slack:
     def __init__(self, api_key=None):
         if api_key is None:
             try:
@@ -86,7 +86,6 @@ class Slack(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = self._paginate_request("users.list", "members", include_locale=True)
 
         tbl.unpack_dict("profile", include_original=False, prepend=True, prepend_value="profile")
@@ -145,7 +144,6 @@ class Slack(object):
             `dict`:
                 A response json
         """
-
         if "as_user" in kwargs:
             warnings.warn(
                 "as_user is a deprecated argument on message_channel().",

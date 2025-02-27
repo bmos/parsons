@@ -23,14 +23,12 @@ class BaseTable:
         """
         Get the number of rows in the table.
         """
-
         return self.db.query(f"SELECT COUNT(*) FROM {self.table}").first
 
     def max_primary_key(self, primary_key):
         """
         Get the maximum primary key in the table.
         """
-
         return self.db.query(
             f"""
             SELECT {primary_key}
@@ -44,7 +42,6 @@ class BaseTable:
         """
         Check if the passed primary key column is distinct.
         """
-
         sql = f"""
                SELECT
                COUNT(*) - COUNT(DISTINCT {primary_key})
@@ -53,15 +50,13 @@ class BaseTable:
 
         if self.db.query(sql).first > 0:
             return False
-        else:
-            return True
+        return True
 
     @property
     def columns(self):
         """
         Return a list of columns in the table.
         """
-
         if not self._columns:
             sql = f"SELECT * FROM {self.table} LIMIT 1"
             self._columns = self.db.query(sql).columns
@@ -73,14 +68,12 @@ class BaseTable:
         """
         Check if table exists.
         """
-
         return self.db.table_exists(self.table)
 
     def get_rows(self, offset=0, chunk_size=None, order_by=None):
         """
         Get rows from a table.
         """
-
         sql = f"SELECT * FROM {self.table}"
 
         if order_by:
@@ -99,7 +92,6 @@ class BaseTable:
         Get a count of rows that have a greater primary key value
         than the one provided.
         """
-
         sql = f"""
                SELECT
                COUNT(*)
@@ -122,7 +114,6 @@ class BaseTable:
 
         It will select every value greater than the provided value.
         """
-
         if cutoff_value is not None:
             where_clause = f"WHERE {primary_key} > %s"
             parameters = [cutoff_value]
@@ -149,7 +140,6 @@ class BaseTable:
         """
         Drop the table.
         """
-
         sql = f"DROP TABLE {self.table}"
         if cascade:
             sql += " CASCADE"
@@ -161,6 +151,5 @@ class BaseTable:
         """
         Truncate the table.
         """
-
         self.db.query(f"TRUNCATE TABLE {self.table}")
         logger.info(f"{self.table} truncated.")

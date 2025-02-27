@@ -58,13 +58,13 @@ WHERE vb_vf_source_state IN ({states})
 
 records = rs.query(sql)
 
-logger.info(f"Applying Activist Codes to {str(records.num_rows)} records...")
+logger.info(f"Applying Activist Codes to {records.num_rows!s} records...")
 
 # Apply codes segmented by state (different API Keys)
 for state, key in myv_keys.items():
     state_set = records.select_rows(lambda row: row.vb_vf_source_state == state)
     if len(state_set) > 0:
-        logger.info(f"Applying {str(len(state_set))} Activist Codes in {state}...")
+        logger.info(f"Applying {len(state_set)!s} Activist Codes in {state}...")
         for vanid in state_set:
             # TODO: row undefined, select row form record?
             row = None

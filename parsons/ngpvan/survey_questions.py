@@ -7,7 +7,7 @@ from parsons.etl.table import Table
 logger = logging.getLogger(__name__)
 
 
-class SurveyQuestions(object):
+class SurveyQuestions:
     def __init__(self, van_connection):
         self.connection = van_connection
 
@@ -33,7 +33,6 @@ class SurveyQuestions(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         params = {
             "statuses": statuses,
             "$top": self.page_size,
@@ -58,7 +57,6 @@ class SurveyQuestions(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         r = self.connection.get_request(f"surveyQuestions/{survey_question_id}")
         logger.info(f"Found survey question {survey_question_id}.")
         return r
@@ -99,7 +97,6 @@ class SurveyQuestions(object):
             date_canvassed : str
                 `Optional`; ISO 8601 formatted date. Defaults to todays date
         """
-
         response = {
             "surveyQuestionId": survey_question_id,
             "surveyResponseId": survey_response_id,

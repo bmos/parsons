@@ -11,7 +11,7 @@ from parsons.utilities import cloud_storage
 logger = logging.getLogger(__name__)
 
 
-class SavedLists(object):
+class SavedLists:
     def __init__(self, van_connection):
         self.connection = van_connection
 
@@ -27,7 +27,6 @@ class SavedLists(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("savedLists", params={"folderId": folder_id}))
         logger.info(f"Found {tbl.num_rows} saved lists.")
         return tbl
@@ -42,7 +41,6 @@ class SavedLists(object):
         `Returns:`
             dict
         """
-
         r = self.connection.get_request(f"savedLists/{saved_list_id}")
         logger.info(f"Found saved list {saved_list_id}.")
         return r
@@ -58,14 +56,12 @@ class SavedLists(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         ej = ExportJobs(self.connection)
         job = ej.export_job_create(saved_list_id)
 
         if isinstance(job, tuple):
             return job
-        else:
-            return Table.from_csv(job["downloadUrl"])
+        return Table.from_csv(job["downloadUrl"])
 
     def upload_saved_list_rest(
         self,
@@ -275,7 +271,7 @@ class SavedLists(object):
         return r
 
 
-class Folders(object):
+class Folders:
     def __init__(self, van_connection):
         # Some sort of test if the van_connection is not present.
 
@@ -289,7 +285,6 @@ class Folders(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("folders"))
         logger.info(f"Found {tbl.num_rows} folders.")
         return tbl
@@ -305,13 +300,12 @@ class Folders(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         r = self.connection.get_request(f"folders/{folder_id}")
         logger.info(f"Found folder {folder_id}.")
         return r
 
 
-class ExportJobs(object):
+class ExportJobs:
     def __init__(self, van_connection):
         self.connection = van_connection
 
@@ -323,7 +317,6 @@ class ExportJobs(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("exportJobTypes"))
         logger.info(f"Found {tbl.num_rows} export job types.")
         return tbl
@@ -347,7 +340,6 @@ class ExportJobs(object):
             dict
                 The export job object
         """
-
         json = {
             "savedListId": str(list_id),
             "type": str(export_type),
@@ -369,7 +361,6 @@ class ExportJobs(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         r = self.connection.get_request(f"exportJobs/{export_job_id}")
         logger.info(f"Found export job {export_job_id}.")
         return r

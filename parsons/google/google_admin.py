@@ -9,10 +9,9 @@ from parsons.google.utilities import (
 )
 
 
-class GoogleAdmin(object):
+class GoogleAdmin:
     """
     A connector for Google Admin.
-
 
     `Args:`
         app_creds: str

@@ -8,7 +8,7 @@ import petl
 from parsons.utilities import files, zip_archive
 
 
-class ToFrom(object):
+class ToFrom:
     def to_dataframe(self, index=None, exclude=None, columns=None, coerce_float=False):
         """
         Outputs table as a Pandas Dataframe
@@ -29,7 +29,6 @@ class ToFrom(object):
             dataframe
                 Pandas DataFrame object
         """
-
         return petl.todataframe(
             self.table,
             index=index,
@@ -80,7 +79,6 @@ class ToFrom(object):
             str
                 The path of the new file
         """
-
         if not local_path:
             local_path = files.create_temp_file(suffix=".html")
 
@@ -108,7 +106,7 @@ class ToFrom(object):
         csv_name=None,
         **csvargs,
     ):
-        """
+        r"""
         Outputs table to a CSV. Additional key word arguments are passed to ``csv.writer()``. So,
         e.g., to override the delimiter from the default CSV dialect, provide the delimiter
         keyword argument.
@@ -143,7 +141,6 @@ class ToFrom(object):
             str
                 The path of the new file
         """
-
         # If a zip archive.
         if files.zip_check(local_path, temp_file_compression):
             return self.to_zip_csv(
@@ -172,7 +169,7 @@ class ToFrom(object):
         return local_path
 
     def append_csv(self, local_path, encoding=None, errors="strict", **csvargs):
-        """
+        r"""
         Appends table to an existing CSV.
 
         Additional additional key word arguments
@@ -195,7 +192,6 @@ class ToFrom(object):
             str
                 The path of the file
         """
-
         petl.appendcsv(self.table, source=local_path, encoding=encoding, errors=errors, **csvargs)
         return local_path
 
@@ -209,7 +205,7 @@ class ToFrom(object):
         if_exists="replace",
         **csvargs,
     ):
-        """
+        r"""
         Outputs table to a CSV in a zip archive. Additional key word arguments are passed to
         ``csv.writer()``. So, e.g., to override the delimiter from the default CSV dialect,
         provide the delimiter keyword argument. Use thismethod if you would like to write
@@ -242,7 +238,6 @@ class ToFrom(object):
             str
                 The path of the archive
         """
-
         if not archive_path:
             archive_path = files.create_temp_file(suffix=".zip")
 
@@ -278,7 +273,6 @@ class ToFrom(object):
             str
                 The path of the new file
         """
-
         if not local_path:
             suffix = ".json" + files.suffix_for_compression_type(temp_file_compression)
             local_path = files.create_temp_file(suffix=suffix)
@@ -318,7 +312,6 @@ class ToFrom(object):
         `Returns:`
             list
         """
-
         return list(petl.dicts(self.table))
 
     def to_sftp_csv(
@@ -335,7 +328,7 @@ class ToFrom(object):
         rsa_private_key_file=None,
         **csvargs,
     ):
-        """
+        r"""
         Writes the table to a CSV file on a remote SFTP server
 
         `Args:`
@@ -362,7 +355,6 @@ class ToFrom(object):
             \**csvargs: kwargs
                 ``csv_writer`` optional arguments
         """
-
         from parsons.sftp import SFTP
 
         sftp = SFTP(host, username, password, port, rsa_private_key_file)
@@ -394,7 +386,7 @@ class ToFrom(object):
         use_env_token=True,
         **csvargs,
     ):
-        """
+        r"""
         Writes the table to an s3 object as a CSV
 
         `Args:`
@@ -432,7 +424,6 @@ class ToFrom(object):
         `Returns:`
             Public url if specified. If not ``None``.
         """
-
         compression = compression or files.compression_type_for_path(key)
 
         csv_name = files.extract_file_name(key, include_suffix=False) + ".csv"
@@ -459,8 +450,7 @@ class ToFrom(object):
 
         if public_url:
             return self.s3.get_url(bucket, key, expires_in=public_url_expires)
-        else:
-            return None
+        return None
 
     def to_gcs_csv(
         self,
@@ -477,7 +467,7 @@ class ToFrom(object):
         public_url_expires=60,
         **csvargs,
     ):
-        """
+        r"""
         Writes the table to a Google Cloud Storage blob as a CSV.
 
         `Args:`
@@ -511,7 +501,6 @@ class ToFrom(object):
         `Returns:`
             Public url if specified. If not ``None``.
         """
-
         compression = compression or files.compression_type_for_path(blob_name)
 
         csv_name = files.extract_file_name(blob_name, include_suffix=False) + ".csv"
@@ -535,8 +524,7 @@ class ToFrom(object):
 
         if public_url:
             return gcs_client.get_url(bucket_name, blob_name, expires_in=public_url_expires)
-        else:
-            return None
+        return None
 
     def to_redshift(
         self,
@@ -548,7 +536,7 @@ class ToFrom(object):
         port=None,
         **copy_args,
     ):
-        """
+        r"""
         Write a table to a Redshift database. Note, this requires you to pass
         AWS S3 credentials or store them as environmental variables.
 
@@ -570,8 +558,8 @@ class ToFrom(object):
 
         Returns:
             ``None``
-        """
 
+        """
         from parsons.databases.redshift import Redshift
 
         rs = Redshift(username=username, password=password, host=host, db=db, port=port)
@@ -587,7 +575,7 @@ class ToFrom(object):
         port=None,
         **copy_args,
     ):
-        """
+        r"""
         Write a table to a Postgres database.
 
         Args:
@@ -608,8 +596,8 @@ class ToFrom(object):
 
         Returns:
             ``None``
-        """
 
+        """
         from parsons.databases.postgres import Postgres
 
         pg = Postgres(username=username, password=password, host=host, db=db, port=port)
@@ -641,7 +629,6 @@ class ToFrom(object):
         `Returns`:
             ``None``
         """
-
         from parsons import GoogleBigQuery as BigQuery
 
         bq = BigQuery(app_creds=app_creds, project=project)
@@ -698,7 +685,6 @@ class ToFrom(object):
             wait: boolean
                 Wait for write job to complete before exiting method.
         """
-
         from parsons.civis.civisclient import CivisClient
 
         civis = CivisClient(db=db, api_key=api_key)
@@ -717,7 +703,7 @@ class ToFrom(object):
 
     @classmethod
     def from_csv(cls, local_path, **csvargs):
-        """
+        r"""
         Create a ``parsons table`` object from a CSV file
 
         `Args:`
@@ -730,7 +716,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         remote_prefixes = ["http://", "https://", "ftp://", "s3://"]
         if any(map(local_path.startswith, remote_prefixes)):
             is_remote_file = True
@@ -756,7 +741,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         bytesio = io.BytesIO(str.encode("utf-8"))
         memory_source = petl.io.sources.MemorySource(bytesio.read())
         return cls(petl.fromcsv(memory_source, **csvargs))
@@ -775,7 +759,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         return cls(petl.fromcolumns(cols, header=header))
 
     @classmethod
@@ -797,7 +780,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if line_delimited:
             if files.is_gzip_path(local_path):
                 open_fn = gzip.open
@@ -808,8 +790,7 @@ class ToFrom(object):
                 rows = [json.loads(line) for line in file]
             return cls(rows)
 
-        else:
-            return cls(petl.fromjson(local_path, header=header))
+        return cls(petl.fromjson(local_path, header=header))
 
     @classmethod
     def from_redshift(cls, sql, username=None, password=None, host=None, db=None, port=None):
@@ -836,7 +817,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         from parsons.databases.redshift import Redshift
 
         rs = Redshift(username=username, password=password, host=host, db=db, port=port)
@@ -858,8 +838,8 @@ class ToFrom(object):
                 Required if env variable ``PGDATABASE`` not populated
             port: int
                 Required if env variable ``PGPORT`` not populated.
-        """
 
+        """
         from parsons.databases.postgres import Postgres
 
         pg = Postgres(username=username, password=password, host=host, db=db, port=port)
@@ -875,7 +855,7 @@ class ToFrom(object):
         aws_secret_access_key=None,
         **csvargs,
     ):
-        """
+        r"""
         Create a ``parsons table`` from a key in an S3 bucket.
 
         `Args:`
@@ -895,7 +875,6 @@ class ToFrom(object):
         `Returns:`
             `parsons.Table` object
         """
-
         from parsons.aws import S3
 
         s3 = S3(aws_access_key_id, aws_secret_access_key)
@@ -943,7 +922,6 @@ class ToFrom(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         from parsons import GoogleBigQuery as BigQuery
 
         bq = BigQuery(app_creds=app_creds, project=project)
@@ -961,5 +939,4 @@ class ToFrom(object):
             include_index: boolean
                 Include index column
         """
-
         return cls(petl.fromdataframe(dataframe, include_index=include_index))

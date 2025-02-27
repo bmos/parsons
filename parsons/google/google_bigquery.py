@@ -106,7 +106,6 @@ def map_column_headers_to_schema_field(schema_definition: list) -> list:
     `Returns`:
         List of instantiated `SchemaField` objects
     """
-
     # TODO - Better way to test for this
     if isinstance(schema_definition[0], bigquery.SchemaField):
         logger.debug("User supplied list of SchemaField objects")
@@ -148,6 +147,7 @@ class GoogleBigQuery(DatabaseConnector):
             Name of the GCS bucket that will be used for storing data during bulk transfers.
             Required if you intend to perform bulk data transfers (eg. the copy_from_gcs method),
             and env variable ``GCS_TEMP_BUCKET`` is not populated.
+
     """
 
     def __init__(
@@ -280,7 +280,6 @@ class GoogleBigQuery(DatabaseConnector):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         with self.connection() as connection:
             return self.query_with_connection(
                 sql, connection, parameters=parameters, return_values=return_values
@@ -308,7 +307,6 @@ class GoogleBigQuery(DatabaseConnector):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if not commit:
             raise ValueError(
                 """
@@ -493,14 +491,13 @@ class GoogleBigQuery(DatabaseConnector):
                     new_file_extension=new_file_extension,
                     max_timeout=max_timeout,
                 )
-            else:
-                return self._load_table_from_uri(
-                    source_uris=gcs_blob_uri,
-                    destination=table_ref,
-                    job_config=job_config,
-                    max_timeout=max_timeout,
-                    **load_kwargs,
-                )
+            return self._load_table_from_uri(
+                source_uris=gcs_blob_uri,
+                destination=table_ref,
+                job_config=job_config,
+                max_timeout=max_timeout,
+                **load_kwargs,
+            )
         except exceptions.BadRequest as e:
             if "one of the files is larger than the maximum allowed size." in str(e):
                 logger.debug(
@@ -525,12 +522,11 @@ class GoogleBigQuery(DatabaseConnector):
                     new_file_extension=new_file_extension,
                     max_timeout=max_timeout,
                 )
-            elif "Schema has no field" in str(e):
+            if "Schema has no field" in str(e):
                 logger.debug(f"{gcs_blob_uri.split('/')[-1]} is empty, skipping file")
                 return "Empty file"
 
-            else:
-                raise e
+            raise e
 
         except exceptions.DeadlineExceeded as e:
             logger.error(f"Max timeout exceeded for {gcs_blob_uri.split('/')[-1]}")
@@ -619,7 +615,6 @@ class GoogleBigQuery(DatabaseConnector):
                 Other arguments to pass to the underlying load_table_from_uri call on the BigQuery
                 client.
         """
-
         self._validate_copy_inputs(if_exists=if_exists, data_type=data_type)
 
         job_config = self._process_job_config(
@@ -740,7 +735,6 @@ class GoogleBigQuery(DatabaseConnector):
             Parsons Table or ``None``
                 See :ref:`parsons-table` for output options.
         """
-
         # copy from S3 to GCS
         tmp_gcs_bucket = (
             tmp_gcs_bucket
@@ -961,7 +955,7 @@ class GoogleBigQuery(DatabaseConnector):
         from_s3=False,
         **copy_args,
     ):
-        """
+        r"""
         Preform an upsert on an existing table. An upsert is a function in which rows
         in a table are updated and inserted at the same time.
 
@@ -1016,7 +1010,7 @@ class GoogleBigQuery(DatabaseConnector):
                 raise ValueError("Primary key column contains duplicate values.")
 
         noise = f"{random.randrange(0, 10000):04}"[:4]
-        date_stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+        date_stamp = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d_%H%M")
         # Generate a temp table like "table_tmp_20200210_1230_14212"
         staging_tbl = f"{target_table}_stg_{date_stamp}_{noise}"
 
@@ -1108,8 +1102,8 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns:`
             Parsons Table
                 See :ref:`parsons-table` for output options.
-        """
 
+        """
         logger.debug("Retrieving tables info.")
         sql = f"select * from {schema}.INFORMATION_SCHEMA.TABLES"
         if table_name:
@@ -1128,8 +1122,8 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns:`
             Parsons Table
                 See :ref:`parsons-table` for output options.
-        """
 
+        """
         logger.debug("Retrieving views info.")
         sql = f"""
               select
@@ -1158,7 +1152,6 @@ class GoogleBigQuery(DatabaseConnector):
             keys of the dictionary are ordered just liked the columns in the table.
             The extra info is a dict with format
         """
-
         base_query = f"""
         SELECT
             *
@@ -1193,7 +1186,6 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns:`
             A list of column names
         """
-
         table_ref = self.client.get_table(table=f"{schema}.{table_name}")
 
         return [schema_ref.name for schema_ref in table_ref.schema]
@@ -1215,7 +1207,6 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns:`
             Row count of the target table
         """
-
         sql = f"SELECT COUNT(*) AS row_count FROM `{schema}.{table_name}`"
         result = self.query(sql=sql)
 
@@ -1262,10 +1253,12 @@ class GoogleBigQuery(DatabaseConnector):
         return None
 
     def _generate_schema_from_parsons_table(self, tbl):
-        """BigQuery schema generation based on contents of Parsons table.
+        """
+        BigQuery schema generation based on contents of Parsons table.
 
         Not usually necessary to use this. BigQuery is able to
-        natively autodetect schema formats."""
+        natively autodetect schema formats.
+        """
         stats = tbl.get_columns_type_stats()
         fields = []
         for stat in stats:
@@ -1332,7 +1325,6 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns`:
             A `LoadJobConfig` object
         """
-
         if not job_config:
             job_config = bigquery.LoadJobConfig()
 
@@ -1486,6 +1478,7 @@ class GoogleBigQuery(DatabaseConnector):
               not provided, the default project of the client is used.
             gzip (bool): If True, the exported file will be compressed
               using GZIP. Defaults to False.
+
         """
         if not job_config:
             logger.info("Using default job config as none was provided...")
@@ -1552,7 +1545,6 @@ class GoogleBigQuery(DatabaseConnector):
         `Returns:`
             None
         """
-
         from google.cloud import bigquery
         from google.cloud.exceptions import NotFound
 
@@ -1616,12 +1608,10 @@ class BigQueryTable(BaseTable):
         """
         Drop the table.
         """
-
         self.db.delete_table(self.table)
 
     def truncate(self):
         """
         Truncate the table.
         """
-
         self.db.query(f"TRUNCATE TABLE {self.table}")

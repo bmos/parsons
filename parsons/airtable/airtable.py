@@ -8,7 +8,7 @@ from parsons.utilities import check_env
 logger = logging.getLogger(__name__)
 
 
-class Airtable(object):
+class Airtable:
     """
     `Args:`
         base_key: str
@@ -39,7 +39,6 @@ class Airtable(object):
         `Returns:`
             A dictionary of the record
         """
-
         return self.client.get(record_id)
 
     def get_records(
@@ -98,7 +97,6 @@ class Airtable(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if isinstance(fields, str):
             fields = [fields]
         # Raises an error if sort is None type. Thus, only adding if populated.
@@ -141,7 +139,6 @@ class Airtable(object):
         `Returns:`
             Dictionary of inserted row
         """
-
         resp = self.client.create(row, typecast=typecast)
         logger.info("Record inserted")
         return resp
@@ -160,7 +157,6 @@ class Airtable(object):
         `Returns:`
             List of dictionaries of inserted rows
         """
-
         if isinstance(table, Table):
             table = table.to_dicts()
 
@@ -187,7 +183,6 @@ class Airtable(object):
         `Returns:`
             Dictionary of updated row
         """
-
         resp = self.client.update(record_id, fields, typecast=typecast, replace=replace)
         logger.info(f"{record_id} updated")
         return resp
@@ -211,7 +206,6 @@ class Airtable(object):
         `Returns:`
             List of dicts of updated records
         """
-
         # the update/upsert API call expects a dict/object shape of:
         # { id: string, fields: { column_name: value, ... } }
         # the map_update_fields helper will convert the flat table field
@@ -248,7 +242,6 @@ class Airtable(object):
                 - `created_records`: list of created records `id`s
                 - `records`: list of records
         """
-
         # the update/upsert API call expects a dict/object shape of:
         # { id: string, fields: { column_name: value, ... } }
         # the map_update_fields helper will convert the flat table field
@@ -280,7 +273,6 @@ class Airtable(object):
         `Returns:`
             Dictionary of record `id` and `deleted` status
         """
-
         resp = self.client.delete(record_id)
         logger.info(f"{record_id} updated")
         return resp
@@ -294,7 +286,6 @@ class Airtable(object):
         `Returns:`
             List of dicts with record `id` and `deleted` status
         """
-
         if isinstance(table, Table):
             table = table.to_dicts()
 

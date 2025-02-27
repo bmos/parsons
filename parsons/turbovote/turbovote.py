@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 TURBOVOTE_URI = "https://turbovote-admin-http-api.prod.democracy.works/"
 
 
-class TurboVote(object):
+class TurboVote:
     """
     Instantiate the TurboVote class
 
@@ -53,7 +53,6 @@ class TurboVote(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         url = self.uri + f"partners/{self.subdomain}.turbovote.org/users"
 
         headers = {"Authorization": f"Bearer {self._get_token()}"}

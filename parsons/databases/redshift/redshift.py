@@ -72,6 +72,7 @@ class Redshift(
             Controls use of the ``AWS_SESSION_TOKEN`` environment variable for S3. Defaults
             to ``True``. Set to ``False`` in order to ignore the ``AWS_SESSION_TOKEN`` environment
             variable even if the ``aws_session_token`` argument was not passed in.
+
     """
 
     def __init__(
@@ -130,7 +131,6 @@ class Redshift(
         `Returns:`
             Psycopg2 ``connection`` object
         """
-
         # Create a psycopg2 connection and cursor
         conn = psycopg2.connect(
             user=self.username,
@@ -193,7 +193,6 @@ class Redshift(
                 See :ref:`parsons-table` for output options.
 
         """
-
         with self.connection() as connection:
             return self.query_with_connection(sql, connection, parameters=parameters)
 
@@ -219,7 +218,6 @@ class Redshift(
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         # To Do: Have it return an ordered dict to return the
         #        rows in the correct order
 
@@ -236,32 +234,31 @@ class Redshift(
                 logger.debug("Query returned 0 rows")
                 return None
 
-            else:
-                # Fetch the data in batches, and "pickle" the rows to a temp file.
-                # (We pickle rather than writing to, say, a CSV, so that we maintain
-                # all the type information for each field.)
+            # Fetch the data in batches, and "pickle" the rows to a temp file.
+            # (We pickle rather than writing to, say, a CSV, so that we maintain
+            # all the type information for each field.)
 
-                temp_file = files.create_temp_file()
+            temp_file = files.create_temp_file()
 
-                with open(temp_file, "wb") as f:
-                    # Grab the header
-                    header = [i[0] for i in cursor.description]
-                    pickle.dump(header, f)
+            with open(temp_file, "wb") as f:
+                # Grab the header
+                header = [i[0] for i in cursor.description]
+                pickle.dump(header, f)
 
-                    while True:
-                        batch = cursor.fetchmany(QUERY_BATCH_SIZE)
-                        if not batch:
-                            break
+                while True:
+                    batch = cursor.fetchmany(QUERY_BATCH_SIZE)
+                    if not batch:
+                        break
 
-                        logger.debug(f"Fetched {len(batch)} rows.")
-                        for row in batch:
-                            pickle.dump(list(row), f)
+                    logger.debug(f"Fetched {len(batch)} rows.")
+                    for row in batch:
+                        pickle.dump(list(row), f)
 
-                # Load a Table from the file
-                final_tbl = Table(petl.frompickle(temp_file))
+            # Load a Table from the file
+            final_tbl = Table(petl.frompickle(temp_file))
 
-                logger.debug(f"Query returned {final_tbl.num_rows} rows.")
-                return final_tbl
+            logger.debug(f"Query returned {final_tbl.num_rows} rows.")
+            return final_tbl
 
     def copy_s3(
         self,
@@ -398,7 +395,6 @@ class Redshift(
             Parsons Table or ``None``
                 See :ref:`parsons-table` for output options.
         """
-
         with self.connection() as connection:
             if self._create_table_precheck(connection, table_name, if_exists):
                 if template_table:
@@ -617,7 +613,6 @@ class Redshift(
             Parsons Table or ``None``
                 See :ref:`parsons-table` for output options.
         """
-
         # Specify the columns for a copy statement.
         if specifycols or (specifycols is None and template_table):
             cols = tbl.columns
@@ -717,7 +712,7 @@ class Redshift(
         aws_access_key_id=None,
         aws_secret_access_key=None,
     ):
-        """
+        r"""
         Unload Redshift data to S3 Bucket. This is a more efficient method than running a query
         to export data as it can export in parallel and directly into an S3 bucket. Consider
         using this for exports of 10MM or more rows.
@@ -773,7 +768,6 @@ class Redshift(
             An AWS secret access key granted to the bucket where the file is located. Not
             required if keys are stored as environmental variables.
         """
-
         # The sql query is provided between single quotes, therefore single
         # quotes within the actual query must be escaped.
         # https://docs.aws.amazon.com/redshift/latest/dg/r_UNLOAD.html#unload-parameters
@@ -858,6 +852,7 @@ class Redshift(
 
         Returns:
             None
+
         """
         query_end = "cascade" if cascade else ""
         self.unload(
@@ -878,7 +873,7 @@ class Redshift(
 
         self.query(f"drop table if exists {rs_table} {query_end}")
 
-        return None
+        return
 
     def generate_manifest(
         self,
@@ -920,7 +915,6 @@ class Redshift(
         `Returns:`
             ``dict`` of manifest
         """
-
         from parsons.aws import S3
 
         s3 = S3(
@@ -974,7 +968,7 @@ class Redshift(
         sortkey=None,
         **copy_args,
     ):
-        """
+        r"""
         Preform an upsert on an existing table. An upsert is a function in which rows
         in a table are updated and inserted at the same time.
 
@@ -1009,7 +1003,6 @@ class Redshift(
             \**copy_args: kwargs
                 See :func:`~parsons.databases.Redshift.copy` for options.
         """
-
         if isinstance(primary_key, str):
             primary_keys = [primary_key]
         else:
@@ -1026,7 +1019,7 @@ class Redshift(
                          created target table."
             )
             self.copy(table_obj, target_table, distkey=distkey, sortkey=sortkey)
-            return None
+            return
 
         if alter_table and table_obj:
             # Make target table column widths match incoming table, if necessary
@@ -1035,9 +1028,9 @@ class Redshift(
             )
 
         noise = f"{random.randrange(0, 10000):04}"[:4]
-        date_stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+        date_stamp = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d_%H%M")
         # Generate a temp table like "table_tmp_20200210_1230_14212"
-        staging_tbl = "{}_stg_{}_{}".format(target_table, date_stamp, noise)
+        staging_tbl = f"{target_table}_stg_{date_stamp}_{noise}"
 
         if distinct_check:
             primary_keys_statement = ", ".join(primary_keys)
@@ -1182,7 +1175,6 @@ class Redshift(
         `Returns:`
             ``None``
         """
-
         # Make the Parsons table column names match valid Redshift names
         tbl.table = petl.setheader(tbl.table, self.column_name_validate(tbl.columns))
 
@@ -1222,7 +1214,6 @@ class Redshift(
         varchar_width:
             The new width of the column if of type varchar.
         """
-
         sql = f"ALTER TABLE {table_name} ALTER COLUMN {column_name} TYPE {data_type}"
 
         if varchar_width:

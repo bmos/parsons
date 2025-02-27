@@ -165,12 +165,14 @@ class RockTheVote:
 
         # Let's figure out at what time should we just give up because we waited
         # too long
-        end_time = datetime.datetime.now() + datetime.timedelta(seconds=report_timeout_seconds)
+        end_time = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(
+            seconds=report_timeout_seconds
+        )
 
         # If we have a download URL, we can move on and just download the
         # report. Otherwise, as long as we haven't run out of time, we will
         # check the status.
-        while not download_url and datetime.datetime.now() < end_time:
+        while not download_url and datetime.datetime.now(tz=datetime.timezone.utc) < end_time:
             logger.debug(
                 f"Registrations report not ready yet, sleeping {poll_interval_seconds} seconds"
             )
@@ -218,8 +220,7 @@ class RockTheVote:
             ]
             table.table = petl.setheader(table.table, normalized_column_names)
             return table
-        else:
-            raise RTVFailure("Unable to download report data")
+        raise RTVFailure("Unable to download report data")
 
     def run_registration_report(
         self,
@@ -270,6 +271,7 @@ class RockTheVote:
     ):
         """
         Checks state eligibility and provides state specific fields information.
+
         Args:
             lang: str
                 Required. Language. Represented by an abbreviation. 'en', 'es', etc
@@ -284,6 +286,7 @@ class RockTheVote:
         Returns:
             Parsons.Table
                 A single row table with the response json
+
         """
         requirements_url = "state_requirements.json"
 
@@ -307,7 +310,6 @@ class RockTheVote:
             response_json = requirements_response.json()
             table = Table([response_json])
             return table
-        else:
-            error_json = requirements_response.json()
-            logger.info(f"{error_json}")
-            raise RTVFailure("Could not retrieve state requirements")
+        error_json = requirements_response.json()
+        logger.info(f"{error_json}")
+        raise RTVFailure("Could not retrieve state requirements")

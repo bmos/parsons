@@ -11,7 +11,7 @@ POLLING_DELAY = 1
 ACTBLUE_API_ENDPOINT = "https://secure.actblue.com/api/v1"
 
 
-class ActBlue(object):
+class ActBlue:
     """
     Instantiate class.
 
@@ -74,7 +74,6 @@ class ActBlue(object):
             Response of POST request; a successful response includes 'id', a unique identifier for
             the CSV being generated.
         """
-
         body = {
             "csv_type": csv_type,
             "date_range_start": date_range_start,
@@ -114,7 +113,6 @@ class ActBlue(object):
             retrieval. Null until CSV has finished generating. Keep this URL secure because until
             it expires, it could be used by anyone to download the CSV.
         """
-
         logger.info("Request received. Please wait while ActBlue generates this data.")
         download_url = None
         while download_url is None:
@@ -151,7 +149,6 @@ class ActBlue(object):
         `Returns:`
             Contents of the generated contribution CSV as a Parsons table.
         """
-
         post_request_response = self.post_request(csv_type, date_range_start, date_range_end)
         csv_id = post_request_response["id"]
         download_url = self.poll_for_download_url(csv_id)

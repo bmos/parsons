@@ -30,7 +30,7 @@ def cleanup_flag_id():
     def delete_flag_id(pdi, flag_id):
         pdi.delete_flag_id(flag_id)
 
-    yield delete_flag_id
+    return delete_flag_id
 
 
 @pytest.fixture
@@ -45,7 +45,7 @@ def create_temp_flag_id():
         if not my_flag_id:
             pdi.delete_flag_id(flag_id)
 
-    yield temp_flag_id
+    return temp_flag_id
 
 
 #
@@ -100,7 +100,7 @@ def test_create_flag_id(live_pdi, cleanup_flag_id, flag_id, is_default):
 
 @mark_live_test
 @pytest.mark.parametrize(
-    ["my_flag_id"],
+    "my_flag_id",
     [
         pytest.param(None),
         pytest.param(QA_INVALID_FLAG_ID),
@@ -116,7 +116,7 @@ def test_delete_flag_id(live_pdi, create_temp_flag_id, my_flag_id):
 
 @mark_live_test
 @pytest.mark.parametrize(
-    ["my_flag_id"],
+    "my_flag_id",
     [
         pytest.param(None),
         pytest.param(QA_INVALID_FLAG_ID, marks=[xfail_http_error]),

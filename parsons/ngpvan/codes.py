@@ -7,7 +7,7 @@ from parsons.etl.table import Table
 logger = logging.getLogger(__name__)
 
 
-class Codes(object):
+class Codes:
     def __init__(self, van_connection):
         self.connection = van_connection
 
@@ -28,7 +28,6 @@ class Codes(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         params = {
             "name": name,
             "supportedEntities": supported_entities,
@@ -52,7 +51,6 @@ class Codes(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         c = self.connection.get_request(f"codes/{code_id}")
         logger.debug(c)
         logger.info(f"Found code {code_id}.")
@@ -66,7 +64,6 @@ class Codes(object):
             list
                 A list of code types.
         """
-
         lst = self.connection.get_request("codeTypes")
         logger.info(f"Found {len(lst)} code types.")
         return lst
@@ -111,7 +108,6 @@ class Codes(object):
                         }
                     ]
         """
-
         json = {
             "parentCodeId": parent_code_id,
             "name": name,
@@ -178,7 +174,6 @@ class Codes(object):
                         }
                     ]
         """
-
         post_data = {}
 
         if name:
@@ -215,7 +210,6 @@ class Codes(object):
         `Returns:`
             ``None``
         """
-
         r = self.connection.delete_request(f"codes/{code_id}")
         logger.info(f"Code {code_id} deleted.")
         return r
@@ -228,7 +222,6 @@ class Codes(object):
             list
                 A list of code supported entities.
         """
-
         lst = self.connection.get_request("codes/supportedEntities")
         logger.info(f"Found {len(lst)} code supported entities.")
         return lst

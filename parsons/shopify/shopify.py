@@ -6,7 +6,7 @@ from parsons.utilities import check_env
 from parsons.utilities.api_connector import APIConnector
 
 
-class Shopify(object):
+class Shopify:
     """
     Instantiate the Shopify class
     `Args:`
@@ -163,8 +163,8 @@ class Shopify(object):
             # Specific date if provided
             query_date = datetime.strptime(query_date, "%Y-%m-%d")
             max_date = query_date + timedelta(days=1)
-            filters += "&created_at_min={}&created_at_max={}".format(
-                query_date.isoformat(), max_date.isoformat()
+            filters += (
+                f"&created_at_min={query_date.isoformat()}&created_at_max={max_date.isoformat()}"
             )
         elif since_id:
             # Since ID if provided

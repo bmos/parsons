@@ -23,7 +23,7 @@ def sg_compatibility():
         os.environ["ALCHEMER_API_VERSION"] = os.getenv("SURVEYGIZMO_API_VERSION")
 
 
-class Alchemer(object):
+class Alchemer:
     """
     Instantiate Alchemer Class
 
@@ -70,7 +70,6 @@ class Alchemer(object):
         `Returns:`
             Table Class
         """
-
         r = self._client.api.survey.list(page)
         data = r["data"]
 
@@ -101,7 +100,6 @@ class Alchemer(object):
         `Returns:`
             Table Class
         """
-
         r = self._client.api.surveyresponse.list(survey_id, page)
         logger.info(f"{survey_id}: {r['total_count']} responses.")
         data = r["data"]

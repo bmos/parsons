@@ -40,12 +40,11 @@ def format_datetime(text):
 def get_run_state_emoji(run_state):
     if run_state == "succeeded":
         return ":white_check_mark:"
-    elif run_state == "failed":
+    if run_state == "failed":
         return ":x:"
-    elif run_state == "running":
+    if run_state == "running":
         return ":runner:"
-    else:
-        return ":shrug:"
+    return ":shrug:"
 
 
 # Returns a Parsons table with workflow and job data from the specified Civis project.
@@ -84,9 +83,8 @@ def get_last_success(object_id, object_type):
         for execution in workflow_executions:
             if execution["state"] != "succeeded":
                 continue
-            else:
-                last_success = format_datetime(execution["finished_at"])
-                break
+            last_success = format_datetime(execution["finished_at"])
+            break
 
     elif object_type == "job":
         job_runs = client.jobs.list_runs(object_id)
@@ -96,9 +94,8 @@ def get_last_success(object_id, object_type):
         for run in job_runs_tbl:
             if run["state"] != "succeeded":
                 continue
-            else:
-                last_success = format_datetime(run["finished_at"])
-                break
+            last_success = format_datetime(run["finished_at"])
+            break
 
     else:
         logger.info(f"{object_type} is not a valid object type.")

@@ -34,7 +34,6 @@ class QuickBooksTime:
         """
         This function handles the pagination of the request
         """
-
         # If no querystring is provided, initialize it as an empty dictionary
         if querystring is None:
             querystring = {}
@@ -128,7 +127,6 @@ class QuickBooksTime:
         `Returns:`
             Parsons Table
         """
-
         querystring = {
             "ids": ids,
             "active": active,
@@ -147,8 +145,7 @@ class QuickBooksTime:
         logger.info(f"Found {tbl.num_rows} groups.")
         if tbl.num_rows > 0:
             return tbl
-        else:
-            return Table()
+        return Table()
 
     def get_jobcodes(
         self,
@@ -226,7 +223,6 @@ class QuickBooksTime:
         `Returns:`
             Parsons Table
         """
-
         querystring = {
             "ids": ids,
             "parent_ids": parent_ids,
@@ -247,8 +243,7 @@ class QuickBooksTime:
         logger.info(f"Found {tbl.num_rows} jobs.")
         if tbl.num_rows > 0:
             return tbl
-        else:
-            return Table()
+        return Table()
 
     def get_timesheets(
         self,
@@ -335,7 +330,6 @@ class QuickBooksTime:
         `Returns:`
             Parsons Table
         """
-
         querystring = {
             "ids": ids,
             "jobcode_ids": jobcode_ids,
@@ -359,8 +353,7 @@ class QuickBooksTime:
         logger.info(f"Found {tbl.num_rows} timesheets.")
         if tbl.num_rows > 0:
             return tbl
-        else:
-            return Table()
+        return Table()
 
     def get_users(
         self,
@@ -442,7 +435,6 @@ class QuickBooksTime:
             Parsons Table
             See Parsons Table for output options.
         """
-
         querystring = {
             "ids": ids,
             "not_ids": not_ids,
@@ -467,8 +459,7 @@ class QuickBooksTime:
         logger.info(f"Found {tbl.num_rows} users.")
         if tbl.num_rows > 0:
             return tbl
-        else:
-            return Table()
+        return Table()
 
     def get_schedule_calendars_list(
         self,
@@ -512,7 +503,6 @@ class QuickBooksTime:
             List of integers of schedules calendar ids.
             Needed for calling the /schedule_events endpoint
         """
-
         endpoint = "schedule_calendars"
 
         querystring = {
@@ -632,7 +622,6 @@ class QuickBooksTime:
             Parsons Table
             See Parsons Table for output options.
         """
-
         # Create a clean end_point
 
         schedule_calendar_ids_list = self.get_schedule_calendars_list()
@@ -663,8 +652,7 @@ class QuickBooksTime:
         logger.info(f"Found {tbl.num_rows} schedules.")
         if tbl.num_rows > 0:
             return tbl
-        else:
-            return Table()
+        return Table()
 
     def get_geolocations(
         self,
@@ -712,7 +700,6 @@ class QuickBooksTime:
             Parsons Table
             See Parsons Table for output options.
         """
-
         endpoint = "geolocations"
 
         querystring = {
@@ -733,5 +720,4 @@ class QuickBooksTime:
 
         if tbl.num_rows > 0:
             return tbl
-        else:
-            return Table()
+        return Table()

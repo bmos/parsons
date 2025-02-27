@@ -103,9 +103,8 @@ class Scytl:
         `Returns`:
             datetime | None
         """
-
         if input_dt is None:
-            return
+            return None
 
         temp = parsedate(input_dt, tzinfos=TZ_INFO)
         temp = temp.astimezone(timezone("UTC"))
@@ -126,7 +125,6 @@ class Scytl:
             str
             The version id as a string
         """
-
         config_version_url = CURRENT_VERSION_URL_TEMPLATE.format(
             administrator=administrator, election_id=election_id
         )
@@ -148,7 +146,6 @@ class Scytl:
             bytes
             The unzipped file as bytes
         """
-
         with BytesIO() as zipdata:
             with requests.get(zipfile_url, headers=BROWSER_HEADERS) as res:
                 zipdata.write(res.content)
@@ -177,7 +174,6 @@ class Scytl:
             dict[str, CountyDetails]
             A dictionary mapping county names to their sub-election information
         """
-
         county_dict = {}
 
         config_settings_json_url = ELECTION_SETTINGS_JSON_URL_TEMPLATE.format(
@@ -227,7 +223,6 @@ class Scytl:
             list[dict]
             The list of election results by precinct and vote method in the file.
         """
-
         tree = ET.fromstring(county_data)
 
         precinct_dict = {}
@@ -309,7 +304,6 @@ class Scytl:
             list[dict]
             The list of election results by state and vote method in the file.
         """
-
         root = ET.fromstring(state_data)
 
         county_dict = {}
@@ -392,7 +386,6 @@ class Scytl:
             list[dict]
             The list of election results by candidate.
         """
-
         summary_csv_zip_url = SUMMARY_CSV_ZIP_URL_TEMPLATE.format(
             administrator=administrator,
             election_id=election_id,
@@ -455,11 +448,10 @@ class Scytl:
                 and instead include the party in the candidate name)
             - recorded_votes (votes cast for the candidate)
         """
-
         version_num = self._get_version(self.administrator, self.election_id)
 
         if not force_update and version_num == self.previous_summary_version_num:
-            return
+            return None
 
         data = self._fetch_and_parse_summary_results(
             self.administrator, self.election_id, version_num
@@ -523,11 +515,10 @@ class Scytl:
             - percent_reporting
             - timestamp_last_updated
         """
-
         version_num = self._get_version(self.administrator, self.election_id)
 
         if not force_update and version_num == self.previous_details_version_num:
-            return
+            return None
 
         detail_xml_url = DETAIL_XML_ZIP_URL_TEMPLATE.format(
             administrator=self.administrator,
@@ -602,7 +593,6 @@ class Scytl:
             - percent_reporting
             - timestamp_last_updated
         """
-
         version_num = self._get_version(self.administrator, self.election_id)
 
         if not force_update and version_num == self.previous_county_details_version_num:

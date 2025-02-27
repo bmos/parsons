@@ -30,7 +30,8 @@ class PostgresCreateStatement(DatabaseCreateStatement):
 
     # the default behavior is f"{col}_"
     def _rename_reserved_word(self, col, index):
-        """Return the renamed column.
+        """
+        Return the renamed column.
 
         `Args`:
             col: str

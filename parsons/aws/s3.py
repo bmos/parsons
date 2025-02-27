@@ -10,7 +10,7 @@ from parsons.utilities import files
 logger = logging.getLogger(__name__)
 
 
-class AWSConnection(object):
+class AWSConnection:
     def __init__(
         self,
         aws_access_key_id=None,
@@ -43,7 +43,7 @@ class AWSConnection(object):
             self.session = boto3.Session()
 
 
-class S3(object):
+class S3:
     """
     Instantiate the S3 class.
 
@@ -93,7 +93,6 @@ class S3(object):
         `Returns:`
             list
         """
-
         return [bucket.name for bucket in self.s3.buckets.all()]
 
     def bucket_exists(self, bucket):
@@ -107,7 +106,6 @@ class S3(object):
             boolean
                 ``True`` if the bucket exists and ``False`` if not.
         """
-
         try:
             # If we can list the keys, the bucket definitely exists. We do this check since
             # it will account for buckets that live on other AWS accounts and that we
@@ -154,7 +152,6 @@ class S3(object):
                 Dict mapping the keys to info about each key. The info includes 'LastModified',
                 'Size', and 'Owner'.
         """
-
         keys_dict = dict()
         logger.debug(f"Fetching keys in {bucket} bucket")
 
@@ -232,15 +229,13 @@ class S3(object):
             boolean
                 ``True`` if key exists and ``False`` if not.
         """
-
         key_count = len(self.list_keys(bucket, prefix=key))
 
         if key_count > 0:
             logger.debug(f"Found {key} in {bucket}.")
             return True
-        else:
-            logger.debug(f"Did not find {key} in {bucket}.")
-            return False
+        logger.debug(f"Did not find {key} in {bucket}.")
+        return False
 
     def create_bucket(self, bucket):
         """
@@ -267,7 +262,6 @@ class S3(object):
         `Returns:`
             ``None``
         """
-
         self.client.create_bucket(Bucket=bucket)
 
     def put_file(self, bucket, key, local_path, acl="bucket-owner-full-control", **kwargs):
@@ -288,7 +282,6 @@ class S3(object):
                 <https://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPUT.html>`_ for more
                 info.
         """
-
         self.client.upload_file(local_path, bucket, key, ExtraArgs={"ACL": acl, **kwargs})
 
     def remove_file(self, bucket, key):
@@ -303,7 +296,6 @@ class S3(object):
         `Returns:`
             ``None``
         """
-
         self.client.delete_object(Bucket=bucket, Key=key)
 
     def get_file(self, bucket, key, local_path=None, **kwargs):
@@ -328,7 +320,6 @@ class S3(object):
             str
                 The path of the new file
         """
-
         if not local_path:
             local_path = files.create_temp_file_for_path(key)
 
@@ -351,7 +342,6 @@ class S3(object):
             Url:
                 A link to download the object
         """
-
         return self.client.generate_presigned_url(
             ClientMethod="get_object",
             Params={"Bucket": bucket, "Key": key},
@@ -404,7 +394,6 @@ class S3(object):
         `Returns:`
             ``None``
         """
-
         # If prefix, get all files for the prefix
         if origin_key.endswith("/"):
             resp = self.list_keys(
@@ -459,7 +448,6 @@ class S3(object):
                 list of buckets
 
         """
-
         all_buckets = self.list_buckets()
         buckets = [x for x in all_buckets if bucket_subname in x.split("-")]
 

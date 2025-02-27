@@ -21,7 +21,6 @@ class CustomFields:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         params = {"customFieldsGroupType": field_type.capitalize()}
 
         tbl = Table(self.connection.get_request("customFields", params=params))
@@ -40,7 +39,6 @@ class CustomFields:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = self.get_custom_fields()
 
         # Some custom fields do no have associated values. If this is the case then
@@ -58,9 +56,8 @@ class CustomFields:
                 ]
             )
 
-        else:
-            logger.info(f"Found {tbl.num_rows} custom field values.")
-            return tbl.long_table("customFieldId", "availableValues", prepend=False)
+        logger.info(f"Found {tbl.num_rows} custom field values.")
+        return tbl.long_table("customFieldId", "availableValues", prepend=False)
 
     def get_custom_field(self, custom_field_id):
         """
@@ -72,7 +69,6 @@ class CustomFields:
         `Returns:`
             A json.
         """
-
         r = self.connection.get_request(f"customFields/{custom_field_id}")
         logger.info(f"Found custom field {custom_field_id}.")
         return r

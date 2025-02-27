@@ -7,7 +7,7 @@ from parsons.utilities.api_connector import APIConnector
 logger = logging.getLogger(__name__)
 
 
-class Census(object):
+class Census:
     """
     Class that creates a connector to the Census Bureau API
     """
@@ -16,9 +16,10 @@ class Census(object):
         """
         Instantiate Census class.
 
-           Args:
+        Args:
                 api_key: string, key for Census API access
                  (optional, can also be pulled from environment variable CENSUS_API_KEY)
+
         """
         self.api_key = check_env.check("CENSUS_API_KEY", api_key)
         self.host = "https://api.census.gov/data"
@@ -43,6 +44,7 @@ class Census(object):
 
         Return:
                 Parsons table with data
+
         """
         # set up the URL
         g = "?get="

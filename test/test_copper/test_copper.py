@@ -226,14 +226,13 @@ class TestCopper(unittest.TestCase):
             row_start = page_number * page_size
             row_finish = row_start + page_size
 
-        with open(f"{_dir}/{context.headers['filename']}", "r") as json_file:
+        with open(f"{_dir}/{context.headers['filename']}") as json_file:
             response = json.load(json_file)
 
         if isinstance(response, list):
             context.headers["X-Pw-Total"] = str(len(response))
             return response[row_start:row_finish]
-        else:
-            return response
+        return response
 
     @requests_mock.Mocker()
     def test_paginate_request(self, m):
@@ -512,7 +511,7 @@ class TestCopper(unittest.TestCase):
     def test_process_custom_fields(self):
         # Using same json file and processed data in testing both process_ and get_ methods
 
-        with open(f"{_dir}/custom_fields_search.json", "r") as json_file:
+        with open(f"{_dir}/custom_fields_search.json") as json_file:
             fake_response = json.load(json_file)
 
         fake_processed = self.cp.process_custom_fields(fake_response)

@@ -12,7 +12,7 @@ class ParsonsBraintreeError(Exception):
     pass
 
 
-class Braintree(object):
+class Braintree:
     """
     Braintree is a payment processor.
     `Args:`
@@ -455,12 +455,11 @@ class Braintree(object):
                 + self.subscription_fields
                 + ["transactions"]
             )
-        else:
-            return (
-                [f"descriptor_{k}" for k in self.descriptor_fields]
-                + self.subscription_fields
-                + ["transaction_ids"]
-            )
+        return (
+            [f"descriptor_{k}" for k in self.descriptor_fields]
+            + self.subscription_fields
+            + ["transaction_ids"]
+        )
 
     def _subscription_to_row(self, include_transactions, collection_item):
         if include_transactions:
@@ -469,12 +468,11 @@ class Braintree(object):
                 + [getattr(collection_item, k) for k in self.subscription_fields]
                 + [collection_item.transactions]
             )
-        else:
-            return (
-                [getattr(collection_item.descriptor, k) for k in self.descriptor_fields]
-                + [getattr(collection_item, k) for k in self.subscription_fields]
-                + [";".join(t.id for t in collection_item.transactions)]
-            )
+        return (
+            [getattr(collection_item.descriptor, k) for k in self.descriptor_fields]
+            + [getattr(collection_item, k) for k in self.subscription_fields]
+            + [";".join(t.id for t in collection_item.transactions)]
+        )
 
     def _get_collection(
         self,
@@ -513,6 +511,7 @@ class Braintree(object):
         disbursement_date={'between': ['2020-03-20', '2020-03-27']}
         merchant_account_id={'in_list': [123, 456]}
         created_at={'greater_than_or_equal': '2020-03-10'}
+
         """
         queries = []
         for node, filters in queryparams.items():

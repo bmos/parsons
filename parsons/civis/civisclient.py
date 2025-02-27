@@ -4,7 +4,7 @@ from parsons.etl.table import Table
 from parsons.utilities import check_env
 
 
-class CivisClient(object):
+class CivisClient:
     """
     Instantiate the Civis class.
 
@@ -55,7 +55,6 @@ class CivisClient(object):
             Parsons Table or ``civis.CivisFuture``
                 See :ref:`parsons-table` for output options.
         """
-
         fut = civis.io.query_civis(
             sql,
             self.db,
@@ -121,7 +120,6 @@ class CivisClient(object):
         `Returns`
             ``None`` or ``civis.CivisFuture``
         """
-
         fut = civis.io.dataframe_to_civis(
             table_obj.to_dataframe(),
             database=self.db,

@@ -61,7 +61,6 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
         `Returns:`
             MySQL `connection` object
         """
-
         # Create a mysql connection and cursor
         connection = mysql.connect(
             host=self.host,
@@ -127,7 +126,6 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
                 See :ref:`parsons-table` for output options.
 
         """
-
         with self.connection() as connection:
             return self.query_with_connection(sql, connection, parameters=parameters)
 
@@ -168,30 +166,29 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
                 logger.debug("Query returned 0 rows")
                 return None
 
-            else:
-                # Fetch the data in batches, and "pickle" the rows to a temp file.
-                # (We pickle rather than writing to, say, a CSV, so that we maintain
-                # all the type information for each field.)
-                temp_file = files.create_temp_file()
+            # Fetch the data in batches, and "pickle" the rows to a temp file.
+            # (We pickle rather than writing to, say, a CSV, so that we maintain
+            # all the type information for each field.)
+            temp_file = files.create_temp_file()
 
-                with open(temp_file, "wb") as f:
-                    # Grab the header
-                    pickle.dump(cursor.column_names, f)
+            with open(temp_file, "wb") as f:
+                # Grab the header
+                pickle.dump(cursor.column_names, f)
 
-                    while True:
-                        batch = cursor.fetchmany(QUERY_BATCH_SIZE)
-                        if len(batch) == 0:
-                            break
+                while True:
+                    batch = cursor.fetchmany(QUERY_BATCH_SIZE)
+                    if len(batch) == 0:
+                        break
 
-                        logger.debug(f"Fetched {len(batch)} rows.")
-                        for row in batch:
-                            pickle.dump(row, f)
+                    logger.debug(f"Fetched {len(batch)} rows.")
+                    for row in batch:
+                        pickle.dump(row, f)
 
-                # Load a Table from the file
-                final_tbl = Table(petl.frompickle(temp_file))
+            # Load a Table from the file
+            final_tbl = Table(petl.frompickle(temp_file))
 
-                logger.debug(f"Query returned {final_tbl.num_rows} rows.")
-                return final_tbl
+            logger.debug(f"Query returned {final_tbl.num_rows} rows.")
+            return final_tbl
 
     def copy(
         self,
@@ -225,10 +222,9 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
                 or if their size will be rounded up to account for future values being larger
                 then the current dataset. defaults to ``True``
         """
-
         if tbl.num_rows == 0:
             logger.info("Parsons table is empty. Table will not be created.")
-            return None
+            return
 
         with self.connection() as connection:
             # Create table if not exists
@@ -247,7 +243,6 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
         """
         Convert the table data into a string for bulk importing.
         """
-
         # Single column tables
         if len(tbl.columns) == 1:
             values = [f"({row[0]})" for row in tbl.data]
@@ -279,7 +274,6 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
             bool
                 True if the table needs to be created, False otherwise.
         """
-
         if if_exists not in ["fail", "truncate", "append", "drop"]:
             raise ValueError("Invalid value for `if_exists` argument")
 
@@ -315,11 +309,9 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
             boolean
                 ``True`` if the table exists and ``False`` if it does not.
         """
-
         if self.query(f"SHOW TABLES LIKE '{table_name}'").first == table_name:
             return True
-        else:
-            return False
+        return False
 
     def table(self, table_name):
         # Return a BaseTable table object

@@ -66,11 +66,11 @@ def main():
         # If we do not get a string back from the create_spreadsheet call
         # then something went wrong. Print the response.
         else:
-            logger.info(f"create_spreadsheet did not return a sheet ID. Issue: {str(new_sheet)}")
+            logger.info(f"create_spreadsheet did not return a sheet ID. Issue: {new_sheet!s}")
 
     # If we get an error when trying to create the spreadsheet we print the error.
     except Exception as e:
-        logger.info(f"There was a problem creating the Google Sheets workbook! Error: {str(e)}")
+        logger.info(f"There was a problem creating the Google Sheets workbook! Error: {e!s}")
 
     logger.info("Querying MYSQL database...")
     query_results = mysql.query(QUERY)

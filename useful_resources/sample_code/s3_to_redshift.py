@@ -48,7 +48,7 @@ files = keys.keys()
 if len(keys) == 0:
     logger.info("No files to sync today!")
 else:
-    logger.info(f"Pulling {str(len(files))} files down from s3...")
+    logger.info(f"Pulling {len(files)!s} files down from s3...")
     for x in files:
         file = s3.get_file(bucket, x)
         # TODO: Table undeifned, may need to import from parsons?

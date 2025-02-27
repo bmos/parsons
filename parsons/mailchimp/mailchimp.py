@@ -103,8 +103,7 @@ class Mailchimp:
         logger.info(f"Found {tbl.num_rows} lists.")
         if tbl.num_rows > 0:
             return tbl
-        else:
-            return Table()
+        return Table()
 
     def get_campaigns(
         self,
@@ -200,8 +199,7 @@ class Mailchimp:
         logger.info(f"Found {tbl.num_rows} campaigns.")
         if tbl.num_rows > 0:
             return tbl
-        else:
-            return Table()
+        return Table()
 
     def get_members(
         self,
@@ -333,8 +331,7 @@ class Mailchimp:
         logger.info(f"Found {tbl.num_rows} members.")
         if tbl.num_rows > 0:
             return tbl
-        else:
-            return Table()
+        return Table()
 
     def get_campaign_emails(
         self,
@@ -386,8 +383,7 @@ class Mailchimp:
         tbl = Table(response["emails"])
         if tbl.num_rows > 0:
             return tbl
-        else:
-            return Table()
+        return Table()
 
     def get_unsubscribes(
         self, campaign_id, fields=None, exclude_fields=None, count=None, offset=None
@@ -429,5 +425,4 @@ class Mailchimp:
         logger.info(f"Found {tbl.num_rows} unsubscribes for {campaign_id}.")
         if tbl.num_rows > 0:
             return tbl
-        else:
-            return Table()
+        return Table()

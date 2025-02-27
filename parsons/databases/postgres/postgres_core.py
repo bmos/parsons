@@ -34,7 +34,6 @@ class PostgresCore(PostgresCreateStatement):
         `Returns:`
             Psycopg2 `connection` object
         """
-
         # Create a psycopg2 connection and cursor
         conn = psycopg2.connect(
             user=self.username,
@@ -101,7 +100,6 @@ class PostgresCore(PostgresCreateStatement):
                 See :ref:`parsons-table` for output options.
 
         """
-
         with self.connection() as connection:
             return self.query_with_connection(sql, connection, parameters=parameters)
 
@@ -126,7 +124,6 @@ class PostgresCore(PostgresCreateStatement):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         with self.cursor(connection) as cursor:
             logger.debug(f"SQL Query: {sql}")
             cursor.execute(sql, parameters)
@@ -139,32 +136,31 @@ class PostgresCore(PostgresCreateStatement):
                 logger.debug("Query returned 0 rows")
                 return None
 
-            else:
-                # Fetch the data in batches, and "pickle" the rows to a temp file.
-                # (We pickle rather than writing to, say, a CSV, so that we maintain
-                # all the type information for each field.)
+            # Fetch the data in batches, and "pickle" the rows to a temp file.
+            # (We pickle rather than writing to, say, a CSV, so that we maintain
+            # all the type information for each field.)
 
-                temp_file = files.create_temp_file()
+            temp_file = files.create_temp_file()
 
-                with open(temp_file, "wb") as f:
-                    # Grab the header
-                    header = [i[0] for i in cursor.description]
-                    pickle.dump(header, f)
+            with open(temp_file, "wb") as f:
+                # Grab the header
+                header = [i[0] for i in cursor.description]
+                pickle.dump(header, f)
 
-                    while True:
-                        batch = cursor.fetchmany(QUERY_BATCH_SIZE)
-                        if not batch:
-                            break
+                while True:
+                    batch = cursor.fetchmany(QUERY_BATCH_SIZE)
+                    if not batch:
+                        break
 
-                        logger.debug(f"Fetched {len(batch)} rows.")
-                        for row in batch:
-                            pickle.dump(list(row), f)
+                    logger.debug(f"Fetched {len(batch)} rows.")
+                    for row in batch:
+                        pickle.dump(list(row), f)
 
-                # Load a Table from the file
-                final_tbl = Table(petl.frompickle(temp_file))
+            # Load a Table from the file
+            final_tbl = Table(petl.frompickle(temp_file))
 
-                logger.debug(f"Query returned {final_tbl.num_rows} rows.")
-                return final_tbl
+            logger.debug(f"Query returned {final_tbl.num_rows} rows.")
+            return final_tbl
 
     def _create_table_precheck(self, connection, table_name, if_exists):
         """
@@ -182,7 +178,6 @@ class PostgresCore(PostgresCreateStatement):
             bool
                 True if the table needs to be created, False otherwise.
         """
-
         if if_exists not in ["fail", "truncate", "append", "drop"]:
             raise ValueError("Invalid value for `if_exists` argument")
 
@@ -204,8 +199,7 @@ class PostgresCore(PostgresCreateStatement):
 
             return False
 
-        else:
-            return True
+        return True
 
     def table_exists(self, table_name: str, view: bool = True) -> bool:
         """
@@ -250,5 +244,4 @@ class PostgresCore(PostgresCreateStatement):
         # If in either, return boolean
         if result >= 1:
             return True
-        else:
-            return False
+        return False

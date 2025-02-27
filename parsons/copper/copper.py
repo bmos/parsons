@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 COPPER_URI = "https://api.prosperworks.com/developer_api/v1"
 
 
-class Copper(object):
+class Copper:
     """
     Instantiate Copper Class
 
@@ -54,11 +54,10 @@ class Copper(object):
         # GET request with non-None data arg is malformed
         if req_type == "GET":
             return request(req_type, url, params=json.dumps(payload), headers=headers)
-        else:
-            payload["page_number"] = page
-            payload["page_size"] = page_size
+        payload["page_number"] = page
+        payload["page_size"] = page_size
 
-            return request(req_type, url, data=json.dumps(payload), headers=headers)
+        return request(req_type, url, data=json.dumps(payload), headers=headers)
 
     def paginate_request(self, endpoint, req_type, page_size=200, filters=None):
         # Internal pagination method
@@ -74,7 +73,7 @@ class Copper(object):
                 page = filters["page_number"]
                 # Ensure exactly one loop
                 total_pages = page
-                rows = f"{str(page_size)} or less"
+                rows = f"{page_size!s} or less"
                 only_page = True
         else:
             filters = {}
@@ -89,7 +88,7 @@ class Copper(object):
                     rows = r.headers["X-Pw-Total"]
                     total_pages = int(math.ceil(int(rows) / float(page_size)))
                 else:
-                    rows = f"{str(page_size)} or less"
+                    rows = f"{page_size!s} or less"
                     total_pages = 1
             logger.info(f"Retrieving page {page} of {total_pages}, total rows: {rows}")
             page += 1
@@ -129,7 +128,6 @@ class Copper(object):
                 * people_socials
                 * people_websites
         """
-
         return self.get_standard_object("people", filters=filters, tidy=tidy)
 
     def get_companies(self, filters=None, tidy=False):
@@ -154,7 +152,6 @@ class Copper(object):
                 * companies_socials
                 * companies_websites
         """
-
         return self.get_standard_object("companies", filters=filters, tidy=tidy)
 
     def get_activities(self, filters=None, tidy=False):
@@ -174,7 +171,6 @@ class Copper(object):
             List of dicts of Parsons Tables:
                 * activities
         """
-
         return self.get_standard_object("activities", filters=filters, tidy=tidy)
 
     def get_opportunities(self, filters=None, tidy=False):
@@ -195,7 +191,6 @@ class Copper(object):
                 * opportunities
                 * opportunities_custom_fields
         """
-
         return self.get_standard_object("opportunities", filters=filters, tidy=tidy)
 
     def get_standard_object(self, object_name, filters=None, tidy=False):
@@ -221,7 +216,6 @@ class Copper(object):
                 * custom_fields_available
                 * custom_fields_options
         """
-
         logger.info("Retrieving custom fields.")
         blob = self.paginate_request("/custom_field_definitions/", req_type="GET")
         return self.process_custom_fields(blob)
@@ -239,7 +233,6 @@ class Copper(object):
             List of dicts of Parsons Tables:
                 * activitiy_types
         """
-
         logger.info("Retrieving activity types.")
 
         response = self.paginate_request("/activity_types/", req_type="GET")
@@ -263,7 +256,6 @@ class Copper(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         response = self.paginate_request("/contact_types/", req_type="GET")
         return Table(response)
 

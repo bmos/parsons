@@ -98,7 +98,8 @@ Before we jump into moving data around, lets import all the things we need and i
 Your imports should look like this::
 
     import json
-    from datetime import datetime
+    import datetime
+
     from parsons import Table, MobilizeAmerica, GoogleSheets
 
 `json <https://docs.python.org/3/library/json.html>`_ is a Python module that helps us convert between data in a JSON format (which is a popular way to store and share data) and Python data structures.
@@ -412,7 +413,7 @@ Log Tables are tables in our database where we store information about our attem
         'actionnetworkid': actionnetworkid,
         'synced': True,
         'errors': None,
-        'date': str(datetime.now())
+        'date': str(datetime.datetime.now(tz=datetime.timezone.utc))
     }
 
     # Add the record of our success to the history books
@@ -489,7 +490,7 @@ Let's take a look inside the try statement. What are we trying to do? ::
             'actionnetworkid': actionnetworkid,
             'synced': True,
             'errors': None,
-            'date': str(datetime.now())
+            'date': str(datetime.datetime.now(tz=datetime.timezone.utc))
         }
 
         # Add the record of our success to the history books
@@ -512,7 +513,7 @@ Now let's look inside the except statement. What happens if things go wrong?::
         'actionnetworkid': None,
         'synced': False,
         'errors': str(e)[:999],
-        'date': str(datetime.now())
+        'date': str(datetime.datetime.now(tz=datetime.timezone.utc))
     }
 
     # Add the record of our greatest failures to the history books

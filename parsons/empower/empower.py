@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 EMPOWER_API_ENDPOINT = "https://api.getempower.com/v1/export"
 
 
-class Empower(object):
+class Empower:
     """
     Instantiate class.
 
@@ -50,18 +50,15 @@ class Empower(object):
             logger.info("Empower data downloaded.")
             return r
 
-        else:
-            return self.data
+        return self.data
 
     def _empty_obj(self, obj_name):
         """
         Determine if a dict object is empty.
         """
-
         if len(self.data[obj_name]) == 0:
             return True
-        else:
-            return False
+        return False
 
     def get_profiles(self):
         """
@@ -71,7 +68,6 @@ class Empower(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.data["profiles"])
         for col in ["createdMts", "lastUsedEmpowerMts", "updatedMts"]:
             tbl.convert_column(col, lambda x: convert_unix_to_readable(x))
@@ -86,7 +82,6 @@ class Empower(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.data["profiles"]).long_table("eid", "activeCtaIds")
         return tbl
 
@@ -98,7 +93,6 @@ class Empower(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.data["regions"])
         tbl.convert_column("inviteCodeCreatedMts", lambda x: convert_unix_to_readable(x))
         return tbl
@@ -111,7 +105,6 @@ class Empower(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         # unpacks answerIdsByPromptId into standalone rows
         tbl = Table(self.data["ctaResults"])
         tbl.convert_column("contactedMts", lambda x: convert_unix_to_readable(x))
@@ -129,7 +122,6 @@ class Empower(object):
         """
         Internal method to split CTA objects into tables.
         """
-
         ctas = Table(self.data["ctas"])
         for col in [
             "createdMts",
@@ -163,7 +155,6 @@ class Empower(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         return self._split_ctas()["ctas"]
 
     def get_cta_prompts(self):
@@ -174,7 +165,6 @@ class Empower(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         return self._split_ctas()["cta_prompts"]
 
     def get_cta_prompt_answers(self):
@@ -185,7 +175,6 @@ class Empower(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         return self._split_ctas()["cta_prompt_answers"]
 
     def get_cta_regions(self):
@@ -196,7 +185,6 @@ class Empower(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.data["ctas"]).long_table("id", "regionIds")
         return tbl
 
@@ -208,7 +196,6 @@ class Empower(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.data["ctas"]).long_table("id", "shareables")
         return tbl
 
@@ -220,7 +207,6 @@ class Empower(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.data["ctas"]).long_table("id", "prioritizations")
         return tbl
 
@@ -254,6 +240,5 @@ class Empower(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table([self.data])
         return tbl

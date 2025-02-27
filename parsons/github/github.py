@@ -54,8 +54,9 @@ class ParsonsGitHubError(Exception):
 
 
 @decorate_methods(wrap_github_404)
-class GitHub(object):
-    """Creates a GitHub class for accessing the GitHub API.
+class GitHub:
+    """
+    Creates a GitHub class for accessing the GitHub API.
 
     Uses ``parsons.utilities.check_env`` to load credentials from environment variables if not
     supplied. Supports either a username and password or an access token for authentication. The
@@ -71,6 +72,7 @@ class GitHub(object):
         access_token: Optional[str]
             Access token to use for credentials. Can be set with ``GITHUB_ACCESS_TOKEN`` environment
             variable.
+
     """
 
     def __init__(self, username=None, password=None, access_token=None):
@@ -86,7 +88,8 @@ class GitHub(object):
             self.client = PyGithub()
 
     def _as_table(self, paginated_list, page=None, page_size=100):
-        """Converts a paginated list into a Parsons ``Table``. Uses the ``_rawData`` property of
+        """
+        Converts a paginated list into a Parsons ``Table``. Uses the ``_rawData`` property of
         each item instead of calling ``raw_data`` to avoid making a separate request for each item
         in a page for types that PyGithub doesn't consider complete.
 
@@ -101,8 +104,8 @@ class GitHub(object):
         Returns:
             ``Table``
                 Table object created from the raw data of the list
-        """
 
+        """
         if page is not None:
             page_start = (page - 1) * page_size
             page_end = page_start + page_size
@@ -113,7 +116,8 @@ class GitHub(object):
         return Table([list_item._rawData for list_item in list_pages])
 
     def get_user(self, username):
-        """Loads a GitHub user by username
+        """
+        Loads a GitHub user by username
 
         Args:
             username: str
@@ -122,12 +126,13 @@ class GitHub(object):
         Returns:
             dict
                 User information
-        """
 
+        """
         return self.client.get_user(username).raw_data
 
     def get_organization(self, organization_name):
-        """Loads a GitHub organization by name
+        """
+        Loads a GitHub organization by name
 
         Args:
             organization_name: str
@@ -136,12 +141,13 @@ class GitHub(object):
         Returns:
             dict
                 Organization information
-        """
 
+        """
         return self.client.get_organization(organization_name).raw_data
 
     def get_repo(self, repo_name):
-        """Loads a GitHub repo by name
+        """
+        Loads a GitHub repo by name
 
         Args:
             repo_name: str
@@ -150,12 +156,13 @@ class GitHub(object):
         Returns:
             dict
                 Repo information
-        """
 
+        """
         return self.client.get_repo(repo_name).raw_data
 
     def list_user_repos(self, username, page=None, page_size=100):
-        """List user repos with pagination, returning a ``Table``
+        """
+        List user repos with pagination, returning a ``Table``
 
         Args:
             username: str
@@ -168,8 +175,8 @@ class GitHub(object):
         Returns:
             ``Table``
                 Table with page of user repos
-        """
 
+        """
         logger.info(f"Listing page {page} of repos for user {username}")
 
         return self._as_table(
@@ -177,7 +184,8 @@ class GitHub(object):
         )
 
     def list_organization_repos(self, organization_name, page=None, page_size=100):
-        """List organization repos with pagination, returning a ``Table``
+        """
+        List organization repos with pagination, returning a ``Table``
 
         Args:
             organization_name: str
@@ -190,8 +198,8 @@ class GitHub(object):
         Returns:
             ``Table``
                 Table with page of organization repos
-        """
 
+        """
         logger.info(f"Listing page {page} of repos for organization {organization_name}")
 
         return self._as_table(
@@ -201,7 +209,8 @@ class GitHub(object):
         )
 
     def get_issue(self, repo_name, issue_number):
-        """Loads a GitHub issue
+        """
+        Loads a GitHub issue
 
         Args:
             repo_name: str
@@ -212,8 +221,8 @@ class GitHub(object):
         Returns:
             dict
                 Issue information
-        """
 
+        """
         return self.client.get_repo(repo_name).get_issue(number=issue_number).raw_data
 
     def list_repo_issues(
@@ -230,7 +239,8 @@ class GitHub(object):
         page=None,
         page_size=100,
     ):
-        """List issues for a given repo
+        """
+        List issues for a given repo
 
         Args:
             repo_name: str
@@ -260,8 +270,8 @@ class GitHub(object):
         Returns:
             ``Table``
                 Table with page of repo issues
-        """
 
+        """
         logger.info(f"Listing page {page} of issues for repo {repo_name}")
 
         kwargs_dict = {"state": state, "sort": sort, "direction": direction}
@@ -283,7 +293,8 @@ class GitHub(object):
         )
 
     def get_pull_request(self, repo_name, pull_request_number):
-        """Loads a GitHub pull request
+        """
+        Loads a GitHub pull request
 
         Args:
             repo_name: str
@@ -294,8 +305,8 @@ class GitHub(object):
         Returns:
             dict
                 Pull request information
-        """
 
+        """
         return self.client.get_repo(repo_name).get_pull(pull_request_number).raw_data
 
     def list_repo_pull_requests(
@@ -308,7 +319,8 @@ class GitHub(object):
         page=None,
         page_size=100,
     ):
-        """Lists pull requests for a given repo
+        """
+        Lists pull requests for a given repo
 
         Args:
             repo_name: str
@@ -330,8 +342,8 @@ class GitHub(object):
         Returns:
             ``Table``
                 Table with page of repo pull requests
-        """
 
+        """
         logger.info(f"Listing page {page} of pull requests for repo {repo_name}")
 
         kwargs_dict = {"state": state, "sort": sort, "direction": direction}
@@ -345,7 +357,8 @@ class GitHub(object):
         )
 
     def list_repo_contributors(self, repo_name, page=None, page_size=100):
-        """Lists contributors for a given repo
+        """
+        Lists contributors for a given repo
 
         Args:
             repo_name: str
@@ -358,8 +371,8 @@ class GitHub(object):
         Returns:
             ``Table``
                 Table with page of repo contributors
-        """
 
+        """
         logger.info(f"Listing page {page} of contributors for repo {repo_name}")
 
         return self._as_table(
@@ -369,7 +382,8 @@ class GitHub(object):
         )
 
     def download_file(self, repo_name, path, branch=None, local_path=None):
-        """Download a file from a repo by path and branch. Defaults to the repo's default branch if
+        """
+        Download a file from a repo by path and branch. Defaults to the repo's default branch if
         branch is not supplied.
 
         Uses the download_url directly rather than the API because the API only supports contents up
@@ -392,8 +406,8 @@ class GitHub(object):
         Returns:
             str
                 File path of downloaded file
-        """
 
+        """
         if not local_path:
             local_path = files.create_temp_file_for_path(path)
 
@@ -416,7 +430,7 @@ class GitHub(object):
 
         if res.status_code == 404:
             raise UnknownObjectException(status=404, data=res.content)
-        elif res.status_code != 200:
+        if res.status_code != 200:
             raise ParsonsGitHubError(
                 f"Error downloading {path} from repo {repo_name}: {res.content}"
             )
@@ -429,7 +443,8 @@ class GitHub(object):
         return local_path
 
     def download_table(self, repo_name, path, branch=None, local_path=None, delimiter=","):
-        """Download a CSV file from a repo by path and branch as a Parsons Table.
+        """
+        Download a CSV file from a repo by path and branch as a Parsons Table.
 
         Args:
             repo_name: str
@@ -446,6 +461,7 @@ class GitHub(object):
         Returns:
             Parsons Table
                 See :ref:`parsons-table` for output options.
+
         """
         downloaded_file = self.download_file(repo_name, path, branch, local_path)
 

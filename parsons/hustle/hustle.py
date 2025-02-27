@@ -13,7 +13,7 @@ HUSTLE_URI = "https://api.hustle.com/v1/"
 PAGE_LIMIT = 1000
 
 
-class Hustle(object):
+class Hustle:
     """
     Instantiate Hustle Class
 
@@ -48,7 +48,9 @@ class Hustle(object):
         logger.debug(r.json())
 
         self.auth_token = r.json()["access_token"]
-        self.token_expiration = datetime.datetime.now() + datetime.timedelta(seconds=7200)
+        self.token_expiration = datetime.datetime.now(
+            tz=datetime.timezone.utc
+        ) + datetime.timedelta(seconds=7200)
         logger.info("Authentication token generated")
 
     def _token_check(self):
@@ -56,7 +58,7 @@ class Hustle(object):
         # not expired and generate another one if it has.
 
         logger.debug("Checking token expiration.")
-        if datetime.datetime.now() >= self.token_expiration:
+        if datetime.datetime.now(tz=datetime.timezone.utc) >= self.token_expiration:
             logger.info("Refreshing authentication token.")
             self._get_auth_token(self.client_id, self.client_secret)
 
@@ -84,8 +86,7 @@ class Hustle(object):
         if "items" not in r.json().keys():
             return r.json()
 
-        else:
-            result = r.json()["items"]
+        result = r.json()["items"]
 
         # Pagination
         while r.json()["pagination"]["hasNextPage"] == "true":
@@ -101,16 +102,15 @@ class Hustle(object):
 
         if r.status_code in (200, 201):
             logger.debug(r.json())
-            return None
+            return
 
         if raise_on_error:
             logger.info(r.json())
             r.raise_for_status()
-            return None
+            return
 
-        else:
-            logger.info(r.json())
-            return None
+        logger.info(r.json())
+        return
 
     def get_agents(self, group_id):
         """
@@ -124,7 +124,6 @@ class Hustle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self._request(f"groups/{group_id}/agents"))
         logger.info(f"Got {tbl.num_rows} agents from {group_id} group.")
         return tbl
@@ -139,7 +138,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         r = self._request(f"agents/{agent_id}")
         logger.info(f"Got {agent_id} agent.")
         return r
@@ -164,7 +162,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         agent = {
             "name": name,
             "fullName": full_name,
@@ -197,7 +194,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         agent = {"name": name, "fullName": full_name, "sendInvite": send_invite}
 
         # Remove empty args in dictionary
@@ -214,7 +210,6 @@ class Hustle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self._request("organizations"))
         logger.info(f"Got {tbl.num_rows} organizations.")
         return tbl
@@ -229,7 +224,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         r = self._request(f"organizations/{organization_id}")
         logger.info(f"Got {organization_id} organization.")
         return r
@@ -244,7 +238,6 @@ class Hustle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self._request(f"organizations/{organization_id}/groups"))
         logger.info(f"Got {tbl.num_rows} groups.")
         return tbl
@@ -257,7 +250,6 @@ class Hustle(object):
             group_id: str
                 The group id.
         """
-
         r = self._request(f"groups/{group_id}")
         logger.info(f"Got {group_id} group.")
         return r
@@ -272,7 +264,6 @@ class Hustle(object):
             lead_id: str
                 The lead id.
         """
-
         return self._request(
             f"groups/{group_id}/memberships",
             req_type="POST",
@@ -289,7 +280,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         r = self._request(f"leads/{lead_id}")
         logger.info(f"Got {lead_id} lead.")
         return r
@@ -308,7 +298,6 @@ class Hustle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if organization_id is None and group_id is None:
             raise ValueError("Either organization_id or group_id required.")
 
@@ -365,7 +354,6 @@ class Hustle(object):
         `Returns:`
                 ``None``
         """
-
         lead = {
             "firstName": first_name,
             "lastName": last_name,
@@ -414,7 +402,6 @@ class Hustle(object):
         `Returns:`
             A table of created ids with associated lead id.
         """
-
         table.map_columns(LEAD_COLUMN_MAP)
 
         arg_list = [
@@ -488,7 +475,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         lead = {
             "leadId": lead_id,
             "firstName": first_name,
@@ -517,7 +503,6 @@ class Hustle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self._request(f"organizations/{organization_id}/tags"))
         logger.info(f"Got {tbl.num_rows} tags for {organization_id} organization.")
         return tbl
@@ -532,7 +517,6 @@ class Hustle(object):
         `Returns:`
             dict
         """
-
         r = self._request(f"tags/{tag_id}")
         logger.info(f"Got {tag_id} tag.")
         return r

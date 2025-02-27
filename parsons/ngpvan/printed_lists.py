@@ -7,7 +7,7 @@ from parsons.etl.table import Table
 logger = logging.getLogger(__name__)
 
 
-class PrintedLists(object):
+class PrintedLists:
     def __init__(self, van_connection):
         self.connection = van_connection
 
@@ -30,7 +30,6 @@ class PrintedLists(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         params = {
             "generatedAfter": generated_after,
             "generatedBefore": generated_before,
@@ -56,7 +55,6 @@ class PrintedLists(object):
         `Returns:`
             dict
         """
-
         r = self.connection.get_request(f"printedLists/{printed_list_number}")
         logger.info(f"Found printed list {printed_list_number}.")
         return r

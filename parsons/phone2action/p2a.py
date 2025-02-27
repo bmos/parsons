@@ -5,7 +5,7 @@ from parsons.capitol_canary import CapitolCanary
 logger = logging.getLogger(__name__)
 
 
-class Phone2Action(object):
+class Phone2Action:
     """
     Instantiate Phone2Action Class
 
@@ -88,7 +88,6 @@ class Phone2Action(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         return self.capitol_canary.get_campaigns(
             state, zip, include_generic, include_private, include_content
         )

@@ -1,5 +1,5 @@
 import re
-from typing import Generator
+from collections.abc import Generator
 from unittest.mock import MagicMock
 
 import pytest
@@ -25,17 +25,17 @@ def mock_requests() -> Generator[MagicMock, None, None]:
 
 
 @pytest.fixture(autouse=True)
-def mock_sftp(mocker) -> Generator[MagicMock, None, None]:
+def mock_sftp(mocker) -> MagicMock:
     """Replace sftp client with a mock client"""
     magic_mock = MagicMock()
 
     mocker.patch("parsons.catalist.catalist.SFTP", new=magic_mock)
 
-    yield mocker
+    return mocker
 
 
 @pytest.fixture(autouse=True)
-def mock_miscellaneous(mocker) -> Generator[MagicMock, None, None]:
+def mock_miscellaneous(mocker) -> MagicMock:
     """Replace miscellaneous utilities with mocks to simplify testing"""
     magic_mock = MagicMock()
 
@@ -43,4 +43,4 @@ def mock_miscellaneous(mocker) -> Generator[MagicMock, None, None]:
     mocker.patch("parsons.catalist.catalist.os", new=magic_mock)
     mocker.patch("parsons.catalist.catalist.Table", new=magic_mock)
 
-    yield mocker
+    return mocker

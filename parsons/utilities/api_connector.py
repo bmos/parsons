@@ -10,7 +10,7 @@ from parsons import Table
 logger = logging.getLogger(__name__)
 
 
-class APIConnector(object):
+class APIConnector:
     """
     The API Connector is a low level class for API requests that other connectors
     can utilize. It is understood that there are many standards for REST APIs and it will be
@@ -95,18 +95,17 @@ class APIConnector(object):
                 The request parameters
         Returns:
                 A requests response object
-        """
 
+        """
         r = self.request(url, "GET", params=params)
         self.validate_response(r)
 
         if return_format == "json":
             logger.debug(r.json())
             return r.json()
-        elif return_format == "content":
+        if return_format == "content":
             return r.content
-        else:
-            raise RuntimeError(f"{return_format} is not a valid format, change to json or content")
+        raise RuntimeError(f"{return_format} is not a valid format, change to json or content")
 
     def post_request(
         self, url, params=None, data=None, json=None, success_codes=[200, 201, 202, 204]
@@ -128,7 +127,6 @@ class APIConnector(object):
         `Returns:`
             A requests response object
         """
-
         r = self.request(url, "POST", params=params, data=data, json=json)
 
         # Validate the response and lift up an errors.
@@ -139,8 +137,7 @@ class APIConnector(object):
         if r.status_code in success_codes:
             if self.json_check(r):
                 return r.json()
-            else:
-                return r.status_code
+            return r.status_code
 
     def delete_request(self, url, params=None, success_codes=[200, 201, 204]):
         """
@@ -155,8 +152,8 @@ class APIConnector(object):
                 The expected success codes to be returned
         Returns:
                 A requests response object or status code
-        """
 
+        """
         r = self.request(url, "DELETE", params=params)
 
         self.validate_response(r)
@@ -166,8 +163,7 @@ class APIConnector(object):
         if r.status_code in success_codes:
             if self.json_check(r):
                 return r.json()
-            else:
-                return r.status_code
+            return r.status_code
 
     def put_request(self, url, data=None, json=None, params=None, success_codes=[200, 201, 204]):
         """
@@ -184,8 +180,8 @@ class APIConnector(object):
                 A JSON object to post
         Returns:
                 A requests response object
-        """
 
+        """
         r = self.request(url, "PUT", params=params, data=data, json=json)
 
         self.validate_response(r)
@@ -193,8 +189,7 @@ class APIConnector(object):
         if r.status_code in success_codes:
             if self.json_check(r):
                 return r.json()
-            else:
-                return r.status_code
+            return r.status_code
 
     def patch_request(self, url, params=None, data=None, json=None, success_codes=[200, 201, 204]):
         """
@@ -214,7 +209,6 @@ class APIConnector(object):
         `Returns:`
             A requests response object
         """
-
         r = self.request(url, "PATCH", params=params, data=data, json=json)
 
         self.validate_response(r)
@@ -224,8 +218,7 @@ class APIConnector(object):
         if r.status_code in success_codes:
             if self.json_check(r):
                 return r.json()
-            else:
-                return r.status_code
+            return r.status_code
 
     def validate_response(self, resp):
         """
@@ -236,7 +229,6 @@ class APIConnector(object):
             resp: object
                 A response object
         """
-
         if resp.status_code >= 400:
             if resp.reason:
                 message = f"HTTP error occurred ({resp.status_code}): {resp.reason}"
@@ -248,8 +240,7 @@ class APIConnector(object):
             # Some errors return JSONs with useful info about the error. Return it if exists.
             if self.json_check(resp):
                 raise HTTPError(f"{message}, json: {resp.json()}")
-            else:
-                raise HTTPError(message)
+            raise HTTPError(message)
 
     def data_parse(self, resp):
         """
@@ -264,7 +255,6 @@ class APIConnector(object):
             dict
                 A dictionary of data.
         """
-
         # TODO: Some response jsons are enclosed in a list. Need to deal with unpacking and/or
         # not assuming that it is going to be a dict.
 
@@ -274,8 +264,7 @@ class APIConnector(object):
 
         if self.data_key and self.data_key in resp.keys():
             return resp[self.data_key]
-        else:
-            return resp
+        return resp
 
     # There are many different ways in which APIs indicate whether there is a next page
     # of data following the initial request. The goal is build out a series of utilities
@@ -292,7 +281,6 @@ class APIConnector(object):
         `Returns:
             boolean
         """
-
         if self.pagination_key and self.pagination_key in resp.keys():
             if resp[self.pagination_key]:
                 return True
@@ -303,7 +291,6 @@ class APIConnector(object):
         """
         Check to see if a response has a json included in it.
         """
-
         try:
             resp.json()
             return True

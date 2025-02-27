@@ -56,9 +56,8 @@ class Person:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if search_id_type in ["smartvan", "votebuilder", "voter"] and state is None:
-            raise KeyError("Search ID type '{}' requires state kwarg".format(search_id_type))
+            raise KeyError(f"Search ID type '{search_id_type}' requires state kwarg")
 
         if search_id_type not in (
             "voterbase",
@@ -161,7 +160,6 @@ class Person:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if (latitude is None or longitude is None) and address is None:
             raise ValueError("Lat/Long or Address required")
 
@@ -214,7 +212,6 @@ class Person:
         `Returns:`
             See :ref:`parsons-table` for output options.
         """
-
         url = self.connection.uri + "person/phone-search"
 
         args = {"phones": list(petl.values(table.table, 0))}
@@ -277,21 +274,19 @@ class Service:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if search_type == "zip" and None in [zip5, zip4]:
             raise ValueError("Search type 'zip' requires 'zip5' and 'zip4' arguments")
 
-        elif search_type == "point" and None in [latitude, longitude]:
+        if search_type == "point" and None in [latitude, longitude]:
             raise ValueError("Search type 'point' requires 'latitude' and 'longitude' arguments")
 
-        elif search_type == "address" and None in [address]:
+        if search_type == "address" and None in [address]:
             raise ValueError("Search type 'address' requires 'address' argument")
 
-        elif search_type not in ["zip", "point", "address"]:
+        if search_type not in ["zip", "point", "address"]:
             raise KeyError("Invalid 'search_type' provided. ")
 
-        else:
-            pass
+        pass
 
         url = self.connection.uri + "service/district"
 
@@ -308,7 +303,7 @@ class Service:
         return Table([self.connection.request(url, args=args, raw=True)["match_data"]])
 
 
-class Voter(object):
+class Voter:
     def __init__(self, connection):
         self.connection = connection
 
@@ -362,7 +357,6 @@ class Voter(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         url = self.connection.uri + "voter/voter-registration-check"
 
         if None in [first_name, last_name, state]:

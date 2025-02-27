@@ -5,7 +5,7 @@ from parsons.etl.table import Table
 logger = logging.getLogger(__name__)
 
 
-class Email(object):
+class Email:
     """
     Instantiate the Email class.
 
@@ -59,7 +59,6 @@ class Email(object):
         `Returns:`
             dict
         """
-
         params = {
             "$expand": (
                 "emailMessageContent, EmailMessageContentDistributions" if expand else None
@@ -82,7 +81,6 @@ class Email(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         email_list = []
 
         final_email_list = []

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 CAPITOL_CANARY_URI = "https://api.phone2action.com/2.0/"
 
 
-class CapitolCanary(object):
+class CapitolCanary:
     """
     Instantiate CapitolCanary Class
 
@@ -86,7 +86,6 @@ class CapitolCanary(object):
                 * fields
                 * advocates
         """
-
         # Convert the passed in updated_since into a Unix timestamp (which is what the API wants)
         updated_since = date_to_timestamp(updated_since)
 
@@ -126,7 +125,7 @@ class CapitolCanary(object):
             tbl.unpack_dict(c)
 
         # Unpack all of the arrays
-        child_tables = [child for child in tbls.keys() if child != "advocates"]
+        child_tables = [child for child in tbls if child != "advocates"]
         for c in child_tables:
             tbls[c] = tbl.long_table(["id"], c, key_rename={"id": "advocate_id"})
 
@@ -159,7 +158,6 @@ class CapitolCanary(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         args = {
             "state": state,
             "zip": zip,
@@ -246,7 +244,6 @@ class CapitolCanary(object):
         `Returns:`
             The int ID of the created advocate.
         """
-
         # Validate the passed in arguments
 
         if not campaigns:
@@ -349,7 +346,6 @@ class CapitolCanary(object):
             **kwargs:
                 Additional fields on the advocate to update
         """
-
         # Validate the passed in arguments
         if (sms_optin or sms_optout) and not (phone and campaigns):
             raise ValueError(

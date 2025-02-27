@@ -18,7 +18,7 @@ class RedashQueryFailed(Exception):
     pass
 
 
-class Redash(object):
+class Redash:
     """
     Instantiate Redash Class
 
@@ -67,7 +67,7 @@ class Redash(object):
             response_json = response.json()
             job = response_json.get(
                 "job",
-                {"status": "Error NO JOB IN RESPONSE: {}".format(json.dumps(response_json))},
+                {"status": f"Error NO JOB IN RESPONSE: {json.dumps(response_json)}"},
             )
             logger.debug(
                 "poll url:%s id:%s status:%s err:%s",
@@ -80,7 +80,7 @@ class Redash(object):
 
         if job["status"] == 3:  # 3 = completed
             return job["query_result_id"]
-        elif job["status"] == 4:  # 3 = ERROR
+        if job["status"] == 4:  # 3 = ERROR
             raise RedashQueryFailed("Redash Query {} failed: {}".format(query_id, job["error"]))
 
     def get_data_source(self, data_source_id):
@@ -256,5 +256,4 @@ class Redash(object):
         obj = cls(**initargs)
         if not refresh or kwargs.get("query_api_key"):
             return obj.get_cached_query_results(kwargs.get("query_id"), kwargs.get("query_api_key"))
-        else:
-            return obj.get_fresh_query_results(kwargs.get("query_id"), kwargs.get("params"))
+        return obj.get_fresh_query_results(kwargs.get("query_id"), kwargs.get("params"))

@@ -13,7 +13,7 @@ PAGE_SIZE = 100
 REQUEST_SLEEP = 10  # CT has a rather agressive 6 requests per minute rate limit.
 
 
-class CrowdTangle(object):
+class CrowdTangle:
     """
     Instantiate CrowdTangle Class
 
@@ -89,8 +89,7 @@ class CrowdTangle(object):
     def _list_to_string(self, list_arg):
         if list_arg:
             return ",".join(list_arg)
-        else:
-            return None
+        return None
 
     def get_posts(
         self,
@@ -157,7 +156,6 @@ class CrowdTangle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         args = {
             "startDate": start_date,
             "endDate": end_date,
@@ -201,7 +199,6 @@ class CrowdTangle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         args = {
             "startDate": start_date,
             "endDate": end_date,
@@ -246,7 +243,6 @@ class CrowdTangle(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         args = {
             "link": link,
             "startDate": start_date,

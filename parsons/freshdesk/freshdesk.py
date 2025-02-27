@@ -120,7 +120,6 @@ class Freshdesk:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         params = {
             "filter": ticket_type,
             "requester_id": requester_id,
@@ -168,7 +167,6 @@ class Freshdesk:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         params = {
             "email": email,
             "mobile": mobile,
@@ -196,7 +194,6 @@ class Freshdesk:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self._get_request("companies"))
         logger.info(f"Found {tbl.num_rows} companies.")
         return self._transform_table(tbl, expand_custom_fields)
@@ -221,7 +218,6 @@ class Freshdesk:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         params = {"email": email, "mobile": mobile, "phone": phone, "state": state}
         tbl = Table(self._get_request("agents", params=params))
         logger.info(f"Found {tbl.num_rows} agents.")

@@ -1,4 +1,5 @@
-"""Utility for running and logging output from dbt commands
+"""
+Utility for running and logging output from dbt commands
 
 Enable this utility by installing parsons with a dbt extra:
 `pip install parsons[dbt-redshift]`
@@ -153,7 +154,6 @@ class dbtLogger:
 
     def log_results(self, command_str: str, stdout: str, stderr: str) -> None:
         """Parsed logs from dbt command and log to logger and slack."""
-
         message = ""
         parsed_rows = []
 
@@ -217,7 +217,8 @@ class dbtRunner:
         slack_webhook: Optional[str] = None,
         slack_api_key: Optional[str] = None,
     ) -> None:
-        """Initialize dbtRunner client with commands, credentials, and options.
+        """
+        Initialize dbtRunner client with commands, credentials, and options.
 
         `Args:`
             commands: List[str]
@@ -293,12 +294,12 @@ class dbtRunner:
         self.dbt_logger.send_to_slack()
 
     def dbt_command(self, command: str) -> None:
-        """Runs dbt command and logs results after process is completed.
+        """
+        Runs dbt command and logs results after process is completed.
 
         If raise_error is set, this method will raise an error if the dbt
         command hits any errors.
         """
-
         self.dbt_logger.record_start(command)
         dbt_executable_path = shutil.which("dbt")
         commands = [dbt_executable_path, "--log-format", "json"] + command.split(" ")

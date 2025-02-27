@@ -5,7 +5,7 @@ from parsons.utilities.api_connector import APIConnector
 AIRMEET_DEFAULT_URI = "https://api-gateway.airmeet.com/prod/"
 
 
-class Airmeet(object):
+class Airmeet:
     """
     Instantiate class.
 
@@ -85,18 +85,17 @@ class Airmeet(object):
         # set needs to be built.
         if "statusCode" in response and response["statusCode"] != 200:
             raise Exception(response)
-        else:
-            results.extend(response["data"])
+        results.extend(response["data"])
 
-            if "cursors" in response and response["cursors"]["pageCount"] > 1:
+        if "cursors" in response and response["cursors"]["pageCount"] > 1:
+            cursor_after = response["cursors"]["after"]
+
+            # Fetch subsequent pages if needed
+            for _ in range(2, response["cursors"]["pageCount"] + 1):
+                kwargs["after"] = cursor_after
+                response = self.client.get_request(url=url, params=kwargs)
+                results.extend(response["data"])
                 cursor_after = response["cursors"]["after"]
-
-                # Fetch subsequent pages if needed
-                for _ in range(2, response["cursors"]["pageCount"] + 1):
-                    kwargs["after"] = cursor_after
-                    response = self.client.get_request(url=url, params=kwargs)
-                    results.extend(response["data"])
-                    cursor_after = response["cursors"]["after"]
 
         return Table(results)
 

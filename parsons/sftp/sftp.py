@@ -13,7 +13,7 @@ from parsons.utilities import files as file_utilities
 logger = logging.getLogger(__name__)
 
 
-class SFTP(object):
+class SFTP:
     """
     Instantiate SFTP Class
 
@@ -67,8 +67,8 @@ class SFTP(object):
 
         Returns:
             SFTP Connection object
-        """
 
+        """
         transport = paramiko.Transport((self.host, self.port))
         pkey = None
         if self.rsa_private_key_file:
@@ -99,12 +99,10 @@ class SFTP(object):
         `Returns:`
             list of files and subdirectories in the provided directory
         """
-
         if connection:
             return connection.listdir(path=remote_path)
-        else:
-            with self.create_connection() as connection:
-                return connection.listdir(path=remote_path)
+        with self.create_connection() as connection:
+            return connection.listdir(path=remote_path)
 
     def make_directory(self, remote_path, connection=None):
         """
@@ -116,7 +114,6 @@ class SFTP(object):
             connection: obj
                 An SFTP connection object
         """
-
         if connection:
             connection.mkdir(remote_path)
         else:
@@ -133,7 +130,6 @@ class SFTP(object):
             connection: obj
                 An SFTP connection object
         """
-
         if connection:
             connection.rmdir(remote_path)
         else:
@@ -169,7 +165,6 @@ class SFTP(object):
             str
                 The path of the local file
         """
-
         if not local_path:
             local_path = file_utilities.create_temp_file_for_path(remote_path)
 
@@ -219,7 +214,6 @@ class SFTP(object):
             export_chunk_size: int
                 Optional. Size in bytes to iteratively export from the remote server.
         """
-
         logger.info(f"Reading from {remote_path} to {local_path} in {export_chunk_size}B chunks")
 
         with connection.open(remote_path, "rb") as _remote_file:
@@ -269,7 +263,6 @@ class SFTP(object):
             list
                 Local paths where the files are saved.
         """
-
         if not (files_to_download or remote):
             raise ValueError(
                 "You must provide either `files_to_download`, `remote`, or both, as "
@@ -305,11 +298,10 @@ class SFTP(object):
                 for local_path, remote_path in zip(local_paths, files_to_download)
             ]
 
-        else:
-            return [
-                self.get_file(file, local_path=None, connection=connection)
-                for file in files_to_download
-            ]
+        return [
+            self.get_file(file, local_path=None, connection=connection)
+            for file in files_to_download
+        ]
 
     def get_table(self, remote_path, connection=None):
         """
@@ -327,7 +319,6 @@ class SFTP(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if not file_utilities.valid_table_suffix(remote_path):
             raise ValueError("File type cannot be converted to a Parsons table.")
 
@@ -382,7 +373,6 @@ class SFTP(object):
             connection: obj
                 An SFTP connection object
         """
-
         if connection:
             connection.remove(remote_path)
         else:
@@ -403,7 +393,6 @@ class SFTP(object):
             int
                 The file size in MB.
         """
-
         if connection:
             size = connection.file(remote_path, "r")._get_size()
         else:
@@ -506,12 +495,11 @@ class SFTP(object):
                 A list of directories touched and a list of files.  If the files were downloaded
                 the file list will consist of local paths, if not, remote paths.
         """
-
         if max_depth > 3:
             logger.warning(
-                "Calling `walk_tree` with `max_depth` {}.  "
+                f"Calling `walk_tree` with `max_depth` {max_depth}.  "
                 "Recursively walking a remote directory will be much slower than a "
-                "similar operation on a local file system.".format(max_depth)
+                "similar operation on a local file system."
             )
 
         to_return = self._walk_tree(

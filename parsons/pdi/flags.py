@@ -12,7 +12,8 @@ class Flags:
         self.url_flags = self.base_url + flags_endpoint
 
     def get_flags(self, start_date, end_date, limit=None):
-        """Get a list of flags.
+        """
+        Get a list of flags.
 
         `Args:`
             start_date: str

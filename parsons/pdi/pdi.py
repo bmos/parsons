@@ -1,5 +1,5 @@
+import datetime
 import logging
-from datetime import datetime, timezone
 from json.decoder import JSONDecodeError
 
 import requests
@@ -91,7 +91,7 @@ class PDI(
 
     def _request(self, url, req_type="GET", post_data=None, args=None, limit=None):
         # Make sure to have a current token before we make another request
-        now = datetime.now(timezone.utc)
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
         if now > self.session_exp:
             self._get_session_token()
 
@@ -155,18 +155,17 @@ class PDI(
 
             return Table(data)
 
-        else:
-            total_need = min(limit, total_count)
+        total_need = min(limit, total_count)
 
-            cursor = 2
-            while len(data) < total_need:
-                args = args or {}
-                args["cursor"] = cursor
-                args["limit"] = min(LIMIT_MAX, total_need - len(data))
-                res = request_fn[req_type](url, headers=headers, json=post_data, params=args)
+        cursor = 2
+        while len(data) < total_need:
+            args = args or {}
+            args["cursor"] = cursor
+            args["limit"] = min(LIMIT_MAX, total_need - len(data))
+            res = request_fn[req_type](url, headers=headers, json=post_data, params=args)
 
-                data.extend(res.json()["data"])
+            data.extend(res.json()["data"])
 
-                cursor += 1
+            cursor += 1
 
-            return Table(data)
+        return Table(data)

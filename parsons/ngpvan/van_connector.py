@@ -11,7 +11,7 @@ URI = "https://api.securevan.com/v4/"
 SOAP_URI = "https://api.securevan.com/Services/V3/ListService.asmx?WSDL"
 
 
-class VANConnector(object):
+class VANConnector:
     def __init__(self, api_key=None, auth_name="default", db=None):
         self.api_key = check_env.check("VAN_API_KEY", api_key)
 
@@ -47,7 +47,6 @@ class VANConnector(object):
         """
         Returns the API key profile with includes permissions and other metadata.
         """
-
         return self.get_request("apiKeyProfiles")[0]
 
     @property
@@ -68,13 +67,11 @@ class VANConnector(object):
         """
         Parse the REST database name to the accepted SOAP format
         """
-
         if self.db == "MyVoters":
             return "MyVoterFile"
         if self.db == "EveryAction":
             return "MyCampaign"
-        else:
-            return self.db
+        return self.db
 
     def get_request(self, endpoint, **kwargs):
         r = self.api.get_request(self.uri + endpoint, **kwargs)

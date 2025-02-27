@@ -13,7 +13,7 @@ class TargetsFailed(Exception):
     pass
 
 
-class Targets(object):
+class Targets:
     def __init__(self, van_connection):
         self.connection = van_connection
 
@@ -28,7 +28,6 @@ class Targets(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("targets"))
         logger.info(f"Found {tbl.num_rows} targets.")
         return tbl
@@ -44,7 +43,6 @@ class Targets(object):
             dict
                 The target
         """
-
         r = self.connection.get_request(f"targets/{target_id}")
         logger.info(f"Found target {target_id}.")
         return r
@@ -57,13 +55,12 @@ class Targets(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         response = self.connection.get_request(f"targetExportJobs/{export_job_id}")
         job_status = response.get("jobStatus")
         if job_status == "Complete":
             url = response["file"]["downloadUrl"]
             return Table(petl.fromcsv(url, encoding="utf-8-sig"))
-        elif job_status == "Pending" or job_status == "InProcess":
+        if job_status == "Pending" or job_status == "InProcess":
             logger.info(f"Target export job is pending or in process for {export_job_id}.")
         else:
             raise TargetsFailed(f"Target export failed for {export_job_id}")

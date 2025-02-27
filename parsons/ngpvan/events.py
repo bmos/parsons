@@ -7,7 +7,7 @@ from parsons.etl.table import Table
 logger = logging.getLogger(__name__)
 
 
-class Events(object):
+class Events:
     def __init__(self, van_connection):
         self.connection = van_connection
 
@@ -55,7 +55,6 @@ class Events(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if expand_fields:
             expand_fields = ",".join(expand_fields)
 
@@ -103,7 +102,6 @@ class Events(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         if expand_fields:
             expand_fields = ",".join(expand_fields)
 
@@ -184,7 +182,6 @@ class Events(object):
             int
               The event code.
         """
-
         if shifts is None:
             shifts = [{"name": "Default Shift", "startTime": start_date, "endTime": end_date}]
         else:
@@ -233,7 +230,6 @@ class Events(object):
         `Returns:`
             ``None``
         """
-
         r = self.connection.delete_request(f"events/{event_id}")
         logger.info(f"Event {event_id} deleted.")
         return r
@@ -255,7 +251,6 @@ class Events(object):
             int
               The shift id.
         """
-
         shift = {"name": shift_name, "startTime": start_time, "endTime": end_time}
 
         r = self.connection.post_request(f"events/{event_id}/shifts", json=shift)
@@ -270,7 +265,6 @@ class Events(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("events/types"))
         logger.info(f"Found {tbl.num_rows} events.")
         return tbl

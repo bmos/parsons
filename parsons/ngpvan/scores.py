@@ -11,7 +11,7 @@ from parsons.utilities import cloud_storage
 logger = logging.getLogger(__name__)
 
 
-class Scores(object):
+class Scores:
     def __init__(self, van_connection):
         self.connection = van_connection
 
@@ -23,7 +23,6 @@ class Scores(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         tbl = Table(self.connection.get_request("scores"))
         logger.info(f"Found {tbl.num_rows} scores.")
         return tbl
@@ -38,7 +37,6 @@ class Scores(object):
         `Returns:`
             dict
         """
-
         r = self.connection.get_request(f"scores/{score_id}")
         logger.info(f"Found score {score_id}.")
         return r
@@ -58,7 +56,6 @@ class Scores(object):
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-
         params = {
             "createdBefore": created_before,
             "createdAfter": created_after,
@@ -82,7 +79,6 @@ class Scores(object):
             `Returns:`
                 dict
         """
-
         r = self.connection.get_request(f"scoreUpdates/{score_update_id}")
         logger.info(f"Returning score update {score_update_id}.")
         return r
@@ -100,18 +96,16 @@ class Scores(object):
         `Returns:`
             ``None``
         """
-
         if status not in ["pending approval", "approved", "disapproved", "canceled"]:
             raise ValueError(
                 """Valid inputs for status are, 'pending approval',
                              'approved','disapproved','canceled'"""
             )
 
+        if status == "pending approval":
+            status = "PendingApproval"
         else:
-            if status == "pending approval":
-                status = "PendingApproval"
-            else:
-                status = status.capitalize()
+            status = status.capitalize()
 
         json = {"loadStatus": status}
 
@@ -150,7 +144,7 @@ class Scores(object):
                     * - ``score_id``
                       - The score slot id.
 
-                Example:
+        Example:
 
                 .. highlight:: python
                 .. code-block:: python
@@ -178,8 +172,8 @@ class Scores(object):
 
         .. [1] NGPVAN asks that you load multiple scores in a single call to reduce the load
            on their servers.
-        """
 
+        """
         # Move to cloud storage
         file_name = str(uuid.uuid1())
         url = cloud_storage.post_file(tbl, url_type, file_path=file_name + ".zip", **url_kwargs)
@@ -228,7 +222,7 @@ class Scores(object):
         return r["jobId"]
 
 
-class FileLoadingJobs(object):
+class FileLoadingJobs:
     def __init__(self, van_connection):
         self.connection = van_connection
 
@@ -285,7 +279,6 @@ class FileLoadingJobs(object):
             dict
                 The file load id
         """
-
         columns = [{"name": c} for c in columns]
 
         # To Do: Validate that it is a .zip file. Not entirely sure if this is possible
@@ -376,7 +369,6 @@ class FileLoadingJobs(object):
         `Returns:`
             The file load job id
         """
-
         columns = [{"name": c} for c in columns]
 
         # To Do: Validate that it is a .zip file. Not entirely sure if this is possible

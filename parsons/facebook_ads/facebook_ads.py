@@ -18,7 +18,7 @@ FBKeySchema = CustomAudience.Schema.MultiKeySchema
 MAX_FB_AUDIENCE_API_USERS = 10000
 
 
-class FacebookAds(object):
+class FacebookAds:
     """
     Instantiate the FacebookAds class
 
@@ -156,7 +156,6 @@ class FacebookAds(object):
             Table
                 The prepared table
         """
-
         # Copy the table to avoid messing up the source table
         t = copy.deepcopy(users_table)
 
@@ -230,7 +229,6 @@ class FacebookAds(object):
         `Returns:`
             ID of the created audience
         """
-
         if not self._is_valid_data_source(data_source):
             raise KeyError("Invalid data_source provided")
 
@@ -252,7 +250,6 @@ class FacebookAds(object):
             audience_id: str
                 The ID of the custom audience to delete.
         """
-
         CustomAudience(audience_id).api_delete()
 
     @staticmethod
@@ -349,7 +346,6 @@ class FacebookAds(object):
                 Parsons table
 
         """
-
         logger.info(
             f"Adding custom audience users from provided table with {users_table.num_rows} rows"
         )
