@@ -16,12 +16,12 @@ class Slack:
             try:
                 self.api_key = os.environ["SLACK_API_TOKEN"]
 
-            except KeyError:
+            except KeyError as e:
                 msg = (
                     "Missing api_key. It must be passed as an "
                     "argument or stored as environmental variable"
                 )
-                raise KeyError(msg)
+                raise KeyError(msg) from e
 
         else:
             self.api_key = api_key

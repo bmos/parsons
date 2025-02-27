@@ -885,9 +885,9 @@ class GoogleBigQuery(DatabaseConnector):
         for column in tbl.columns:
             try:
                 schema_row = next(i for i in job_config.schema if i.name.lower() == column.lower())
-            except IndexError:
+            except IndexError as e:
                 msg = f"Column found in Table that was not found in schema: {column}"
-                raise IndexError(msg)
+                raise IndexError(msg) from e
             schema.append(schema_row)
         job_config.schema = schema
 

@@ -415,5 +415,5 @@ class Box:
         except ValueError as e:
             if base_folder_id == DEFAULT_FOLDER_ID:
                 msg = f'{e}: "{path}"'
-                raise ValueError(msg)
+                raise ValueError(msg) from e
             raise

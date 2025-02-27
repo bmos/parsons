@@ -59,7 +59,7 @@ class GoogleSheets:
                 return self.gspread_client.open_by_key(spreadsheet_id).get_worksheet(idx)
             except:  # noqa: E722
                 msg = f"Couldn't find worksheet {worksheet}"
-                raise ValueError(msg)
+                raise ValueError(msg)  # noqa: B904
 
         else:
             msg = f"Couldn't find worksheet index or title {worksheet}"

@@ -27,9 +27,9 @@ class Phone2Action:
     def __getattr__(self, name):
         try:
             return getattr(self.capitol_canary, name)
-        except AttributeError:
+        except AttributeError as e:
             msg = f"{type(self).__name__} object has no attribute {name}"
-            raise AttributeError(msg)
+            raise AttributeError(msg) from e
 
     def get_advocates(self, state=None, campaign_id=None, updated_since=None, page=None):
         """

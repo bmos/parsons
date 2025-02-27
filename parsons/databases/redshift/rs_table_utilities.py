@@ -747,7 +747,7 @@ class RedshiftTableUtilities:
         except ValueError as e:
             if "too many values to unpack" in str(e):
                 msg = f"Invalid Redshift table {full_table_name}"
-                raise ValueError(msg)
+                raise ValueError(msg) from e
 
         return schema, table
 

@@ -41,9 +41,9 @@ def wrap_github_404(func):
     def _wrapped_func(*args, **kwargs):
         try:
             return (func)(*args, **kwargs)
-        except UnknownObjectException:
+        except UnknownObjectException as e:
             msg = "Couldn't find the object you referenced, maybe you need to log in?"
-            raise ParsonsGitHubError(msg)
+            raise ParsonsGitHubError(msg) from e
 
     return _wrapped_func
 
