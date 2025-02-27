@@ -28,10 +28,12 @@ class Gmail(SendMail):
         self.user_id = user_id
 
         if not creds_path:
-            raise ValueError("Invalid path to credentials.json.")
+            msg = "Invalid path to credentials.json."
+            raise ValueError(msg)
 
         if not token_path:
-            raise ValueError("Invalid path to token.json.")
+            msg = "Invalid path to token.json."
+            raise ValueError(msg)
 
         self.store = file.Storage(token_path)
         self.creds = self.store.get()

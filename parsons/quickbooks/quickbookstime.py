@@ -57,7 +57,7 @@ class QuickBooksTime:
             response = self.client.get_request(end_point, params=querystring)
 
             # Extract the key of the results
-            endpoint_key = list(response["results"].keys())[0]
+            endpoint_key = next(iter(response["results"].keys()))
 
             # Extract the records from the results
             temp_list = list(response["results"][endpoint_key].values())

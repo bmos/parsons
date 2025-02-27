@@ -1,7 +1,7 @@
 import json
 import logging
 import time
-from typing import Any, Dict, Optional, Tuple, cast
+from typing import Any, Optional, cast
 from urllib.parse import parse_qs, urlparse
 
 from parsons import Table
@@ -37,38 +37,46 @@ class NationBuilder:
     @classmethod
     def get_uri(cls, slug: Optional[str]) -> str:
         if slug is None:
-            raise ValueError("slug can't None")
+            msg = "slug can't None"
+            raise ValueError(msg)
 
         if not isinstance(slug, str):
-            raise ValueError("slug must be an str")
+            msg = "slug must be an str"
+            raise ValueError(msg)
 
         if len(slug.strip()) == 0:
-            raise ValueError("slug can't be an empty str")
+            msg = "slug can't be an empty str"
+            raise ValueError(msg)
 
         return f"https://{slug}.nationbuilder.com/api/v1"
 
     @classmethod
-    def get_auth_headers(cls, access_token: Optional[str]) -> Dict[str, str]:
+    def get_auth_headers(cls, access_token: Optional[str]) -> dict[str, str]:
         if access_token is None:
-            raise ValueError("access_token can't None")
+            msg = "access_token can't None"
+            raise ValueError(msg)
 
         if not isinstance(access_token, str):
-            raise ValueError("access_token must be an str")
+            msg = "access_token must be an str"
+            raise ValueError(msg)
 
         if len(access_token.strip()) == 0:
-            raise ValueError("access_token can't be an empty str")
+            msg = "access_token can't be an empty str"
+            raise ValueError(msg)
 
         return {"authorization": f"Bearer {access_token}"}
 
     @classmethod
-    def parse_next_params(cls, next_value: str) -> Tuple[str, str]:
+    def parse_next_params(cls, next_value: str) -> tuple[str, str]:
         next_params = parse_qs(urlparse(next_value).query)
 
         if "__nonce" not in next_params:
-            raise ValueError("__nonce param not found")
+            msg = "__nonce param not found"
+            raise ValueError(msg)
 
         if "__token" not in next_params:
-            raise ValueError("__token param not found")
+            msg = "__token param not found"
+            raise ValueError(msg)
 
         nonce = next_params["__nonce"][0]
         token = next_params["__token"][0]
@@ -91,7 +99,7 @@ class NationBuilder:
 
         while True:
             try:
-                logging.debug("sending request %s" % url)
+                logging.debug(f"sending request {url}")
                 response = self.client.get_request(url)
 
                 res = response.get("results", None)
@@ -99,7 +107,7 @@ class NationBuilder:
                 if res is None:
                     break
 
-                logging.debug("response got %s records" % len(res))
+                logging.debug(f"response got {len(res)} records")
 
                 data.extend(res)
 
@@ -109,7 +117,7 @@ class NationBuilder:
                 else:
                     break
             except Exception as error:
-                logging.error("error requesting data from Nation Builder: %s" % error)
+                logging.error(f"error requesting data from Nation Builder: {error}")
 
                 wait_time = 30
                 logging.info("waiting %d seconds before retrying" % wait_time)
@@ -117,7 +125,7 @@ class NationBuilder:
 
         return Table(data)
 
-    def update_person(self, person_id: str, person: Dict[str, Any]) -> Dict[str, Any]:
+    def update_person(self, person_id: str, person: dict[str, Any]) -> dict[str, Any]:
         """
         This method updates a person with the provided id to have the provided data. It returns a
         full representation of the updated person.
@@ -133,24 +141,26 @@ class NationBuilder:
             A person object with the updated data.
         """
         if person_id is None:
-            raise ValueError("person_id can't None")
+            msg = "person_id can't None"
+            raise ValueError(msg)
 
         if not isinstance(person_id, str):
-            raise ValueError("person_id must be a str")
+            msg = "person_id must be a str"
+            raise ValueError(msg)
 
         if len(person_id.strip()) == 0:
-            raise ValueError("person_id can't be an empty str")
+            msg = "person_id can't be an empty str"
+            raise ValueError(msg)
 
         if not isinstance(person, dict):
-            raise ValueError("person must be a dict")
+            msg = "person must be a dict"
+            raise ValueError(msg)
 
         url = f"people/{person_id}"
         response = self.client.put_request(url, data=json.dumps({"person": person}))
-        response = cast(Dict[str, Any], response)
+        return cast(dict[str, Any], response)
 
-        return response
-
-    def upsert_person(self, person: Dict[str, Any]) -> Tuple[bool, Optional[Dict[str, Any]]]:
+    def upsert_person(self, person: dict[str, Any]) -> tuple[bool, Optional[dict[str, Any]]]:
         """
         Updates a matched person or creates a new one if the person doesn't exist.
 
@@ -192,7 +202,8 @@ class NationBuilder:
         ]
 
         if not isinstance(person, dict):
-            raise ValueError("person must be a dict")
+            msg = "person must be a dict"
+            raise ValueError(msg)
 
         has_required_key = any(x in person for x in _required_keys)
 
@@ -206,12 +217,10 @@ class NationBuilder:
 
         self.client.validate_response(response)
 
-        if response.status_code == 200:
-            if self.client.json_check(response):
-                return (False, response.json())
+        if response.status_code == 200 and self.client.json_check(response):
+            return (False, response.json())
 
-        if response.status_code == 201:
-            if self.client.json_check(response):
-                return (True, response.json())
+        if response.status_code == 201 and self.client.json_check(response):
+            return (True, response.json())
 
         return (False, None)

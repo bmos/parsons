@@ -86,7 +86,7 @@ def test_get_flag_id(live_pdi, id):
 
 @mark_live_test
 @pytest.mark.parametrize(
-    ["flag_id", "is_default"],
+    ("flag_id", "is_default"),
     [
         pytest.param(None, True, marks=[xfail_http_error]),
         pytest.param("amm", None, marks=[xfail_http_error]),

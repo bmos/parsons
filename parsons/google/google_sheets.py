@@ -297,6 +297,7 @@ class GoogleSheets:
         # Update the data in one batch
         sheet.update_cells(cells, value_input_option=value_input_option)
         logger.info(f"Appended {table.num_rows} rows to worksheet.")
+        return None
 
     def paste_data_in_sheet(
         self, spreadsheet_id, table, worksheet=0, header=True, startrow=0, startcol=0
@@ -349,7 +350,7 @@ class GoogleSheets:
             data[row_num] = list(row)
 
         if header:
-            sheet.update(data_range, [table.columns] + data)
+            sheet.update(data_range, [table.columns, *data])
         else:
             sheet.update(data_range, data)
 

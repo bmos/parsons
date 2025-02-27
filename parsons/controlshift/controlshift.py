@@ -81,3 +81,5 @@ class Controlshift:
 
         def get_local_groups(self):
             pass
+
+        return None

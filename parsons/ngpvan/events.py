@@ -19,16 +19,7 @@ class Events:
         starting_after=None,
         starting_before=None,
         district_field=None,
-        expand_fields=[
-            "locations",
-            "codes",
-            "shifts",
-            "roles",
-            "notes",
-            "financialProgram",
-            "ticketCategories",
-            "onlineForms",
-        ],
+        expand_fields=None,
     ):
         """
         Get events.
@@ -55,6 +46,17 @@ class Events:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
+        if expand_fields is None:
+            expand_fields = [
+                "locations",
+                "codes",
+                "shifts",
+                "roles",
+                "notes",
+                "financialProgram",
+                "ticketCategories",
+                "onlineForms",
+            ]
         if expand_fields:
             expand_fields = ",".join(expand_fields)
 
@@ -76,16 +78,7 @@ class Events:
     def get_event(
         self,
         event_id,
-        expand_fields=[
-            "locations",
-            "codes",
-            "shifts",
-            "roles",
-            "notes",
-            "financialProgram",
-            "ticketCategories",
-            "voterRegistrationBatches",
-        ],
+        expand_fields=None,
     ):
         """
         Get an event.
@@ -102,6 +95,17 @@ class Events:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
+        if expand_fields is None:
+            expand_fields = [
+                "locations",
+                "codes",
+                "shifts",
+                "roles",
+                "notes",
+                "financialProgram",
+                "ticketCategories",
+                "voterRegistrationBatches",
+            ]
         if expand_fields:
             expand_fields = ",".join(expand_fields)
 

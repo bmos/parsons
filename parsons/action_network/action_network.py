@@ -2,7 +2,7 @@ import json
 import logging
 import re
 import warnings
-from typing import Dict, List, Literal, Union
+from typing import Literal, Optional, Union
 
 from parsons import Table
 from parsons.utilities import check_env
@@ -52,14 +52,13 @@ class ActionNetwork:
         while True:
             response = self._get_page(object_name, page, per_page, filter=filter)
             page = page + 1
-            response_list = response["_embedded"][list(response["_embedded"])[0]]
+            response_list = response["_embedded"][next(iter(response["_embedded"]))]
             if not response_list:
                 return Table(return_list)
             return_list.extend(response_list)
             count = count + len(response_list)
-            if limit:
-                if count >= limit:
-                    return Table(return_list[0:limit])
+            if limit and count >= limit:
+                return Table(return_list[0:limit])
 
     # Advocacy Campaigns
     def get_advocacy_campaigns(self, limit=None, per_page=25, page=None, filter=None):
@@ -1154,7 +1153,7 @@ class ActionNetwork:
 
     def upsert_person(
         self,
-        email_address: Union[str, List[str], List[Dict[str, str]]] = None,
+        email_address: Optional[Union[str, list[str], list[dict[str, str]]]] = None,
         given_name=None,
         family_name=None,
         tags=None,
@@ -1835,9 +1834,9 @@ class ActionNetwork:
         data = {"name": name}
         response = self.api.post_request(url=f"{self.api_url}/tags", data=json.dumps(data))
         identifiers = response["identifiers"]
-        person_id = [
+        person_id = next(
             entry_id.split(":")[1] for entry_id in identifiers if "action_network:" in entry_id
-        ][0]
+        )
         logger.info(f"Tag {person_id} successfully added to tags.")
         return response
 

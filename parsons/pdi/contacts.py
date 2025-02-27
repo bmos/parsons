@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 class Contacts:
     """A class to access the contacts PDI API endpoint."""
 
@@ -7,13 +10,13 @@ class Contacts:
 
     def get_contacts(
         self,
-        email: str = None,
-        phone: str = None,
-        first_name: str = None,
-        last_name: str = None,
-        zip_code: str = None,
+        email: Optional[str] = None,
+        phone: Optional[str] = None,
+        first_name: Optional[str] = None,
+        last_name: Optional[str] = None,
+        zip_code: Optional[str] = None,
         search_by_email: bool = False,
-        limit: int = None,
+        limit: Optional[int] = None,
     ):
         """
         Get a list of Contacts.
@@ -177,6 +180,7 @@ class Contacts:
         res = self._request(f"{self.url_contacts}/{id}", req_type="PUT", post_data=payload)
         if res["code"] == 201:
             return True
+        return None
 
     def add_phone(
         self,
@@ -211,13 +215,11 @@ class Contacts:
         if extension:
             payload["extension"] = extension
 
-        response = self._request(
+        return self._request(
             self.url_contacts + f"/{contact_id!s}/phones",
             req_type="POST",
             post_data=payload,
         )
-
-        return response
 
     def add_email(self, contact_id: int, email: str, primary=True):
         """
@@ -234,13 +236,11 @@ class Contacts:
         """
         payload = {"emailAddress": email, "isPrimary": primary}
 
-        response = self._request(
+        return self._request(
             self.url_contacts + f"/{contact_id!s}/emails",
             req_type="POST",
             post_data=payload,
         )
-
-        return response
 
     def delete_contact(self, id: str):
         """

@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 class Activities:
     """A class to access the Activities PDI API endpoint."""
 
@@ -6,7 +9,7 @@ class Activities:
         self.url_activites = self.base_url + activites_endpoint
         super().__init__()
 
-    def get_activities(self, limit: int = None):
+    def get_activities(self, limit: Optional[int] = None):
         """
         Get a list of Activities.
         `Args:`

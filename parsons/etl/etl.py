@@ -282,6 +282,7 @@ class ETL:
                 for source_col in source_columns:
                     if row.get(source_col):
                         return row[source_col]
+                return None
 
             logger.debug(f"Coalescing {source_columns} into {dest_column}")
             self.convert_column(dest_column, convert_fn, pass_row=True)
@@ -292,6 +293,7 @@ class ETL:
                 for source_col in source_columns:
                     if row.get(source_col):
                         return row[source_col]
+                return None
 
             logger.debug(f"Creating new column {dest_column} from {source_columns}")
             self.add_column(dest_column, add_fn)
@@ -332,10 +334,7 @@ class ETL:
             >> {{'first_name': 'Jane', 'last_name': 'Doe', 'date_of_birth': '1908-01-01'}}
         """
         for col in self.columns:
-            if not exact_match:
-                cleaned_col = col.lower().replace("_", "").replace(" ", "")
-            else:
-                cleaned_col = col
+            cleaned_col = col.lower().replace("_", "").replace(" ", "") if not exact_match else col
 
             for k, v in column_map.items():
                 for i in v:
@@ -562,9 +561,9 @@ class ETL:
 
         if replace:
             self.table = tbl
+            return None
 
-        else:
-            return tbl
+        return tbl
 
     def unpack_nested_columns_as_rows(self, column, key="id", expand_original=False):
         """

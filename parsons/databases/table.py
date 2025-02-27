@@ -48,9 +48,7 @@ class BaseTable:
                FROM {self.table}
                """
 
-        if self.db.query(sql).first > 0:
-            return False
-        return True
+        return not self.db.query(sql).first > 0
 
     @property
     def columns(self):

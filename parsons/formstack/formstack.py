@@ -29,7 +29,7 @@ class Formstack:
         self.client = APIConnector(API_URI, headers=headers)
 
     def _get_paginated_request(
-        self, url: str, data_key: str, params: dict = {}, large_request: bool = False
+        self, url: str, data_key: str, params: Optional[dict] = None, large_request: bool = False
     ) -> Table:
         """
         Make a GET request for any endpoint that returns a list of data. Will check pagination.
@@ -67,6 +67,8 @@ class Formstack:
             Table Class
                 A table with the returned data.
         """
+        if params is None:
+            params = {}
         data = Table()
         page = 1
         pages = None
@@ -193,5 +195,4 @@ class Formstack:
         """
         response_data = self.client.get_request(f"form/{form_id}/field")
         logger.debug(response_data)
-        tbl = Table(response_data)
-        return tbl
+        return Table(response_data)

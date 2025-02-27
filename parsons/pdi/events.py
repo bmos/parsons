@@ -340,12 +340,11 @@ class Events:
         if specific_occurrence_start:
             event_invitation_payload["specificOcurrenceStartUtc"] = specific_occurrence_start
 
-        response = self._request(
+        return self._request(
             self.events_url + f"/{event_id}/invitations",
             req_type="POST",
             post_data=event_invitation_payload,
         )
-        return response
 
     def update_invitation(
         self,
@@ -391,12 +390,11 @@ class Events:
         if specific_occurrence_start:
             event_invitation_payload["specificOcurrenceStartUtc"] = specific_occurrence_start
 
-        response = self._request(
+        return self._request(
             self.events_url + f"/{event_id}/invitations/{invitation_id}",
             req_type="PUT",
             post_data=event_invitation_payload,
         )
-        return response
 
     def create_activity_assignment(
         self,
@@ -439,11 +437,9 @@ class Events:
         if specific_occurrence_start:
             assignment_payload["specificOcurrenceStartUtc"] = specific_occurrence_start
 
-        response = self._request(
+        return self._request(
             self.activityassignment_url, req_type="POST", post_data=assignment_payload
         )
-
-        return response
 
     def update_activity_assignment(
         self,
@@ -492,13 +488,11 @@ class Events:
         if specific_occurrence_start:
             assignment_payload["specificOcurrenceStartUtc"] = specific_occurrence_start
 
-        response = self._request(
+        return self._request(
             self.activityassignment_url + f"/{activityassignementid}",
             req_type="PUT",
             post_data=assignment_payload,
         )
-
-        return response
 
     def get_event_activity_assignments(self, start_date, end_date, expand, limit=None):
         """
@@ -526,7 +520,8 @@ class Events:
             Parsons Table with event activity assignment responses
         """
         if limit and limit > 2000:
-            raise ValueError("Maximum allowed limit is 2000")
+            msg = "Maximum allowed limit is 2000"
+            raise ValueError(msg)
 
         params = {"startDate": start_date, "endDate": end_date, "expand": expand}
         return self._request(self.activityassignment_url, args=params, limit=limit)
@@ -553,7 +548,8 @@ class Events:
             Parsons Table with event activity responses
         """
         if limit and limit > 2000:
-            raise ValueError("Maximum allowed limit is 2000")
+            msg = "Maximum allowed limit is 2000"
+            raise ValueError(msg)
 
         params = {"startDate": start_date, "endDate": end_date}
         return self._request(self.eventactivities_url, args=params, limit=limit)
@@ -572,6 +568,7 @@ class Events:
             Parsons Table object with id, name, description, and timeZone records
         """
         if limit and limit > 2000:
-            raise ValueError("Maximum allowed limit is 2000")
+            msg = "Maximum allowed limit is 2000"
+            raise ValueError(msg)
 
         return self._request(self.calendars_url, limit=limit)

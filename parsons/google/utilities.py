@@ -9,7 +9,7 @@ from parsons.utilities import check_env, files
 
 
 def setup_google_application_credentials(
-    app_creds: t.Union[t.Dict, str, None],
+    app_creds: t.Union[dict, str, None],
     env_var_name: str = "GOOGLE_APPLICATION_CREDENTIALS",
     target_env_var_name: t.Optional[str] = None,
 ) -> None:
@@ -60,7 +60,7 @@ def hexavigesimal(n: int) -> str:
 
 def load_google_application_credentials(
     env_var_name: str = "GOOGLE_APPLICATION_CREDENTIALS",
-    scopes: t.Optional[t.List[str]] = None,
+    scopes: t.Optional[list[str]] = None,
     subject: t.Optional[str] = None,
 ) -> google.auth.credentials.Credentials:
     service_account_filepath = os.environ[env_var_name]

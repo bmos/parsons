@@ -151,7 +151,7 @@ class AzureBlobStorage:
                 A list of blob names
         """
         container_client = self.get_container(container_name)
-        blobs = [blob for blob in container_client.list_blobs(name_starts_with=name_starts_with)]
+        blobs = list(container_client.list_blobs(name_starts_with=name_starts_with))
         logger.info(f"Found {len(blobs)} blobs in {container_name} container.")
         return blobs
 
@@ -227,9 +227,10 @@ class AzureBlobStorage:
         """
         if not account_key:
             if not self.credential:
-                raise ValueError(
+                msg = (
                     "An account shared access key must be provided if it was not on initialization"
                 )
+                raise ValueError(msg)
             account_key = self.credential
 
         sas = generate_blob_sas(

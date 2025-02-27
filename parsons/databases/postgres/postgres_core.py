@@ -179,12 +179,14 @@ class PostgresCore(PostgresCreateStatement):
                 True if the table needs to be created, False otherwise.
         """
         if if_exists not in ["fail", "truncate", "append", "drop"]:
-            raise ValueError("Invalid value for `if_exists` argument")
+            msg = "Invalid value for `if_exists` argument"
+            raise ValueError(msg)
 
         # If the table exists, evaluate the if_exists argument for next steps.
         if self.table_exists_with_connection(table_name, connection):
             if if_exists == "fail":
-                raise ValueError("Table already exists.")
+                msg = "Table already exists."
+                raise ValueError(msg)
 
             if if_exists == "truncate":
                 truncate_sql = f"TRUNCATE TABLE {table_name};"
@@ -242,6 +244,4 @@ class PostgresCore(PostgresCreateStatement):
                 result += cursor.fetchone()[0]
 
         # If in either, return boolean
-        if result >= 1:
-            return True
-        return False
+        return result >= 1

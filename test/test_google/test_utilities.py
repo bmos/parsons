@@ -3,6 +3,8 @@ import os
 import tempfile
 import unittest
 
+import pytest
+
 from parsons.google import utilities as util
 
 
@@ -34,29 +36,29 @@ class TestSetupGoogleApplicationCredentials(FakeCredentialTest):
     def test_noop_if_env_already_set(self):
         os.environ[self.TEST_ENV_NAME] = self.cred_path
         util.setup_google_application_credentials(None, self.TEST_ENV_NAME)
-        self.assertEqual(os.environ[self.TEST_ENV_NAME], self.cred_path)
+        assert os.environ[self.TEST_ENV_NAME] == self.cred_path
 
     def test_accepts_dictionary(self):
         util.setup_google_application_credentials(self.cred_contents, self.TEST_ENV_NAME)
         actual = os.environ[self.TEST_ENV_NAME]
-        self.assertTrue(os.path.exists(actual))
+        assert os.path.exists(actual)
         with open(actual) as f:
-            self.assertEqual(json.load(f), self.cred_contents)
+            assert json.load(f) == self.cred_contents
 
     def test_accepts_string(self):
         cred_str = json.dumps(self.cred_contents)
         util.setup_google_application_credentials(cred_str, self.TEST_ENV_NAME)
         actual = os.environ[self.TEST_ENV_NAME]
-        self.assertTrue(os.path.exists(actual))
+        assert os.path.exists(actual)
         with open(actual) as f:
-            self.assertEqual(json.load(f), self.cred_contents)
+            assert json.load(f) == self.cred_contents
 
     def test_accepts_file_path(self):
         util.setup_google_application_credentials(self.cred_path, self.TEST_ENV_NAME)
         actual = os.environ[self.TEST_ENV_NAME]
-        self.assertTrue(os.path.exists(actual))
+        assert os.path.exists(actual)
         with open(actual) as f:
-            self.assertEqual(json.load(f), self.cred_contents)
+            assert json.load(f) == self.cred_contents
 
     def test_credentials_are_valid_after_double_call(self):
         # write creds to tmp file...
@@ -67,20 +69,19 @@ class TestSetupGoogleApplicationCredentials(FakeCredentialTest):
         util.setup_google_application_credentials(None, self.TEST_ENV_NAME)
         snd = os.environ[self.TEST_ENV_NAME]
 
-        with open(fst) as ffst:
-            with open(snd) as fsnd:
-                actual = fsnd.read()
-                self.assertEqual(self.cred_contents, json.loads(actual))
-                self.assertEqual(ffst.read(), actual)
+        with open(fst) as ffst, open(snd) as fsnd:
+            actual = fsnd.read()
+            assert self.cred_contents == json.loads(actual)
+            assert ffst.read() == actual
 
 
 class TestHexavigesimal(unittest.TestCase):
     def test_returns_A_on_1(self):
-        self.assertEqual(util.hexavigesimal(1), "A")
+        assert util.hexavigesimal(1) == "A"
 
     def test_returns_AA_on_27(self):
-        self.assertEqual(util.hexavigesimal(27), "AA")
+        assert util.hexavigesimal(27) == "AA"
 
     def test_returns_error_on_0(self):
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             util.hexavigesimal(0)

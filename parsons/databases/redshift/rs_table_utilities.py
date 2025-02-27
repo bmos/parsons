@@ -155,13 +155,15 @@ class RedshiftTableUtilities:
                 True if the table needs to be created, False otherwise.
         """
         if if_exists not in ["fail", "truncate", "append", "drop"]:
-            raise ValueError("Invalid value for `if_exists` argument")
+            msg = "Invalid value for `if_exists` argument"
+            raise ValueError(msg)
 
         exists = self.table_exists_with_connection(table_name, connection)
 
         if exists and if_exists in ["fail", "truncate", "append"]:
             if if_exists == "fail":
-                raise ValueError("Table already exists.")
+                msg = "Table already exists."
+                raise ValueError(msg)
             if if_exists == "truncate":
                 truncate_sql = f"truncate table {table_name}"
                 self.query_with_connection(truncate_sql, connection, commit=False)

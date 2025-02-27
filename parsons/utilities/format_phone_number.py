@@ -29,6 +29,4 @@ def format_phone_number(phone_number, country_code="1"):
         digits = country_code + digits
 
     # Format the phone number in E.164 format
-    formatted_number = "+" + digits
-
-    return formatted_number
+    return "+" + digits

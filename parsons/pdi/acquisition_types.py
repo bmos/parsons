@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 class AcquisitionTypes:
     """A class to access the Acquisition Types PDI API endpoint."""
 
@@ -7,7 +10,7 @@ class AcquisitionTypes:
 
         super().__init__()
 
-    def get_acquisition_types(self, limit: int = None):
+    def get_acquisition_types(self, limit: Optional[int] = None):
         """
         Get a list of Acquisition Types.
         `Args:`
@@ -25,7 +28,7 @@ class AcquisitionTypes:
         acquisition_type: str,
         acquisition_description: str,
         acquisition_method: str,
-        page_default: str = None,
+        page_default: Optional[str] = None,
     ):
         """
         Create a new Acquisition Type
@@ -89,7 +92,7 @@ class AcquisitionTypes:
         acquisition_type: str,
         acquisition_description: str,
         acquisition_method: str,
-        page_default: str = None,
+        page_default: Optional[str] = None,
     ):
         """
         Update Acquisition Type

@@ -41,7 +41,8 @@ class FakeDatabase(DatabaseConnector):
 
         if self.table_map[table_name]["failures"] > 0:
             self.table_map[table_name]["failures"] -= 1
-            raise ValueError("Canned error")
+            msg = "Canned error"
+            raise ValueError(msg)
 
         self.copy_call_args.append(
             {
@@ -77,7 +78,7 @@ class FakeTable:
         if primary_key not in self.data.columns:
             return True
 
-        pk_values = [val for val in self.data[primary_key]]
+        pk_values = list(self.data[primary_key])
         pk_set = set(pk_values)
         return len(pk_set) == len(pk_values)
 
@@ -108,10 +109,7 @@ class FakeTable:
         if order_by:
             data.sort(order_by)
 
-        if chunk_size:
-            subset = data[offset : chunk_size + offset]
-        else:
-            subset = data[offset:]
+        subset = data[offset : chunk_size + offset] if chunk_size else data[offset:]
 
         return Table(subset)
 

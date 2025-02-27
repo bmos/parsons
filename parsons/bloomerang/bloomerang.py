@@ -56,7 +56,8 @@ class Bloomerang:
             self._generate_access_token()
             headers["Authorization"] = f"Bearer {self.access_token}"
         else:
-            raise Exception("Missing authorization credentials.")
+            msg = "Missing authorization credentials."
+            raise Exception(msg)
         return APIConnector(uri=self.uri, headers=headers)
 
     def _generate_authorization_code(self):

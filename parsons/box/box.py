@@ -20,6 +20,7 @@ https://developer.box.com/guides/applications/custom-apps/oauth2-setup/
 
 import logging
 import tempfile
+from typing import Optional
 
 import boxsdk
 
@@ -165,10 +166,7 @@ class Box:
         `Returns`: Table
             A Parsons table of items in the folder and their attributes.
         """
-        if path:
-            folder_id = self.get_item_id(path)
-        else:
-            folder_id = DEFAULT_FOLDER_ID
+        folder_id = self.get_item_id(path) if path else DEFAULT_FOLDER_ID
         return self.list_items_by_id(folder_id=folder_id, item_type=item_type)
 
     def list_items_by_id(self, folder_id=DEFAULT_FOLDER_ID, item_type=None) -> Table:
@@ -270,12 +268,11 @@ class Box:
                 msg = f'Got (theoretically) impossible format option "{format}"'
                 raise SystemError(msg)  # pragma: no cover
 
-            new_file = self.client.folder(folder_id).upload(
+            return self.client.folder(folder_id).upload(
                 file_path=temp_file_path, file_name=file_name
             )
-        return new_file
 
-    def download_file(self, path: str, local_path: str = None) -> str:
+    def download_file(self, path: str, local_path: Optional[str] = None) -> str:
         """
         Download a Box object to a local file.
 
@@ -380,7 +377,8 @@ class Box:
             if "/" in path:
                 this_element, path = path.split(sep="/", maxsplit=1)
                 if path == "":
-                    raise ValueError('Illegal trailing "/" in file path')
+                    msg = 'Illegal trailing "/" in file path'
+                    raise ValueError(msg)
 
             else:
                 this_element = path

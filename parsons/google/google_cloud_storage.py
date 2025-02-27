@@ -125,7 +125,8 @@ class GoogleCloudStorage:
         if self.client.lookup_bucket(bucket_name):
             bucket = self.client.get_bucket(bucket_name)
         else:
-            raise google.cloud.exceptions.NotFound("Bucket not found")
+            msg = "Bucket not found"
+            raise google.cloud.exceptions.NotFound(msg)
 
         logger.debug(f"Returning {bucket_name} object")
         return bucket
@@ -195,10 +196,7 @@ class GoogleCloudStorage:
             bucket_name, max_results=max_results, prefix=prefix, match_glob=match_glob
         )
 
-        if include_file_details:
-            lst = [b for b in blobs]
-        else:
-            lst = [b.name for b in blobs]
+        lst = list(blobs) if include_file_details else [b.name for b in blobs]
 
         logger.info(f"Found {len(lst)} in {bucket_name} bucket.")
 
@@ -378,12 +376,11 @@ class GoogleCloudStorage:
         """
         bucket = self.client.bucket(bucket_name)
         blob = bucket.blob(blob_name)
-        url = blob.generate_signed_url(
+        return blob.generate_signed_url(
             version="v4",
             expiration=datetime.timedelta(minutes=expires_in),
             method="GET",
         )
-        return url
 
     def copy_bucket_to_gcs(
         self,
@@ -419,7 +416,8 @@ class GoogleCloudStorage:
             msg = f"Blob transfer only supports gcs and s3 sources [source={source}]"
             raise ValueError(msg)
         if source_path and source_path[-1] != "/":
-            raise ValueError("Source path much end in a '/'")
+            msg = "Source path much end in a '/'"
+            raise ValueError(msg)
 
         client = storage_transfer.StorageTransferServiceClient()
 

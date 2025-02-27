@@ -28,7 +28,8 @@ def decode_credential(credential, save_path=None, export=True, echo=False):
     """
     x = len(PREFIX)
     if credential[:x] != PREFIX:
-        raise ValueError("Invalid Parsons variable.")
+        msg = "Invalid Parsons variable."
+        raise ValueError(msg)
 
     decoded_str = b64decode(bytes(credential.replace(PREFIX, ""), "utf-8")).decode("utf-8")
 
@@ -62,9 +63,7 @@ def encode_from_json_str(credential):
     data = json.loads(credential)
 
     json_str = json.dumps(data)
-    encoded_str = PREFIX + b64encode(bytes(json_str, "utf-8")).decode("utf-8")
-
-    return encoded_str
+    return PREFIX + b64encode(bytes(json_str, "utf-8")).decode("utf-8")
 
 
 def encode_from_json_file(credential_file):
@@ -82,9 +81,7 @@ def encode_from_json_file(credential_file):
         data = json.load(f)
 
     json_str = json.dumps(data)
-    encoded_str = PREFIX + b64encode(bytes(json_str, "utf-8")).decode("utf-8")
-
-    return encoded_str
+    return PREFIX + b64encode(bytes(json_str, "utf-8")).decode("utf-8")
 
 
 def encode_from_env(env_variables):
@@ -103,9 +100,7 @@ def encode_from_env(env_variables):
         data[var] = os.environ[var]
 
     json_str = json.dumps(data)
-    encoded_str = PREFIX + b64encode(bytes(json_str, "utf-8")).decode("utf-8")
-
-    return encoded_str
+    return PREFIX + b64encode(bytes(json_str, "utf-8")).decode("utf-8")
 
 
 def encode_from_dict(credential):
@@ -120,9 +115,7 @@ def encode_from_dict(credential):
             The encoded credential.
     """
     data_str = json.dumps(credential)
-    encoded_str = PREFIX + b64encode(bytes(data_str, "utf-8")).decode("utf-8")
-
-    return encoded_str
+    return PREFIX + b64encode(bytes(data_str, "utf-8")).decode("utf-8")
 
 
 @click.command(options_metavar="[-e [-f] | -d [-xp] [-o <file>]]")
@@ -201,7 +194,8 @@ def main(credential, fn, is_file=False, save_path="", no_export=False, suppress=
     elif fn == "decode":
         decode_credential(credential, save_path, not no_export, not suppress)
     else:
-        raise ValueError("Invalid function selected. Use --help for help.")
+        msg = "Invalid function selected. Use --help for help."
+        raise ValueError(msg)
 
 
 if __name__ == "__main__":

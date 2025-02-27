@@ -103,7 +103,8 @@ class RedshiftCopyTable:
         elif data_type == "json":
             sql += f"json '{json_option}' \n"
         else:
-            raise TypeError("Invalid data type specified.")
+            msg = "Invalid data type specified."
+            raise TypeError(msg)
 
         if compression == "gzip":
             sql += "gzip \n"
@@ -145,10 +146,11 @@ class RedshiftCopyTable:
         csv_encoding="utf-8",
     ):
         if not self.s3_temp_bucket:
-            raise KeyError(
+            msg = (
                 "Missing S3_TEMP_BUCKET, needed for transferring data to Redshift. "
                 "Must be specified as env vars or kwargs"
             )
+            raise KeyError(msg)
 
         # Coalesce S3 Key arguments
         aws_access_key_id = aws_access_key_id or self.aws_access_key_id

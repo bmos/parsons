@@ -27,10 +27,12 @@ class Signups:
                 See :ref:`parsons-table` for output options.
         """
         if event_id is None and event_type_id is None:
-            raise ValueError("One of event_id or event_type_id must be populated")
+            msg = "One of event_id or event_type_id must be populated"
+            raise ValueError(msg)
 
         if event_id is not None and event_type_id is not None:
-            raise ValueError("Event Id and Event Type ID may not BOTH be populated")
+            msg = "Event Id and Event Type ID may not BOTH be populated"
+            raise ValueError(msg)
 
         if event_id:
             params = {"eventId": event_id}

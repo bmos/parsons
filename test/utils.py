@@ -22,7 +22,8 @@ mark_live_test = pytest.mark.skipif(
 # Tests whether a table has the expected structure
 def validate_list(expected_keys, table):
     if set(expected_keys) != set(table.columns):
-        raise KeyError("Not all expected keys found.")
+        msg = "Not all expected keys found."
+        raise KeyError(msg)
 
     return True
 

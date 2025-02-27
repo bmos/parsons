@@ -1,7 +1,7 @@
 import os
 import unittest
 from abc import ABC
-from typing import Optional, Type
+from typing import Optional
 
 from parsons import DBSync, Postgres, Redshift, Table
 from parsons.databases.database_connector import DatabaseConnector
@@ -17,14 +17,15 @@ class TestDBSync(ABC, unittest.TestCase):
     setup_sql: Optional[str] = None
     teardown_sql: Optional[str] = None
     temp_schema: Optional[str] = TEMP_SCHEMA
-    db: Type[DatabaseConnector]
+    db: type[DatabaseConnector]
 
     @classmethod
     def setUpClass(cls):
         # Skip tests on this abstract base class
         if cls is TestDBSync:
-            raise unittest.SkipTest("%s is an abstract base class" % cls.__name__)
-        super(TestDBSync, cls).setUpClass()
+            msg = f"{cls.__name__} is an abstract base class"
+            raise unittest.SkipTest(msg)
+        super().setUpClass()
 
     def setUp(self):
         self.initialize_db_connections()
@@ -82,9 +83,9 @@ class TestDBSync(ABC, unittest.TestCase):
         rows = destination_table.get_rows()
 
         # Check that the rows were inserted in the expected order
-        self.assertEqual(rows[0]["pk"], "010")
-        self.assertEqual(rows[1]["pk"], "012")
-        self.assertEqual(rows[2]["pk"], "028")
+        assert rows[0]["pk"] == "010"
+        assert rows[1]["pk"] == "012"
+        assert rows[2]["pk"] == "028"
 
     def test_table_sync_full_truncate(self):
         self.table_sync_full(if_exists="truncate")
@@ -160,11 +161,9 @@ class TestFakeDBSync(TestDBSync):
 
         # Make sure copy was called the expected number of times
         # read chunks of 2, 5 rows to write.. should be 3 copy calls
-        self.assertEqual(
-            len(self.destination_db.copy_call_args[0]),
-            3,
-            self.destination_db.copy_call_args[0],
-        )
+        assert len(self.destination_db.copy_call_args[0]) == 3, self.destination_db.copy_call_args[
+            0
+        ]
 
     def test_table_sync_full_write_chunk(self):
         self.set_up_db_sync(
@@ -175,11 +174,9 @@ class TestFakeDBSync(TestDBSync):
         self.assert_matching_tables()
 
         # Make sure copy was called the expected number of times
-        self.assertEqual(
-            len(self.destination_db.copy_call_args[0]),
-            3,
-            self.destination_db.copy_call_args[0],
-        )
+        assert len(self.destination_db.copy_call_args[0]) == 3, self.destination_db.copy_call_args[
+            0
+        ]
 
 
 # These tests interact directly with the Postgres database. In order to run, set the

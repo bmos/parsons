@@ -34,7 +34,7 @@ import pathlib
 import shutil
 import subprocess
 import time
-from typing import List, Literal, Optional
+from typing import Literal, Optional
 
 from parsons.notifications.slack import Slack
 from parsons.utilities import check_env
@@ -193,10 +193,7 @@ class dbtLogger:
                 logger.info(log_message)
 
         done_messages = [i for i in log_messages if "Done. PASS" in i]
-        if done_messages:
-            done_message = done_messages[0]
-        else:
-            done_message = ""
+        done_message = done_messages[0] if done_messages else ""
 
         self.record_result(command_str, error_messages, warn_messages, skip_messages, done_message)
 
@@ -204,7 +201,7 @@ class dbtLogger:
 class dbtRunner:
     def __init__(
         self,
-        commands: List[str],
+        commands: list[str],
         dbt_project_directory: pathlib.Path,
         dbt_schema: Optional[str] = None,
         username: Optional[str] = None,
@@ -302,7 +299,7 @@ class dbtRunner:
         """
         self.dbt_logger.record_start(command)
         dbt_executable_path = shutil.which("dbt")
-        commands = [dbt_executable_path, "--log-format", "json"] + command.split(" ")
+        commands = [dbt_executable_path, "--log-format", "json", *command.split(" ")]
 
         shell_environment = {
             "REDSHIFT_USERNAME": self.username,

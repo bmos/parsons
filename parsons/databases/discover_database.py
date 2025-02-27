@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional, Type, Union
+from typing import Optional, Union
 
 from parsons.databases.database_connector import DatabaseConnector
 from parsons.databases.mysql import MySQL
@@ -10,7 +10,7 @@ from parsons.google.google_bigquery import GoogleBigQuery as BigQuery
 
 def discover_database(
     default_connector: Optional[
-        Union[Type[DatabaseConnector], List[Type[DatabaseConnector]]]
+        Union[type[DatabaseConnector], list[type[DatabaseConnector]]]
     ] = None,
 ) -> DatabaseConnector:
     """
@@ -75,4 +75,5 @@ def discover_database(
 
     if detected:
         return connectors[detected[0]]()
-    raise OSError("Could not find any database configuration.")
+    msg = "Could not find any database configuration."
+    raise OSError(msg)

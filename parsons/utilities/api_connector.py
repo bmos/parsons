@@ -108,9 +108,7 @@ class APIConnector:
         msg = f"{return_format} is not a valid format, change to json or content"
         raise RuntimeError(msg)
 
-    def post_request(
-        self, url, params=None, data=None, json=None, success_codes=[200, 201, 202, 204]
-    ):
+    def post_request(self, url, params=None, data=None, json=None, success_codes=None):
         """
         Make a POST request.
 
@@ -128,6 +126,8 @@ class APIConnector:
         `Returns:`
             A requests response object
         """
+        if success_codes is None:
+            success_codes = [200, 201, 202, 204]
         r = self.request(url, "POST", params=params, data=data, json=json)
 
         # Validate the response and lift up an errors.
@@ -139,8 +139,9 @@ class APIConnector:
             if self.json_check(r):
                 return r.json()
             return r.status_code
+        return None
 
-    def delete_request(self, url, params=None, success_codes=[200, 201, 204]):
+    def delete_request(self, url, params=None, success_codes=None):
         """
         Make a DELETE request.
 
@@ -155,6 +156,8 @@ class APIConnector:
                 A requests response object or status code
 
         """
+        if success_codes is None:
+            success_codes = [200, 201, 204]
         r = self.request(url, "DELETE", params=params)
 
         self.validate_response(r)
@@ -165,8 +168,9 @@ class APIConnector:
             if self.json_check(r):
                 return r.json()
             return r.status_code
+        return None
 
-    def put_request(self, url, data=None, json=None, params=None, success_codes=[200, 201, 204]):
+    def put_request(self, url, data=None, json=None, params=None, success_codes=None):
         """
         Make a PUT request.
 
@@ -183,6 +187,8 @@ class APIConnector:
                 A requests response object
 
         """
+        if success_codes is None:
+            success_codes = [200, 201, 204]
         r = self.request(url, "PUT", params=params, data=data, json=json)
 
         self.validate_response(r)
@@ -191,8 +197,9 @@ class APIConnector:
             if self.json_check(r):
                 return r.json()
             return r.status_code
+        return None
 
-    def patch_request(self, url, params=None, data=None, json=None, success_codes=[200, 201, 204]):
+    def patch_request(self, url, params=None, data=None, json=None, success_codes=None):
         """
         Make a PATCH request.
 
@@ -210,6 +217,8 @@ class APIConnector:
         `Returns:`
             A requests response object
         """
+        if success_codes is None:
+            success_codes = [200, 201, 204]
         r = self.request(url, "PATCH", params=params, data=data, json=json)
 
         self.validate_response(r)
@@ -220,6 +229,7 @@ class APIConnector:
             if self.json_check(r):
                 return r.json()
             return r.status_code
+        return None
 
     def validate_response(self, resp):
         """
@@ -264,7 +274,7 @@ class APIConnector:
         if isinstance(resp, list):
             return resp
 
-        if self.data_key and self.data_key in resp.keys():
+        if self.data_key and self.data_key in resp:
             return resp[self.data_key]
         return resp
 
@@ -283,11 +293,11 @@ class APIConnector:
         `Returns:
             boolean
         """
-        if self.pagination_key and self.pagination_key in resp.keys():
+        if self.pagination_key and self.pagination_key in resp:
             if resp[self.pagination_key]:
                 return True
-        else:
-            return False
+            return None
+        return False
 
     def json_check(self, resp):
         """
@@ -301,10 +311,4 @@ class APIConnector:
 
     def convert_to_table(self, data):
         """Internal method to create a Parsons table from a data element."""
-        table = None
-        if type(data) is list:
-            table = Table(data)
-        else:
-            table = Table([data])
-
-        return table
+        return Table(data) if type(data) is list else Table([data])

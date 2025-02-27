@@ -97,5 +97,4 @@ class ChangedEntities:
                 raise ValueError(status["message"])
 
     def _get_changed_entity_job(self, job_id):
-        r = self.connection.get_request(f"changedEntityExportJobs/{job_id}")
-        return r
+        return self.connection.get_request(f"changedEntityExportJobs/{job_id}")

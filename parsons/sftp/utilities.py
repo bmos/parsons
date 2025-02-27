@@ -4,11 +4,9 @@ import paramiko
 
 
 def connection_exists(args, kwargs):
-    if any([isinstance(arg, paramiko.sftp_client.SFTPClient) for arg in args]):
+    if any(isinstance(arg, paramiko.sftp_client.SFTPClient) for arg in args):
         return True
-    if kwargs.get("connection"):
-        return True
-    return False
+    return bool(kwargs.get("connection"))
 
 
 def connect(func):

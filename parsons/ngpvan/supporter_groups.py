@@ -51,8 +51,7 @@ class SupporterGroups:
             and description
         """
         json = {"name": name, "description": description}
-        r = self.connection.post_request("supporterGroups", json=json)
-        return r
+        return self.connection.post_request("supporterGroups", json=json)
 
     def delete_supporter_group(self, supporter_group_id):
         """

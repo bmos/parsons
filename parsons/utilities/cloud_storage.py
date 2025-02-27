@@ -43,4 +43,5 @@ def post_file(tbl, type, file_path=None, quoting=csv.QUOTE_MINIMAL, **file_stora
             public_url=True, blob_name=file_path, quoting=quoting, **file_storage_args
         )
 
-    raise ValueError("Type must be S3 or GCS.")
+    msg = "Type must be S3 or GCS."
+    raise ValueError(msg)

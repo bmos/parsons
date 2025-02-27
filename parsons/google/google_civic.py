@@ -166,11 +166,14 @@ class GoogleCivic:
                 See :ref:`parsons-table` for output options.
         """
         if levels is not None and not isinstance(levels, list):
-            raise ValueError("levels must be a list of strings")
+            msg = "levels must be a list of strings"
+            raise ValueError(msg)
         if roles is not None and not isinstance(roles, list):
-            raise ValueError("roles must be a list of strings")
+            msg = "roles must be a list of strings"
+            raise ValueError(msg)
         if address is None or not isinstance(address, str):
-            raise ValueError("address must be a string")
+            msg = "address must be a string"
+            raise ValueError(msg)
 
         url = self.uri + "representatives"
 

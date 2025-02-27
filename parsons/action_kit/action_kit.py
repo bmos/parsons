@@ -85,7 +85,7 @@ class ActionKit:
         # AK provides some pretty robust/helpful error reporting. We should surface them with
         # our exceptions.
 
-        if "errors" in resp.json().keys():
+        if "errors" in resp.json():
             if isinstance(resp.json()["errors"], list):
                 exception_message += "\n" + ",".join(resp.json()["errors"])
             else:
@@ -763,8 +763,7 @@ class ActionKit:
         Copy a mailer
         returns new copy of mailer which should be updatable.
         """
-        resp = self.conn.post(self._base_endpoint("mailer", entity_id=mailer_id) + "/copy")
-        return resp
+        return self.conn.post(self._base_endpoint("mailer", entity_id=mailer_id) + "/copy")
 
     def update_mailing(self, mailer_id, **kwargs):
         """
@@ -1245,7 +1244,8 @@ class ActionKit:
                 The response json
         """
         if not email or ak_id:
-            raise ValueError("One of email or ak_id is required.")
+            msg = "One of email or ak_id is required."
+            raise ValueError(msg)
 
         return self._base_post(
             endpoint="action",
@@ -1327,13 +1327,12 @@ class ActionKit:
         }
         with upload_client.post(url, files=files, data=data) as res:
             progress_url = res.headers.get("Location")
-            rv = {
+            return {
                 "res": res,
                 "success": res.status_code == 201,
                 "id": progress_url.split("/")[-2] if progress_url else None,
                 "progress_url": progress_url,
             }
-            return rv
 
     def bulk_upload_table(
         self,
@@ -1388,7 +1387,7 @@ class ActionKit:
         results = []
         for tbl in upload_tables:
             user_fields_only = int(
-                not any([h for h in tbl.columns if h != "email" and not h.startswith("user_")])
+                not any(h for h in tbl.columns if h != "email" and not h.startswith("user_"))
             )
             results.append(
                 self.bulk_upload_csv(
@@ -1398,7 +1397,7 @@ class ActionKit:
                     user_fields_only=user_fields_only,
                 )
             )
-        return {"success": all([r["success"] for r in results]), "results": results}
+        return {"success": all(r["success"] for r in results), "results": results}
 
     def _split_tables_no_empties(self, table, no_overwrite_on_empty, set_only_columns):
         table_groups = {}
@@ -1419,7 +1418,7 @@ class ActionKit:
                 subset_table.table = subset_table.table.cutout(*blanks)
             logger.debug(f"Column Upload Blanks: {blanks}")
             logger.debug(f"Column Upload Columns: {subset_table.columns}")
-            if not set(["user_id", "email"]).intersection(subset_table.columns):
+            if not {"user_id", "email"}.intersection(subset_table.columns):
                 logger.warning(
                     f"Upload will fail without user_id or email. "
                     f"Rows: {subset_table.num_rows}, Columns: {subset_table.columns}"

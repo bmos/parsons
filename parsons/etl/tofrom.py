@@ -717,13 +717,11 @@ class ToFrom:
                 See :ref:`parsons-table` for output options.
         """
         remote_prefixes = ["http://", "https://", "ftp://", "s3://"]
-        if any(map(local_path.startswith, remote_prefixes)):
-            is_remote_file = True
-        else:
-            is_remote_file = False
+        is_remote_file = bool(any(map(local_path.startswith, remote_prefixes)))
 
         if not is_remote_file and not files.has_data(local_path):
-            raise ValueError("CSV file is empty")
+            msg = "CSV file is empty"
+            raise ValueError(msg)
 
         return cls(petl.fromcsv(local_path, **csvargs))
 
@@ -781,10 +779,7 @@ class ToFrom:
                 See :ref:`parsons-table` for output options.
         """
         if line_delimited:
-            if files.is_gzip_path(local_path):
-                open_fn = gzip.open
-            else:
-                open_fn = open
+            open_fn = gzip.open if files.is_gzip_path(local_path) else open
 
             with open_fn(local_path, "r") as file:
                 rows = [json.loads(line) for line in file]
@@ -901,7 +896,9 @@ class ToFrom:
         return cls(petl.cat(*tbls))
 
     @classmethod
-    def from_bigquery(cls, sql: str, app_creds: str = None, project: str = None):
+    def from_bigquery(
+        cls, sql: str, app_creds: Optional[str] = None, project: Optional[str] = None
+    ):
         """
         Create a ``parsons table`` from a BigQuery statement.
 

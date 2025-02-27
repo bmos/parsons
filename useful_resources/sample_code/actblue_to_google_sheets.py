@@ -55,7 +55,8 @@ spreadsheet_name = "Contributions - January"
 # your email address. Once the sheet has been created you may add user permissions in Google Sheets.
 editor_email = ""
 if not editor_email:
-    raise ValueError("editor_email is required to enable access to the new Google Sheet")
+    msg = "editor_email is required to enable access to the new Google Sheet"
+    raise ValueError(msg)
 
 # Step 2: Specify what contribution data you want from ActBlue
 date_range_start = "2022-01-01"  # Start of date range to withdraw contribution data (inclusive).

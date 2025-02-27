@@ -38,7 +38,8 @@ class MobilizeAmerica:
     def _request(self, url, req_type="GET", post_data=None, args=None, auth=False):
         if auth:
             if not self.api_key:
-                raise TypeError("This method requires an api key.")
+                msg = "This method requires an api key."
+                raise TypeError(msg)
             header = {"Authorization": "Bearer " + self.api_key}
 
         else:
@@ -78,7 +79,8 @@ class MobilizeAmerica:
                 if time_filter == i[0]:
                     return i[1] + str(time)
 
-            raise ValueError("Invalid time operator. Must be one of >=, >, <= or >.")
+            msg = "Invalid time operator. Must be one of >=, >, <= or >."
+            raise ValueError(msg)
 
         return time_arg
 

@@ -60,7 +60,7 @@ class Table(ETL, ToFrom):
         if lst is _EMPTYDEFAULT:
             self.table = petl.fromdicts([])
 
-        elif isinstance(lst, list) or isinstance(lst, tuple):
+        elif isinstance(lst, (list, tuple)):
             # Check for empty list
             if not len(lst):
                 self.table = petl.fromdicts([])
@@ -85,7 +85,8 @@ class Table(ETL, ToFrom):
             raise ValueError(msg)
 
         if not self.is_valid_table():
-            raise ValueError("Could not create Table")
+            msg = "Could not create Table"
+            raise ValueError(msg)
 
         # Count how many times someone is indexing directly into this table, so we can warn
         # against inefficient usage.
@@ -106,9 +107,10 @@ class Table(ETL, ToFrom):
 
         if isinstance(index, slice):
             tblslice = petl.rowslice(self.table, index.start, index.stop, index.step)
-            return [row for row in tblslice]
+            return list(tblslice)
 
-        raise TypeError("You must pass a string or an index as a value.")
+        msg = "You must pass a string or an index as a value."
+        raise TypeError(msg)
 
     def __bool__(self):
         # Try to get a single row from our table
@@ -204,7 +206,8 @@ class Table(ETL, ToFrom):
         if column_name in self.columns:
             return list(self.table[column_name])
 
-        raise ValueError("Column name not found.")
+        msg = "Column name not found."
+        raise ValueError(msg)
 
     def materialize(self):
         """
@@ -277,6 +280,4 @@ class Table(ETL, ToFrom):
         `Returns:`
             bool
         """
-        if petl.nrows(petl.selectnotnone(self.table, column)) == 0:
-            return True
-        return False
+        return petl.nrows(petl.selectnotnone(self.table, column)) == 0

@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 import xmltodict
 from bs4 import BeautifulSoup
@@ -16,11 +17,7 @@ DATE_FMT = "%Y-%m-%d"
 
 
 def _format_date(user_entered_date):
-    if user_entered_date:
-        formatted_date = parse_date(user_entered_date).strftime(DATE_FMT)
-    else:
-        formatted_date = None
-    return formatted_date
+    return parse_date(user_entered_date).strftime(DATE_FMT) if user_entered_date else None
 
 
 class MobileCommons:
@@ -103,7 +100,8 @@ class MobileCommons:
         if response_table.num_rows > 0:
             empty_page = False
         else:
-            raise ValueError("There are no records for specified resource")
+            msg = "There are no records for specified resource"
+            raise ValueError(msg)
 
         # Unpack any specified elements
         if elements_to_unpack:
@@ -199,10 +197,7 @@ class MobileCommons:
 
         # If good response, compile data into final_table
         # Parse xml to nested dictionary and load to parsons table
-        response_dict = xmltodict.parse(
-            response.text, attr_prefix="", cdata_key="", dict_constructor=dict
-        )
-        return response_dict
+        return xmltodict.parse(response.text, attr_prefix="", cdata_key="", dict_constructor=dict)
 
     def _mc_post_request(self, endpoint, params):
         """
@@ -268,10 +263,10 @@ class MobileCommons:
     def get_campaign_subscribers(
         self,
         campaign_id: int,
-        first_date: str = None,
-        last_date: str = None,
-        opt_in_path_id: int = None,
-        limit: int = None,
+        first_date: Optional[str] = None,
+        last_date: Optional[str] = None,
+        opt_in_path_id: Optional[int] = None,
+        limit: Optional[int] = None,
     ):
         """
         A function for getting subscribers of a specified campaign
@@ -314,12 +309,12 @@ class MobileCommons:
 
     def get_profiles(
         self,
-        phones: list = None,
-        first_date: str = None,
-        last_date: str = None,
+        phones: Optional[list] = None,
+        first_date: Optional[str] = None,
+        last_date: Optional[str] = None,
         include_custom_columns: bool = False,
         include_subscriptions: bool = False,
-        limit: int = None,
+        limit: Optional[int] = None,
     ):
         """
         A function for getting profiles, which are MobileCommons people records

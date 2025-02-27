@@ -56,9 +56,7 @@ class Empower:
         """
         Determine if a dict object is empty.
         """
-        if len(self.data[obj_name]) == 0:
-            return True
-        return False
+        return len(self.data[obj_name]) == 0
 
     def get_profiles(self):
         """
@@ -82,8 +80,7 @@ class Empower:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-        tbl = Table(self.data["profiles"]).long_table("eid", "activeCtaIds")
-        return tbl
+        return Table(self.data["profiles"]).long_table("eid", "activeCtaIds")
 
     def get_regions(self):
         """
@@ -185,8 +182,7 @@ class Empower:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-        tbl = Table(self.data["ctas"]).long_table("id", "regionIds")
-        return tbl
+        return Table(self.data["ctas"]).long_table("id", "regionIds")
 
     def get_cta_shareables(self):
         """
@@ -196,8 +192,7 @@ class Empower:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-        tbl = Table(self.data["ctas"]).long_table("id", "shareables")
-        return tbl
+        return Table(self.data["ctas"]).long_table("id", "shareables")
 
     def get_cta_prioritizations(self):
         """
@@ -207,8 +202,7 @@ class Empower:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-        tbl = Table(self.data["ctas"]).long_table("id", "prioritizations")
-        return tbl
+        return Table(self.data["ctas"]).long_table("id", "prioritizations")
 
     def get_outreach_entries(self):
         """
@@ -240,5 +234,4 @@ class Empower:
             Parsons Table
                 See :ref:`parsons-table` for output options.
         """
-        tbl = Table([self.data])
-        return tbl
+        return Table([self.data])

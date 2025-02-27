@@ -71,8 +71,7 @@ class Community:
             if filename != "outbound_message_type_usage"
             else f"{filename}.csv.gz/segment-based-subscription"
         )
-        response = self.client.get_request(url=url, return_format="content")
-        return response
+        return self.client.get_request(url=url, return_format="content")
 
     def get_data_export(self, filename):
         """
@@ -96,5 +95,4 @@ class Community:
         """
         get_request_response = self.get_request(filename=filename)
         response_string = get_request_response.decode("utf-8")
-        table = Table.from_csv_string(response_string)
-        return table
+        return Table.from_csv_string(response_string)

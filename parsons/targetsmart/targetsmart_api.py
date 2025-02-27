@@ -70,7 +70,8 @@ class Person:
             "voter",
             "household",
         ):
-            raise ValueError("Search_id_type is not valid")
+            msg = "Search_id_type is not valid"
+            raise ValueError(msg)
 
         url = self.connection.uri + "person/data-enhance"
 
@@ -162,13 +163,16 @@ class Person:
                 See :ref:`parsons-table` for output options.
         """
         if (latitude is None or longitude is None) and address is None:
-            raise ValueError("Lat/Long or Address required")
+            msg = "Lat/Long or Address required"
+            raise ValueError(msg)
 
         if not first_name:
-            raise ValueError("First name is required")
+            msg = "First name is required"
+            raise ValueError(msg)
 
         if not last_name:
-            raise ValueError("Last name is required")
+            msg = "Last name is required"
+            raise ValueError(msg)
 
         # Convert booleans
         for a in [last_name_exact, last_name_is_prefix]:
@@ -199,7 +203,7 @@ class Person:
         }
 
         r = self.connection.request(url, args=args, raw=True)
-        return Table([itm for itm in r["output"]]).unpack_dict("data_fields", prepend=False)
+        return Table(list(r["output"])).unpack_dict("data_fields", prepend=False)
 
     def phone(self, table):
         """
@@ -276,16 +280,20 @@ class Service:
                 See :ref:`parsons-table` for output options.
         """
         if search_type == "zip" and None in [zip5, zip4]:
-            raise ValueError("Search type 'zip' requires 'zip5' and 'zip4' arguments")
+            msg = "Search type 'zip' requires 'zip5' and 'zip4' arguments"
+            raise ValueError(msg)
 
         if search_type == "point" and None in [latitude, longitude]:
-            raise ValueError("Search type 'point' requires 'latitude' and 'longitude' arguments")
+            msg = "Search type 'point' requires 'latitude' and 'longitude' arguments"
+            raise ValueError(msg)
 
         if search_type == "address" and None in [address]:
-            raise ValueError("Search type 'address' requires 'address' argument")
+            msg = "Search type 'address' requires 'address' argument"
+            raise ValueError(msg)
 
         if search_type not in ["zip", "point", "address"]:
-            raise KeyError("Invalid 'search_type' provided. ")
+            msg = "Invalid 'search_type' provided. "
+            raise KeyError(msg)
 
         pass
 
@@ -361,10 +369,9 @@ class Voter:
         url = self.connection.uri + "voter/voter-registration-check"
 
         if None in [first_name, last_name, state]:
-            raise ValueError(
-                """Function must include at least first_name,
+            msg = """Function must include at least first_name,
                              last_name, and state."""
-            )
+            raise ValueError(msg)
 
         args = {
             "first_name": first_name,

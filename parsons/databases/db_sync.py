@@ -97,7 +97,8 @@ class DBSync:
                     logger.info(f"needed to drop {destination_tbl}...")
                     destination_tbl.drop()
             else:
-                raise ValueError("Invalid if_exists argument. Must be drop or truncate.")
+                msg = "Invalid if_exists argument. Must be drop or truncate."
+                raise ValueError(msg)
 
         # Create the table, if needed.
         if not destination_tbl.exists:
@@ -169,7 +170,8 @@ class DBSync:
                 primary_key,
                 source_table,
             )
-            raise ValueError("{primary_key} is not distinct in source table.")
+            msg = "{primary_key} is not distinct in source table."
+            raise ValueError(msg)
 
         # Get the max source table and destination table primary key
         logger.debug(
@@ -188,7 +190,8 @@ class DBSync:
         # Check for a mismatch in row counts; if dest_max_pk is None, or destination is empty
         # and we don't have to worry about this check.
         if dest_max_pk is not None and dest_max_pk > source_max_pk:
-            raise ValueError("Destination DB primary key greater than source DB primary key.")
+            msg = "Destination DB primary key greater than source DB primary key."
+            raise ValueError(msg)
 
         # Do not copied if row counts are equal.
         if dest_max_pk == source_max_pk:
@@ -315,10 +318,9 @@ class DBSync:
         Ensure that the columns from each table match
         """
         if source_table_obj.columns != destination_table_obj.columns:
-            raise ValueError(
-                """Destination table columns do not match source table columns.
+            msg = """Destination table columns do not match source table columns.
                              Consider dropping destination table and running a full sync."""
-            )
+            raise ValueError(msg)
 
     @staticmethod
     def _row_count_verify(source_table_obj, destination_table_obj):

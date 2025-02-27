@@ -13,9 +13,7 @@ def live_pdi():
     password = os.environ["PDI_PASSWORD"]
     api_token = os.environ["PDI_API_TOKEN"]
 
-    pdi = PDI(username, password, api_token, qa_url=True)
-
-    return pdi
+    return PDI(username, password, api_token, qa_url=True)
 
 
 @pytest.fixture
@@ -34,6 +32,4 @@ def mock_pdi(requests_mock):
     password = "PDI_PASSWORD"
     api_token = "PDI_API_TOKEN"
 
-    pdi = PDI(username, password, api_token, qa_url=True)
-
-    return pdi
+    return PDI(username, password, api_token, qa_url=True)

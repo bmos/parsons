@@ -46,8 +46,9 @@ class Postgres(PostgresCore, Alchemy, DatabaseConnector):
         pgpass = os.path.isfile(os.path.expanduser("~/.pgpass"))
 
         if not any([self.username, self.password, self.host, self.db]) and not pgpass:
+            msg = "Connection arguments missing. Please pass as a pgpass file, kwargs"
             raise ValueError(
-                "Connection arguments missing. Please pass as a pgpass file, kwargs",
+                msg,
                 "or env variables.",
             )
 
@@ -137,6 +138,4 @@ class PostgresTable(BaseTable):
 
         sql += f" OFFSET {offset}"
 
-        result = self.db.query(sql, parameters=parameters)
-
-        return result
+        return self.db.query(sql, parameters=parameters)

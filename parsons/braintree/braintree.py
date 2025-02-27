@@ -235,7 +235,7 @@ class Braintree:
             query_list=query_list,
             query_dict=query_dict,
             default_query=(
-                {"effective_date": dict(between=[start_date, end_date])}
+                {"effective_date": {"between": [start_date, end_date]}}
                 if start_date and end_date
                 else None
             ),
@@ -311,7 +311,7 @@ class Braintree:
             query_list=query_list,
             query_dict=query_dict,
             default_query=(
-                {"created_at": dict(between=[start_date, end_date])}
+                {"created_at": {"between": [start_date, end_date]}}
                 if start_date and end_date
                 else None
             ),
@@ -390,11 +390,7 @@ class Braintree:
             query_list=query_list,
             query_dict=query_dict,
             default_query=(
-                {
-                    "disbursement_date": dict(
-                        between=[disbursement_start_date, disbursement_end_date]
-                    )
-                }
+                {"disbursement_date": {"between": [disbursement_start_date, disbursement_end_date]}}
                 if disbursement_start_date and disbursement_end_date
                 else None
             ),
@@ -414,7 +410,7 @@ class Braintree:
         )
 
     def _dispute_header(self):
-        return self.dispute_fields + ["transaction_id"]
+        return [*self.dispute_fields, "transaction_id"]
 
     def _dispute_to_row(self, collection_item):
         row = [getattr(collection_item, k) for k in self.dispute_fields]
@@ -492,10 +488,11 @@ class Braintree:
         elif default_query:
             collection_query = self._get_query_objects(query_type, **default_query)
         if not collection_query:
-            raise ParsonsBraintreeError(
+            msg = (
                 "You must pass some query parameters: "
                 "query_dict, start_date with end_date, or query_list"
             )
+            raise ParsonsBraintreeError(msg)
 
         if table_of_ids:
             # We don't need to re-do the query, we can just reconstruct the query object
@@ -524,12 +521,14 @@ class Braintree:
                 for qual, vals in filters.items():  # likely only one, but fine
                     queryobj_qualfunc = getattr(queryobj, qual, None)
                     if not queryobj_qualfunc:
-                        raise ParsonsBraintreeError("oh no, that's not a braintree parameter")
+                        msg = "oh no, that's not a braintree parameter"
+                        raise ParsonsBraintreeError(msg)
                     if not isinstance(vals, list):
                         vals = [vals]
                     queries.append(queryobj_qualfunc(*vals))
             else:
-                raise ParsonsBraintreeError("oh no, that's not a braintree parameter")
+                msg = "oh no, that's not a braintree parameter"
+                raise ParsonsBraintreeError(msg)
         return queries
 
     def _create_collection(self, query_type, ids, queries):
@@ -547,3 +546,4 @@ class Braintree:
                 {"search_results": {"ids": list(ids), "page_size": 50}},
                 method=gateway._SubscriptionGateway__fetch,
             )
+        return None

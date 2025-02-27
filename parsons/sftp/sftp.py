@@ -46,14 +46,17 @@ class SFTP:
     ):
         self.host = host
         if not self.host:
-            raise ValueError("Missing the SFTP host name")
+            msg = "Missing the SFTP host name"
+            raise ValueError(msg)
 
         self.username = username
         if not self.username:
-            raise ValueError("Missing the SFTP username")
+            msg = "Missing the SFTP username"
+            raise ValueError(msg)
 
         if not (password or rsa_private_key_file):
-            raise ValueError("Missing password or SSH authentication key")
+            msg = "Missing password or SSH authentication key"
+            raise ValueError(msg)
 
         self.password = password
         self.rsa_private_key_file = rsa_private_key_file
@@ -264,10 +267,11 @@ class SFTP:
                 Local paths where the files are saved.
         """
         if not (files_to_download or remote):
-            raise ValueError(
+            msg = (
                 "You must provide either `files_to_download`, `remote`, or both, as "
                 "an argument to `get_files`."
             )
+            raise ValueError(msg)
 
         if not files_to_download:
             files_to_download = []
@@ -320,13 +324,13 @@ class SFTP:
                 See :ref:`parsons-table` for output options.
         """
         if not file_utilities.valid_table_suffix(remote_path):
-            raise ValueError("File type cannot be converted to a Parsons table.")
+            msg = "File type cannot be converted to a Parsons table."
+            raise ValueError(msg)
 
         return Table.from_csv(self.get_file(remote_path, connection=connection))
 
     def _convert_bytes_to_megabytes(self, size_in_bytes: int) -> int:
-        result = int(size_in_bytes / (1024 * 1024))
-        return result
+        return int(size_in_bytes / (1024 * 1024))
 
     def _progress(self, transferred: int, to_be_transferred: int) -> None:
         """Return progress every 5 MB"""
@@ -353,10 +357,7 @@ class SFTP:
             verbose: bool
                 Log progress every 5MB. Defaults to True.
         """
-        if verbose:
-            callback = self._progress
-        else:
-            callback = None
+        callback = self._progress if verbose else None
         if connection:
             connection.put(local_path, remote_path, callback=callback)
         else:
@@ -502,7 +503,7 @@ class SFTP:
                 "similar operation on a local file system."
             )
 
-        to_return = self._walk_tree(
+        return self._walk_tree(
             remote_path,
             connection,
             download,
@@ -510,8 +511,6 @@ class SFTP:
             file_pattern,
             max_depth=max_depth,
         )
-
-        return to_return
 
     def _walk_tree(
         self,

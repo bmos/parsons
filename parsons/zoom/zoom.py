@@ -65,19 +65,19 @@ class Zoom:
             params = {}
 
         # Return a dict or table if only one item.
-        if "page_number" not in r.keys():
+        if "page_number" not in r:
             if isinstance(data, dict):
                 return data
             if isinstance(data, list):
                 return Table(data)
+            return None
 
         # Else iterate through the pages and return a Table
-        else:
-            while r["page_number"] < r["page_count"]:
-                params["page_number"] = int(r["page_number"]) + 1
-                r = self.client.get_request(endpoint, params=params, **kwargs)
-                data.extend(self.client.data_parse(r))
-            return Table(data)
+        while r["page_number"] < r["page_count"]:
+            params["page_number"] = int(r["page_number"]) + 1
+            r = self.client.get_request(endpoint, params=params, **kwargs)
+            data.extend(self.client.data_parse(r))
+        return Table(data)
 
     def __handle_nested_json(self, table: Table, column: str, version: int = 1) -> Table:
         """
@@ -153,7 +153,8 @@ class Zoom:
                 See :ref:`parsons-table` for output options.
         """
         if status not in ["active", "inactive", "pending"]:
-            raise ValueError("Invalid status type provided.")
+            msg = "Invalid status type provided."
+            raise ValueError(msg)
 
         params = {"status": status, "role_id": role_id}
 

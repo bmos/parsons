@@ -47,8 +47,8 @@ def event_command(event, context):
 
 def run(
     func,
-    args=[],
-    kwargs={},
+    args=None,
+    kwargs=None,
     service="lambda",
     capture_response=False,
     remote_aws_lambda_function_name=None,
@@ -57,6 +57,10 @@ def run(
     func_class_init_kwargs=None,
     **task_kwargs,
 ):
+    if kwargs is None:
+        kwargs = {}
+    if args is None:
+        args = []
     lambda_function_name = remote_aws_lambda_function_name or os.environ.get(
         "AWS_LAMBDA_FUNCTION_NAME"
     )
@@ -88,7 +92,8 @@ def run(
         }
     ).encode("utf-8")
     if len(payload) > 128000:  # pragma: no cover
-        raise AsyncException("Payload too large for async Lambda call")
+        msg = "Payload too large for async Lambda call"
+        raise AsyncException(msg)
     lambda_client = boto3.Session().client("lambda")
     response = lambda_client.invoke(
         FunctionName=lambda_function_name,
@@ -139,13 +144,12 @@ def get_func_task_path(func, method_class=None):
     # Then we record that info with |'s to be decoded in import_and_get_task
     # classmethod format: "Foo|method|"
     # instance method format: "Foo|method"
-    task_path = "{}.{}{}{}".format(
+    return "{}.{}{}{}".format(
         module_path,
         f"{method_class.__name__}|" if method_class else "",
         func_name,
         "|" if method_class and "of <class" in repr(func) else "",
     )
-    return task_path
 
 
 class AsyncException(Exception):

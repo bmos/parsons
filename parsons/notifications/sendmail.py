@@ -198,10 +198,12 @@ class SendMail(ABC):
         realname, email_addr = parseaddr(str)
 
         if not email_addr:
-            raise ValueError("Invalid email address.")
+            msg = "Invalid email address."
+            raise ValueError(msg)
 
         if not validate_email(email_addr):
-            raise ValueError("Invalid email address.")
+            msg = "Invalid email address."
+            raise ValueError(msg)
 
         return True
 
@@ -234,7 +236,8 @@ class SendMail(ABC):
         self.log.info("Validating email(s)")
         if isinstance(to, list):
             if len(to) == 0:
-                raise EmptyListError("Must contain at least 1 email.")
+                msg = "Must contain at least 1 email."
+                raise EmptyListError(msg)
 
             for e in to:
                 self._validate_email_string(e)

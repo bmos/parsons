@@ -32,7 +32,8 @@ class FakeRunner:
         count = count + 1
         tableargs = (table, self.init1, a, x, y)
         if a == "raise":
-            raise Exception("foo bar")
+            msg = "foo bar"
+            raise Exception(msg)
 
 
 class TestAsync(unittest.TestCase):
@@ -41,7 +42,7 @@ class TestAsync(unittest.TestCase):
         fake_str = get_func_task_path(fake_func)
         logging.info("fake_str", fake_str)
         fake_renewed = import_and_get_task(fake_str)
-        self.assertEqual(fake_renewed(1, 2, 3), (1, 2, 3, 56))
+        assert fake_renewed(1, 2, 3) == (1, 2, 3, 56)
 
         # Table.from_csv_string @classmethod
         csv_str = get_func_task_path(Table.from_csv_string, Table)
@@ -53,7 +54,7 @@ class TestAsync(unittest.TestCase):
         dicts_str = get_func_task_path(Table.to_dicts, Table)
         logging.info("dicts_str", dicts_str)
         dicts_renewed = import_and_get_task(dicts_str, {"lst": [("x", "y"), (1, 2)]})
-        self.assertEqual(dicts_renewed(), [{"x": 1, "y": 2}])
+        assert dicts_renewed() == [{"x": 1, "y": 2}]
 
     def test_distribute_task(self):
         global count
@@ -81,7 +82,7 @@ class TestAsync(unittest.TestCase):
             storage="local",
             func_kwargs={"x": 1, "y": [2, 3]},
         )
-        self.assertEqual(count, 2)
+        assert count == 2
         assert_matching_tables(
             tableargs[0],
             Table(
@@ -98,7 +99,7 @@ class TestAsync(unittest.TestCase):
         count = 0
         tableargs = None
         distribute_task(
-            Table(datatable + [(0, 0)]),
+            Table([*datatable, (0, 0)]),
             FakeRunner.foobar,
             "foo",  # bucket
             group_count=5,
@@ -107,9 +108,9 @@ class TestAsync(unittest.TestCase):
             func_class_kwargs={"init1": "initx"},
             func_kwargs={"a": 1, "x": 2, "y": 3},
         )
-        self.assertEqual(count, 3)
-        self.assertEqual(tableargs[1:], ("initx", 1, 2, 3))
-        self.assertEqual(tableargs[1:], ("initx", 1, 2, 3))
+        assert count == 3
+        assert tableargs[1:] == ("initx", 1, 2, 3)
+        assert tableargs[1:] == ("initx", 1, 2, 3)
         assert_matching_tables(tableargs[0], Table([("x", "y"), ("0", "0")]))
 
         # 3. catch=True (with throwing)

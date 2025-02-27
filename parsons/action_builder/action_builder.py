@@ -38,7 +38,8 @@ class ActionBuilder:
 
         final_campaign = campaign or self.campaign
         if not final_campaign:
-            raise ValueError("No campaign provided!")
+            msg = "No campaign provided!"
+            raise ValueError(msg)
 
         return final_campaign
 
@@ -84,10 +85,9 @@ class ActionBuilder:
             # Assuming there's data, add it to the running response list
             return_list.extend(response_list)
             count = count + len(response_list)
-            if limit:
-                if count >= limit:
-                    # Limit reached or exceeded, so return just the requested limit amount
-                    return Table(return_list[0:limit])
+            if limit and count >= limit:
+                # Limit reached or exceeded, so return just the requested limit amount
+                return Table(return_list[0:limit])
 
     def get_campaign_tags(self, campaign=None, limit=None, per_page=25, filter=None):
         """
@@ -329,10 +329,12 @@ class ActionBuilder:
             Logbook'}` if successful.
         """
         if {tag_name, tag_id} == {None}:
-            raise ValueError("Please supply a tag_name or tag_id!")
+            msg = "Please supply a tag_name or tag_id!"
+            raise ValueError(msg)
 
         if {identifier, tagging_id} == {None}:
-            raise ValueError("Please supply an entity or connection identifier, or a tagging id!")
+            msg = "Please supply an entity or connection identifier, or a tagging id!"
+            raise ValueError(msg)
 
         campaign = self._campaign_check(campaign)
         endpoint = "tags/{}/taggings"
@@ -350,7 +352,8 @@ class ActionBuilder:
             logger.info(f"Tag {tag_name} has ID {tag_id}")
 
         if tagging_id and not tag_id:
-            raise ValueError("Cannot search based on tagging ID alone.")
+            msg = "Cannot search based on tagging ID alone."
+            raise ValueError(msg)
 
         if tag_id and not tagging_id:
             taggings = self._get_all_records(self.campaign, endpoint.format(tag_id))
@@ -361,11 +364,11 @@ class ActionBuilder:
                     else identifier in row["osdi:person"]["href"]
                 )
             )
-            tagging_id = [
+            tagging_id = next(
                 x.split(":")[1]
                 for x in taggings_filtered["identifiers"][0]
                 if "action_builder" in x
-            ][0]
+            )
 
         logger.info(f"Removing tag {tag_id} from {identifier or tagging_id}")
         return self.api.delete_request(
@@ -397,10 +400,12 @@ class ActionBuilder:
         """
         # Check that there are exactly two identifiers and that campaign is provided first
         if not isinstance(identifiers, list):
-            raise ValueError("Must provide identifiers as a list")
+            msg = "Must provide identifiers as a list"
+            raise ValueError(msg)
 
         if len(identifiers) != 2:
-            raise ValueError("Must provide exactly two identifiers")
+            msg = "Must provide exactly two identifiers"
+            raise ValueError(msg)
 
         campaign = self._campaign_check(campaign)
 
@@ -421,7 +426,8 @@ class ActionBuilder:
                 tag_data = [tag_data]
 
             if not isinstance(tag_data[0], dict):
-                raise ValueError("Must provide tag_data as a dict or list of dicts")
+                msg = "Must provide tag_data as a dict or list of dicts"
+                raise ValueError(msg)
 
             data["add_tags"] = tag_data
 
@@ -455,7 +461,8 @@ class ActionBuilder:
         """
         # Check that either connection or second entity identifier are provided
         if {connection_identifier, to_identifier} == {None}:
-            raise ValueError("Must provide a connection ID or an ID for the second entity")
+            msg = "Must provide a connection ID or an ID for the second entity"
+            raise ValueError(msg)
 
         campaign = self._campaign_check(campaign)
 

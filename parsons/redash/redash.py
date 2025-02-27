@@ -83,7 +83,9 @@ class Redash:
         if job["status"] == 3:  # 3 = completed
             return job["query_result_id"]
         if job["status"] == 4:  # 3 = ERROR
-            raise RedashQueryFailed("Redash Query {} failed: {}".format(query_id, job["error"]))
+            msg = "Redash Query {} failed: {}".format(query_id, job["error"])
+            raise RedashQueryFailed(msg)
+        return None
 
     def get_data_source(self, data_source_id):
         """
@@ -164,7 +166,7 @@ class Redash:
         query_id = check("REDASH_QUERY_ID", query_id, optional=True)
         params_from_env = check("REDASH_QUERY_PARAMS", "", optional=True)
         redash_params = (
-            {"p_%s" % k: str(v).replace("'", "''") for k, v in params.items()} if params else {}
+            {f"p_{k}": str(v).replace("'", "''") for k, v in params.items()} if params else {}
         )
 
         response = self.session.post(

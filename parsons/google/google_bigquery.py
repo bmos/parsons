@@ -5,7 +5,7 @@ import pickle
 import random
 import uuid
 from contextlib import contextmanager
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import google
 import petl
@@ -155,15 +155,17 @@ class GoogleBigQuery(DatabaseConnector):
         app_creds: Optional[Union[str, dict, Credentials]] = None,
         project=None,
         location=None,
-        client_options: dict = {
-            "scopes": [
-                "https://www.googleapis.com/auth/drive",
-                "https://www.googleapis.com/auth/bigquery",
-                "https://www.googleapis.com/auth/cloud-platform",
-            ]
-        },
+        client_options: Optional[dict] = None,
         tmp_gcs_bucket: Optional[str] = None,
     ):
+        if client_options is None:
+            client_options = {
+                "scopes": [
+                    "https://www.googleapis.com/auth/drive",
+                    "https://www.googleapis.com/auth/bigquery",
+                    "https://www.googleapis.com/auth/cloud-platform",
+                ]
+            }
         self.app_creds = app_creds
 
         if isinstance(app_creds, Credentials):
@@ -308,15 +310,14 @@ class GoogleBigQuery(DatabaseConnector):
                 See :ref:`parsons-table` for output options.
         """
         if not commit:
-            raise ValueError(
-                """
+            msg = """
                 BigQuery implementation uses an API client which always auto-commits.
                 If you wish to wrap multiple queries in a transaction, use
                 Mulit-Statement transactions within a single query as outlined
                 here: https://cloud.google.com/bigquery/docs/transactions or use the
                 `query_with_transaction` method on the BigQuery connector.
             """
-            )
+            raise ValueError(msg)
 
         # get our connection and cursor
         with self.cursor(connection) as cursor:
@@ -332,9 +333,7 @@ class GoogleBigQuery(DatabaseConnector):
             if not cursor.description:
                 return None
 
-            final_table = self._fetch_query_results(cursor=cursor)
-
-            return final_table
+            return self._fetch_query_results(cursor=cursor)
 
     def query_with_transaction(self, queries, parameters=None):
         queries_with_semicolons = [ends_with_semicolon(q) for q in queries]
@@ -378,7 +377,7 @@ class GoogleBigQuery(DatabaseConnector):
         allow_quoted_newlines: bool = True,
         allow_jagged_rows: bool = True,
         quote: Optional[str] = None,
-        schema: Optional[List[dict]] = None,
+        schema: Optional[list[dict]] = None,
         job_config: Optional[LoadJobConfig] = None,
         force_unzip_blobs: bool = False,
         compression_type: str = "gzip",
@@ -545,7 +544,7 @@ class GoogleBigQuery(DatabaseConnector):
         allow_quoted_newlines: bool = True,
         allow_jagged_rows: bool = True,
         quote: Optional[str] = None,
-        schema: Optional[List[dict]] = None,
+        schema: Optional[list[dict]] = None,
         job_config: Optional[LoadJobConfig] = None,
         compression_type: str = "gzip",
         new_file_extension: str = "csv",
@@ -786,7 +785,7 @@ class GoogleBigQuery(DatabaseConnector):
         allow_quoted_newlines: bool = True,
         allow_jagged_rows: bool = True,
         quote: Optional[str] = None,
-        schema: Optional[List[dict]] = None,
+        schema: Optional[list[dict]] = None,
         max_timeout: int = 21600,
         convert_dict_columns_to_json: bool = True,
         **load_kwargs,
@@ -834,9 +833,10 @@ class GoogleBigQuery(DatabaseConnector):
             or check_env.check("GCS_TEMP_BUCKET", tmp_gcs_bucket)
         )
         if not tmp_gcs_bucket:
-            raise ValueError(
+            msg = (
                 "Must set GCS_TEMP_BUCKET environment variable or pass in tmp_gcs_bucket parameter"
             )
+            raise ValueError(msg)
 
         self._validate_copy_inputs(if_exists=if_exists, data_type=data_type)
 
@@ -884,7 +884,7 @@ class GoogleBigQuery(DatabaseConnector):
         schema = []
         for column in tbl.columns:
             try:
-                schema_row = [i for i in job_config.schema if i.name.lower() == column.lower()][0]
+                schema_row = next(i for i in job_config.schema if i.name.lower() == column.lower())
             except IndexError:
                 msg = f"Column found in Table that was not found in schema: {column}"
                 raise IndexError(msg)
@@ -930,9 +930,11 @@ class GoogleBigQuery(DatabaseConnector):
                 Drop the source table
         """
         if if_exists not in ["fail", "replace", "ignore"]:
-            raise ValueError("Invalid value for `if_exists` argument")
+            msg = "Invalid value for `if_exists` argument"
+            raise ValueError(msg)
         if if_exists == "fail" and self.table_exists(destination_table):
-            raise ValueError("Table already exists.")
+            msg = "Table already exists."
+            raise ValueError(msg)
 
         table__replace_clause = "OR REPLACE " if if_exists == "replace" else ""
         table__exists_clause = " IF NOT EXISTS" if if_exists == "ignore" else ""
@@ -987,10 +989,7 @@ class GoogleBigQuery(DatabaseConnector):
             self.copy(table_obj, target_table)
             return None
 
-        if isinstance(primary_key, str):
-            primary_keys = [primary_key]
-        else:
-            primary_keys = primary_key
+        primary_keys = [primary_key] if isinstance(primary_key, str) else primary_key
 
         if distinct_check:
             primary_keys_statement = ", ".join(primary_keys)
@@ -1008,7 +1007,8 @@ class GoogleBigQuery(DatabaseConnector):
             """
             ).first
             if diff > 0:
-                raise ValueError("Primary key column contains duplicate values.")
+                msg = "Primary key column contains duplicate values."
+                raise ValueError(msg)
 
         noise = f"{random.randrange(0, 10000):04}"[:4]
         date_stamp = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d_%H%M")
@@ -1020,10 +1020,11 @@ class GoogleBigQuery(DatabaseConnector):
 
         if from_s3:
             if table_obj is not None:
-                raise ValueError(
+                msg = (
                     "upsert(... from_s3=True) requires the first argument (table_obj)"
                     " to be None. from_s3 and table_obj are mutually exclusive."
                 )
+                raise ValueError(msg)
             self.copy_s3(staging_tbl, template_table=target_table, **copy_args)
 
         else:
@@ -1227,7 +1228,7 @@ class GoogleBigQuery(DatabaseConnector):
         parsons_table: Optional[Table] = None,
         custom_schema: Optional[list] = None,
         template_table: Optional[str] = None,
-    ) -> Optional[List[bigquery.SchemaField]]:
+    ) -> Optional[list[bigquery.SchemaField]]:
         # if job.schema already set in job_config, do nothing
         if job_config.schema:
             return job_config.schema
@@ -1370,7 +1371,8 @@ class GoogleBigQuery(DatabaseConnector):
             elif if_exists == "truncate":
                 job_config.write_disposition = bigquery.WriteDisposition.WRITE_TRUNCATE
             elif destination_table_exists and if_exists == "fail":
-                raise Exception("Table already exists.")
+                msg = "Table already exists."
+                raise Exception(msg)
             elif if_exists == "drop" and destination_table_exists:
                 self.delete_table(destination_table_name)
                 job_config.write_disposition = bigquery.WriteDisposition.WRITE_EMPTY
@@ -1463,7 +1465,7 @@ class GoogleBigQuery(DatabaseConnector):
         location: str = "US",
         destination_file_format: str = "CSV",
         field_delimiter: str = ",",
-        compression: str = None,
+        compression: Optional[str] = None,
         job_config: ExtractJobConfig = None,
         wait_for_job_to_complete: bool = True,
         **export_kwargs,

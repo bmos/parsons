@@ -20,10 +20,11 @@ class VANConnector:
         elif db in ["MyMembers", "MyCampaign", "EveryAction"]:
             self.db_code = 1
         else:
-            raise KeyError(
+            msg = (
                 "Invalid database type specified. Pick one of:"
                 " MyVoters, MyCampaign, MyMembers, EveryAction."
             )
+            raise KeyError(msg)
 
         self.uri = URI
         self.db = db

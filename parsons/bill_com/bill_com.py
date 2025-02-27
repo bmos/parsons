@@ -28,7 +28,7 @@ class BillCom:
             "orgId": org_id,
             "devKey": dev_key,
         }
-        response = requests.post(url="%sLogin.json" % api_url, data=params, headers=self.headers)
+        response = requests.post(url=f"{api_url}Login.json", data=params, headers=self.headers)
         self.dev_key = dev_key
         self.api_url = api_url
         self.session_id = response.json()["response_data"]["sessionId"]
@@ -68,14 +68,14 @@ class BillCom:
             A dictionary containing the JSON response from the post request.
         """
         if action == "Read":
-            url = "%sCrud/%s/%s.json" % (self.api_url, action, object_name)
+            url = f"{self.api_url}Crud/{action}/{object_name}.json"
         elif action == "Create":
             data["obj"]["entity"] = object_name
-            url = "%sCrud/%s/%s.json" % (self.api_url, action, object_name)
+            url = f"{self.api_url}Crud/{action}/{object_name}.json"
         elif action == "Send":
-            url = "%s%s%s.json" % (self.api_url, action, object_name)
+            url = f"{self.api_url}{action}{object_name}.json"
         else:
-            url = "%s%s/%s.json" % (self.api_url, action, object_name)
+            url = f"{self.api_url}{action}/{object_name}.json"
         payload = self._get_payload(data)
         response = requests.post(url=url, data=payload, headers=self.headers)
         return response.json()
@@ -219,10 +219,9 @@ class BillCom:
             False otherwise
 
         """
-        if "id" in customer1.keys():
-            if customer1["id"] == customer2["id"]:
-                return True
-        if "id" not in customer1.keys() and customer2["email"]:
+        if "id" in customer1 and customer1["id"] == customer2["id"]:
+            return True
+        if "id" not in customer1 and customer2["email"]:
             if customer1["email"].lower() == customer2["email"].lower():
                 return True
         return False

@@ -89,7 +89,7 @@ class FacebookAds:
             raise error
 
         FacebookAdsApi.init(self.app_id, self.app_secret, self.access_token)
-        self.ad_account = AdAccount("act_%s" % self.ad_account_id)
+        self.ad_account = AdAccount(f"act_{self.ad_account_id}")
 
     @staticmethod
     def _get_match_key_for_column(column):
@@ -192,14 +192,12 @@ class FacebookAds:
 
         # Convert None values to empty strings. Otherwise the FB SDK chokes.
         petl_table = t.to_petl()
-        t = Table(petl_table.replaceall(None, ""))
-
-        return t
+        return Table(petl_table.replaceall(None, ""))
 
     @staticmethod
     def _get_match_schema_and_data(table):
         # Grab the raw data as a list of tuples
-        data_list = [row for row in table.data]
+        data_list = list(table.data)
         return (table.columns, data_list)
 
     @staticmethod
@@ -230,7 +228,8 @@ class FacebookAds:
             ID of the created audience
         """
         if not self._is_valid_data_source(data_source):
-            raise KeyError("Invalid data_source provided")
+            msg = "Invalid data_source provided"
+            raise KeyError(msg)
 
         params = {
             "name": name,
@@ -352,10 +351,11 @@ class FacebookAds:
 
         match_table = FacebookAds.get_match_table_for_users_table(users_table)
         if not match_table.columns:
-            raise KeyError(
+            msg = (
                 "No valid columns found for audience matching. "
                 "See FacebookAds.KeyMatchMap for supported columns"
             )
+            raise KeyError(msg)
 
         num_rows = match_table.num_rows
         logger.info(f"Found {num_rows} rows with valid FB matching keys")

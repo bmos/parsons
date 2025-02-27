@@ -24,7 +24,7 @@ class TestRockTheVote(unittest.TestCase):
         rtv = RockTheVote(partner_id=partner_id, partner_api_key=partner_api_key)
 
         result = rtv.create_registration_report()
-        self.assertEqual(result, report_id)
+        assert result == report_id
 
     @requests_mock.Mocker()
     def test_get_registration_report(self, mocker):
@@ -42,9 +42,9 @@ class TestRockTheVote(unittest.TestCase):
         rtv = RockTheVote(partner_id=partner_id, partner_api_key=partner_api_key)
 
         result = rtv.get_registration_report(report_id=1)
-        self.assertEqual(result.num_rows, 1)
-        self.assertEqual(result[0]["first_name"], "Carol")
-        self.assertEqual(result[0]["last_name"], "King")
+        assert result.num_rows == 1
+        assert result[0]["first_name"] == "Carol"
+        assert result[0]["last_name"] == "King"
 
     @requests_mock.Mocker()
     def test_run_registration_report(self, mocker):
@@ -67,9 +67,9 @@ class TestRockTheVote(unittest.TestCase):
         rtv = RockTheVote(partner_id=partner_id, partner_api_key=partner_api_key)
 
         result = rtv.run_registration_report()
-        self.assertEqual(result.num_rows, 1)
-        self.assertEqual(result[0]["first_name"], "Carol")
-        self.assertEqual(result[0]["last_name"], "King")
+        assert result.num_rows == 1
+        assert result[0]["first_name"] == "Carol"
+        assert result[0]["last_name"] == "King"
 
     @requests_mock.Mocker()
     def test_get_state_requirements(self, mocker):
@@ -89,6 +89,6 @@ class TestRockTheVote(unittest.TestCase):
         result = rtv.get_state_requirements("en", "fl", "33314")
         logging.info(result.columns)
 
-        self.assertEqual(result.num_rows, 1)
-        self.assertEqual(result[0]["requires_party"], True)
-        self.assertEqual(result[0]["requires_race"], True)
+        assert result.num_rows == 1
+        assert result[0]["requires_party"] is True
+        assert result[0]["requires_race"] is True

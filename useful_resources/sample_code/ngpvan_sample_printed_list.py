@@ -61,9 +61,7 @@ def get_info_from_van(van_folder):
             "number": "List Number",
         }
     )
-    saved_printed_merged = saved_printed_merged_renamed.drop(columns=["name"])
-
-    return saved_printed_merged
+    return saved_printed_merged_renamed.drop(columns=["name"])
 
 
 # ~~~~~~~~~~~~~~ Send master checklist to Google Sheets ~~~~~~~~~~~~~~~~#

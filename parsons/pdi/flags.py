@@ -32,7 +32,8 @@ class Flags:
             start_date = parse(start_date).date().isoformat()
             end_date = parse(end_date).date().isoformat()
         except ValueError:
-            raise ValueError("Invalid date format.")
+            msg = "Invalid date format."
+            raise ValueError(msg)
 
         params = {
             "startDate": start_date,
@@ -56,7 +57,8 @@ class Flags:
         ]
         """
         if "pdiId" not in list(flag_list[0].keys()):
-            raise ValueError("missing required key")
+            msg = "missing required key"
+            raise ValueError(msg)
             return {}
         for flag in flag_list:
             try:
@@ -64,7 +66,8 @@ class Flags:
                     datetime.strptime(flag["flagEntryDate"], "%Y-%m-%d").isoformat()
                 )
             except ValueError:
-                raise ValueError("Invalid date format.")
+                msg = "Invalid date format."
+                raise ValueError(msg)
         logging.info(flag_list)
         return self._request(self.url_flags, post_data=flag_list, req_type="POST")
 

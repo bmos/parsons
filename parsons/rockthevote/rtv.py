@@ -114,7 +114,8 @@ class RockTheVote:
         )
         response = self.client.request(report_url, "post", json=report_parameters)
         if response.status_code != requests.codes.ok:
-            raise RTVFailure("Couldn't create RTV registrations report")
+            msg = "Couldn't create RTV registrations report"
+            raise RTVFailure(msg)
 
         response_json = response.json()
         # The RTV API says the response should include the report_id, but I have not found
@@ -191,7 +192,8 @@ class RockTheVote:
                 if not download_url and not block:
                     return None
             else:
-                raise RTVFailure("Couldn't get report status")
+                msg = "Couldn't get report status"
+                raise RTVFailure(msg)
 
             if not download_url:
                 # We just got the status, so we should wait a minute before
@@ -201,7 +203,8 @@ class RockTheVote:
         # If we never got a valid download_url, then we timed out waiting for
         # the report to generate. We will log an error and exit.
         if not download_url:
-            raise RTVFailure("Timed out waiting for report")
+            msg = "Timed out waiting for report"
+            raise RTVFailure(msg)
 
         # Download the report data
         download_response = self.client.request(download_url, "get", params=credentials)
@@ -221,7 +224,8 @@ class RockTheVote:
             ]
             table.table = petl.setheader(table.table, normalized_column_names)
             return table
-        raise RTVFailure("Unable to download report data")
+        msg = "Unable to download report data"
+        raise RTVFailure(msg)
 
     def run_registration_report(
         self,
@@ -309,8 +313,8 @@ class RockTheVote:
 
         if requirements_response.status_code == requests.codes.ok:
             response_json = requirements_response.json()
-            table = Table([response_json])
-            return table
+            return Table([response_json])
         error_json = requirements_response.json()
         logger.info(f"{error_json}")
-        raise RTVFailure("Could not retrieve state requirements")
+        msg = "Could not retrieve state requirements"
+        raise RTVFailure(msg)

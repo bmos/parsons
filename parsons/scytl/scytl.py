@@ -91,7 +91,7 @@ class Scytl:
         self.previous_details_version_num = None
         self.previous_county_details_version_num = None
         self.previous_county_details_list = None
-        self.previously_fetched_counties = set([])
+        self.previously_fetched_counties = set()
 
     def _parse_date_to_utc(self, input_dt: str) -> datetime:
         """
@@ -107,9 +107,7 @@ class Scytl:
             return None
 
         temp = parsedate(input_dt, tzinfos=TZ_INFO)
-        temp = temp.astimezone(timezone("UTC"))
-
-        return temp
+        return temp.astimezone(timezone("UTC"))
 
     def _get_version(self, administrator: str, election_id: str) -> str:
         """
@@ -158,7 +156,7 @@ class Scytl:
 
     def _get_latest_counties_scytl_info(
         self, state: str, election_id: str, version_num: str
-    ) -> t.Dict[str, CountyDetails]:
+    ) -> dict[str, CountyDetails]:
         """
         Fetch the settings JSON file for the election and parse the county details
         for participating counties in a state election.
@@ -208,7 +206,7 @@ class Scytl:
 
     def _parse_county_xml_data_to_precincts(
         self, county_data: bytes, county_details: CountyDetails
-    ) -> t.List[t.Dict]:
+    ) -> list[dict]:
         """
         Parse a detail XML file for a county into a list of election
         results by precinct and vote method.
@@ -290,7 +288,7 @@ class Scytl:
 
         return precinct_votes
 
-    def _parse_state_xml_data_to_counties(self, state_data: bytes, state: str) -> t.List[t.Dict]:
+    def _parse_state_xml_data_to_counties(self, state_data: bytes, state: str) -> list[dict]:
         """
         Parse a detail XML file for a state into a list of election
         results by county and vote method.
@@ -367,7 +365,7 @@ class Scytl:
 
     def _fetch_and_parse_summary_results(
         self, administrator: str, election_id: str, version_num: str, county=""
-    ) -> t.List[t.Dict]:
+    ) -> list[dict]:
         """
         Fetches the summary results CSV file from the Scytl site and parses it
         into a list of election results by candidate.
@@ -397,7 +395,7 @@ class Scytl:
         string_buffer = StringIO(zip_bytes.decode("latin-1"))
         csv_data = csv.DictReader(string_buffer, delimiter=",")
 
-        data = [
+        return [
             {
                 "state": self.state,
                 "county_name": county or self.county,
@@ -415,9 +413,7 @@ class Scytl:
             for x in csv_data
         ]
 
-        return data
-
-    def get_summary_results(self, force_update=False) -> t.List[t.Dict]:
+    def get_summary_results(self, force_update=False) -> list[dict]:
         """
         Fetch the latest summary results for the given election, across all contests.
 
@@ -461,7 +457,7 @@ class Scytl:
 
         return data
 
-    def get_detailed_results(self, force_update=False) -> t.List[t.Dict]:
+    def get_detailed_results(self, force_update=False) -> list[dict]:
         """
         Fetch the latest detailed results by geography for the given election, across all contests.
 
@@ -542,8 +538,8 @@ class Scytl:
         return parsed_data
 
     def get_detailed_results_for_participating_counties(
-        self, county_names: t.List[str] = None, force_update=False
-    ) -> t.Tuple[t.List[str], t.List[t.Dict]]:
+        self, county_names: t.Optional[list[str]] = None, force_update=False
+    ) -> tuple[list[str], list[dict]]:
         """
         Fetch the latest detailed results for the given election for all participating counties
             with detailed results, across all contests.

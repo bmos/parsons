@@ -43,3 +43,4 @@ class Locations:
         res = self._request(f"{self.locations_url}/{id}", req_type="PUT", post_data=payload)
         if res["code"] == 201:
             return True
+        return None

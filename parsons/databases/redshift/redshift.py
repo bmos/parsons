@@ -5,7 +5,7 @@ import os
 import pickle
 import random
 from contextlib import contextmanager
-from typing import List, Optional
+from typing import Optional
 
 import petl
 import psycopg2
@@ -415,7 +415,8 @@ class Redshift(
                     elif data_type == "json":
                         tbl = Table.from_json(local_path, line_delimited=line_delimited)
                     else:
-                        raise TypeError("Invalid data type provided")
+                        msg = "Invalid data type provided"
+                        raise TypeError(msg)
 
                     # Create the table
                     sql = self.create_statement(
@@ -481,7 +482,7 @@ class Redshift(
         acceptinvchars: bool = True,
         dateformat: str = "auto",
         timeformat: str = "auto",
-        varchar_max: Optional[List[str]] = None,
+        varchar_max: Optional[list[str]] = None,
         truncatecolumns: bool = False,
         columntypes: Optional[dict] = None,
         specifycols: Optional[bool] = None,
@@ -614,10 +615,7 @@ class Redshift(
                 See :ref:`parsons-table` for output options.
         """
         # Specify the columns for a copy statement.
-        if specifycols or (specifycols is None and template_table):
-            cols = tbl.columns
-        else:
-            cols = None
+        cols = tbl.columns if specifycols or (specifycols is None and template_table) else None
 
         with self.connection() as connection:
             # Check to see if the table exists. If it does not or if_exists = drop, then
@@ -1003,10 +1001,7 @@ class Redshift(
             \**copy_args: kwargs
                 See :func:`~parsons.databases.Redshift.copy` for options.
         """
-        if isinstance(primary_key, str):
-            primary_keys = [primary_key]
-        else:
-            primary_keys = primary_key
+        primary_keys = [primary_key] if isinstance(primary_key, str) else primary_key
 
         # Set distkey and sortkey to argument or primary key. These keys will be used
         # for the staging table and, if it does not already exist, the destination table.
@@ -1048,7 +1043,8 @@ class Redshift(
             """
             ).first
             if diff > 0:
-                raise ValueError("Primary key column contains duplicate values.")
+                msg = "Primary key column contains duplicate values."
+                raise ValueError(msg)
 
         with self.connection() as connection:
             try:
@@ -1064,10 +1060,11 @@ class Redshift(
 
                 if from_s3:
                     if table_obj is not None:
-                        raise ValueError(
+                        msg = (
                             "upsert(... from_s3=True) requires the first argument (table_obj)"
                             " to be None. from_s3 and table_obj are mutually exclusive."
                         )
+                        raise ValueError(msg)
                     self.copy_s3(staging_tbl, template_table=target_table, **copy_args)
                 else:
                     self.copy(

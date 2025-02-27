@@ -99,27 +99,24 @@ class TestTargetSmartAPI(unittest.TestCase):
         m.get(self.ts.connection.uri + "person/data-enhance", json=json)
 
         # Assert response is expected structure
-        self.assertTrue(validate_list(expected, self.ts.data_enhance("IL-12568678")))
+        assert validate_list(expected, self.ts.data_enhance("IL-12568678"))
 
         # Assert exception on missing state
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             self.ts.data_enhance("vb0001", search_id_type="votebuilder")
 
         # Assert exception on missing state
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             self.ts.data_enhance("vb0001", search_id_type="smartvan")
 
         # Assert exception on missing state
-        with self.assertRaises(Exception):
+        with pytest.raises(Exception):
             self.ts.data_enhance("vb0001", search_id_type="voter")
 
         # Assert works with state provided
         for i in ["votebuilder", "voter", "smartvan"]:
-            self.assertTrue(
-                validate_list(
-                    expected,
-                    self.ts.data_enhance("IL-12568678", search_id_type=i, state="IL"),
-                )
+            assert validate_list(
+                expected, self.ts.data_enhance("IL-12568678", search_id_type=i, state="IL")
             )
 
     @requests_mock.Mocker()
@@ -177,10 +174,10 @@ class TestTargetSmartAPI(unittest.TestCase):
                 address="908 N Washtenaw, Chicago, IL",
             )
 
-        self.assertTrue(validate_list(expected, rad_search()))
+        assert validate_list(expected, rad_search())
 
     def test_rad_search_no_first_name(self):
-        with self.assertRaisesRegex(ValueError, "First name is required"):
+        with pytest.raises(ValueError, match="First name is required"):
             self.ts.radius_search(
                 first_name=None,
                 last_name="Burchard",
@@ -189,7 +186,7 @@ class TestTargetSmartAPI(unittest.TestCase):
             )
 
     def test_rad_search_no_last_name(self):
-        with self.assertRaisesRegex(ValueError, "Last name is required"):
+        with pytest.raises(ValueError, match="Last name is required"):
             self.ts.radius_search(
                 first_name="BILLY",
                 last_name=None,
@@ -199,7 +196,7 @@ class TestTargetSmartAPI(unittest.TestCase):
 
     # Assert response is expected structure
     def test_rad_search_no_address_or_latlon(self):
-        with self.assertRaisesRegex(ValueError, "Lat/Long or Address required"):
+        with pytest.raises(ValueError, match="Lat/Long or Address required"):
             self.ts.radius_search(
                 first_name="BILLY",
                 last_name="Burchard",
@@ -219,39 +216,30 @@ class TestTargetSmartAPI(unittest.TestCase):
     def test_district_point(self, m):
         # Test Points
         m.get(self.ts.connection.uri + "service/district", json=district_point)
-        self.assertTrue(
-            validate_list(
-                district_expected,
-                self.ts.district(search_type="point", latitude="41.898369", longitude="-87.694382"),
-            )
+        assert validate_list(
+            district_expected,
+            self.ts.district(search_type="point", latitude="41.898369", longitude="-87.694382"),
         )
 
     @requests_mock.Mocker()
     def test_district_zip(self, m):
         # Test Zips
         m.get(self.ts.connection.uri + "service/district", json=district_zip)
-        self.assertTrue(
-            validate_list(
-                zip_expected,
-                self.ts.district(search_type="zip", zip5="60622", zip4="7194"),
-            )
+        assert validate_list(
+            zip_expected, self.ts.district(search_type="zip", zip5="60622", zip4="7194")
         )
 
     @requests_mock.Mocker()
     def test_district_address(self, m):
         # Test Address
         m.get(self.ts.connection.uri + "service/district", json=address_response)
-        self.assertTrue(
-            validate_list(
-                district_expected,
-                self.ts.district(search_type="address", address="908 N Main St, Chicago, IL 60611"),
-            )
+        assert validate_list(
+            district_expected,
+            self.ts.district(search_type="address", address="908 N Main St, Chicago, IL 60611"),
         )
 
     @requests_mock.Mocker()
     def test_phone(self, m):
         # Test phone
         m.get(self.ts.connection.uri + "person/phone-search", json=phone_response)
-        self.assertTrue(
-            validate_list(phone_expected, self.ts.phone(Table([{"phone": 4435705355}])))
-        )
+        assert validate_list(phone_expected, self.ts.phone(Table([{"phone": 4435705355}])))

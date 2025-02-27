@@ -129,15 +129,18 @@ class SavedLists:
         # will check that the folder exists and if the list already exists.
         logger.info("Validating folder id and list name.")
         if folder_id not in [x["folderId"] for x in self.get_folders()]:
-            raise ValueError("Folder does not exist or is not shared with API user.")
+            msg = "Folder does not exist or is not shared with API user."
+            raise ValueError(msg)
 
         if list_name in [x["name"] for x in self.get_saved_lists(folder_id)] and not overwrite:
-            raise ValueError(
+            msg = (
                 "Saved list already exists. Set overwrite argument to list ID or change list name."
             )
+            raise ValueError(msg)
 
         if delimiter not in ["csv", "tab", "pipe"]:
-            raise ValueError("Delimiter must be one of 'csv', 'tab' or 'pipe'")
+            msg = "Delimiter must be one of 'csv', 'tab' or 'pipe'"
+            raise ValueError(msg)
 
         columns = [{"name": c} for c in columns]
         delimiter = delimiter.capitalize()
@@ -224,14 +227,16 @@ class SavedLists:
         # will check that the folder exists and if the list already exists.
         logger.info("Validating folder id and list name.")
         if folder_id not in [x["folderId"] for x in self.get_folders()]:
-            raise ValueError("Folder does not exist or is not shared with API user.")
+            msg = "Folder does not exist or is not shared with API user."
+            raise ValueError(msg)
 
         if not replace:
             if list_name in [x["name"] for x in self.get_saved_lists(folder_id)]:
-                raise ValueError(
+                msg = (
                     "Saved list already exists. Set to replace argument to True or "
                     "change list name."
                 )
+                raise ValueError(msg)
 
         # i think we dont need this if we have the warning in the funciton description,
         # perhapse a style/standanrds decision

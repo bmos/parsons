@@ -213,10 +213,11 @@ class TargetSmartAutomation:
             if f == f"{job_name}.job.xml.bad":
                 logger.info(f"Match job {job_name} configuration error.")
                 #  To Do: Lift up the configuration error.
-                raise ValueError(
+                msg = (
                     "Job configuration failed. If you provided an email"
                     "address, you will be sent more details."
                 )
+                raise ValueError(msg)
 
             pass
 

@@ -63,7 +63,8 @@ class RedshiftCreateTable(DatabaseCreateStatement):
         tbl.table = petl.setheader(tbl.table, self.column_name_validate(tbl.columns))
 
         if tbl.num_rows == 0:
-            raise ValueError("Table is empty. Must have 1 or more rows.")
+            msg = "Table is empty. Must have 1 or more rows."
+            raise ValueError(msg)
 
         mapping = self.generate_data_types(tbl)
 

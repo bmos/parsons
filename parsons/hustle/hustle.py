@@ -83,7 +83,7 @@ class Hustle:
         self._error_check(r, raise_on_error)
 
         # If a single item return the dict
-        if "items" not in r.json().keys():
+        if "items" not in r.json():
             return r.json()
 
         result = r.json()["items"]
@@ -299,10 +299,12 @@ class Hustle:
                 See :ref:`parsons-table` for output options.
         """
         if organization_id is None and group_id is None:
-            raise ValueError("Either organization_id or group_id required.")
+            msg = "Either organization_id or group_id required."
+            raise ValueError(msg)
 
         if organization_id is not None and group_id is not None:
-            raise ValueError("Only one of organization_id and group_id may be populated.")
+            msg = "Only one of organization_id and group_id may be populated."
+            raise ValueError(msg)
 
         if organization_id:
             endpoint = f"organizations/{organization_id}/leads"
@@ -432,7 +434,8 @@ class Hustle:
 
             # Group Id check
             if not group_id and "group_id" not in table.columns:
-                raise ValueError("Group Id must be passed as an argument or a column value.")
+                msg = "Group Id must be passed as an argument or a column value."
+                raise ValueError(msg)
             if group_id:
                 lead["group_id"] = group_id
 

@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Union
+from typing import Union
 
 from parsons.utilities import json_format
 
@@ -193,7 +193,7 @@ class People:
         first_name=None,
         last_name=None,
         date_of_birth=None,
-        email: Union[str, List[Dict[str, Union[str, bool]]], None] = None,
+        email: Union[str, list[dict[str, Union[str, bool]]], None] = None,
         phone=None,
         phone_type=None,
         street_number=None,
@@ -294,7 +294,7 @@ class People:
         first_name=None,
         last_name=None,
         date_of_birth=None,
-        email: Union[str, List[Dict[str, Union[str, bool]]], None] = None,
+        email: Union[str, list[dict[str, Union[str, bool]]], None] = None,
         phone=None,
         phone_type="H",
         street_number=None,
@@ -382,8 +382,7 @@ class People:
             and None in [firstName, lastName, addressLine1, zipOrPostalCode]
             and None in [email]
         ):
-            raise ValueError(
-                """
+            msg = """
                              Person find must include the following minimum
                              combinations to conduct a search.
                                 - first_name, last_name, email
@@ -392,7 +391,7 @@ class People:
                                 - first_name, last_name, street_number, street_name, zip
                                 - email
                             """
-            )
+            raise ValueError(msg)
 
         return True
 
@@ -400,27 +399,7 @@ class People:
         self,
         id,
         id_type="vanid",
-        expand_fields=[
-            "contribution_history",
-            "addresses",
-            "phones",
-            "emails",
-            "codes",
-            "custom_fields",
-            "external_ids",
-            "preferences",
-            "recorded_addresses",
-            "reported_demographics",
-            "suppressions",
-            "cases",
-            "custom_properties",
-            "districts",
-            "election_records",
-            "membership_statuses",
-            "notes",
-            "organization_roles",
-            "disclosure_field_values",
-        ],
+        expand_fields=None,
     ):
         """
         Returns a single person record using their VANID or external id.
@@ -443,6 +422,28 @@ class People:
             A person dict
         """
         # Change end point based on id type
+        if expand_fields is None:
+            expand_fields = [
+                "contribution_history",
+                "addresses",
+                "phones",
+                "emails",
+                "codes",
+                "custom_fields",
+                "external_ids",
+                "preferences",
+                "recorded_addresses",
+                "reported_demographics",
+                "suppressions",
+                "cases",
+                "custom_properties",
+                "districts",
+                "election_records",
+                "membership_statuses",
+                "notes",
+                "organization_roles",
+                "disclosure_field_values",
+            ]
         url = "people/"
 
         id_type = "" if id_type in ("vanid", None) else f"{id_type}:"
@@ -662,13 +663,15 @@ class People:
             json["responses"] = response
 
         if result_code_id is not None and response is not None:
-            raise ValueError("Both result_code_id and responses cannot be specified.")
+            msg = "Both result_code_id and responses cannot be specified."
+            raise ValueError(msg)
 
         if isinstance(response, dict):
             json["responses"] = [response]
 
         if result_code_id is not None and response is not None:
-            raise ValueError("Both result_code_id and responses cannot be specified.")
+            msg = "Both result_code_id and responses cannot be specified."
+            raise ValueError(msg)
 
         return self.connection.post_request(url, json=json)
 
@@ -707,10 +710,7 @@ class People:
             ``None``
         """
         # Set url based on id_type
-        if id_type == "vanid":
-            url = f"people/{id}/codes"
-        else:
-            url = f"people/{id_type}:{id}/codes"
+        url = f"people/{id}/codes" if id_type == "vanid" else f"people/{id_type}:{id}/codes"
 
         json = {"codeId": code_id}
 
@@ -738,5 +738,4 @@ class People:
         url = f"people/{source_vanid}/mergeInto"
         json = {"vanId": primary_vanid}
 
-        r = self.connection.put_request(url, json=json)
-        return r
+        return self.connection.put_request(url, json=json)

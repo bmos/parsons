@@ -152,7 +152,7 @@ class S3:
                 Dict mapping the keys to info about each key. The info includes 'LastModified',
                 'Size', and 'Owner'.
         """
-        keys_dict = dict()
+        keys_dict = {}
         logger.debug(f"Fetching keys in {bucket} bucket")
 
         continuation_token = None
@@ -449,6 +449,4 @@ class S3:
 
         """
         all_buckets = self.list_buckets()
-        buckets = [x for x in all_buckets if bucket_subname in x.split("-")]
-
-        return buckets
+        return [x for x in all_buckets if bucket_subname in x.split("-")]

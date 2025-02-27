@@ -252,11 +252,9 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
             values = [str(row) for row in tbl.data]
 
         # Create full insert statement
-        sql = f"""INSERT INTO {table_name}
+        return f"""INSERT INTO {table_name}
                   ({",".join(tbl.columns)})
                   VALUES {",".join(values)};"""
-
-        return sql
 
     def _create_table_precheck(self, connection, table_name, if_exists):
         """
@@ -275,12 +273,14 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
                 True if the table needs to be created, False otherwise.
         """
         if if_exists not in ["fail", "truncate", "append", "drop"]:
-            raise ValueError("Invalid value for `if_exists` argument")
+            msg = "Invalid value for `if_exists` argument"
+            raise ValueError(msg)
 
         # If the table exists, evaluate the if_exists argument for next steps.
         if self.table_exists(table_name):
             if if_exists == "fail":
-                raise ValueError("Table already exists.")
+                msg = "Table already exists."
+                raise ValueError(msg)
 
             if if_exists == "truncate":
                 sql = f"TRUNCATE TABLE {table_name}"
@@ -293,9 +293,9 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
                 self.query_with_connection(sql, connection, commit=False)
                 logger.info(f"{table_name} dropped.")
                 return True
+            return None
 
-        else:
-            return True
+        return True
 
     def table_exists(self, table_name: str) -> bool:
         """
@@ -309,9 +309,7 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
             boolean
                 ``True`` if the table exists and ``False`` if it does not.
         """
-        if self.query(f"SHOW TABLES LIKE '{table_name}'").first == table_name:
-            return True
-        return False
+        return self.query(f"SHOW TABLES LIKE '{table_name}'").first == table_name
 
     def table(self, table_name):
         # Return a BaseTable table object

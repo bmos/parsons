@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 class Questions:
     """A class to access the Questions PDI API endpoint."""
 
@@ -40,9 +43,9 @@ class Questions:
         type: str,
         category: str,
         answer_options: list,
-        question_label: str = None,
-        question_description: str = None,
-        candidate_issue_id: str = None,
+        question_label: Optional[str] = None,
+        question_description: Optional[str] = None,
+        candidate_issue_id: Optional[str] = None,
         default: bool = True,
         *args,
     ):

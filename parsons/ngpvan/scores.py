@@ -97,15 +97,11 @@ class Scores:
             ``None``
         """
         if status not in ["pending approval", "approved", "disapproved", "canceled"]:
-            raise ValueError(
-                """Valid inputs for status are, 'pending approval',
+            msg = """Valid inputs for status are, 'pending approval',
                              'approved','disapproved','canceled'"""
-            )
+            raise ValueError(msg)
 
-        if status == "pending approval":
-            status = "PendingApproval"
-        else:
-            status = status.capitalize()
+        status = "PendingApproval" if status == "pending approval" else status.capitalize()
 
         json = {"loadStatus": status}
 
@@ -285,7 +281,8 @@ class FileLoadingJobs:
         # as some urls might not end in ".zip".
 
         if delimiter not in ["csv", "tab", "pipe"]:
-            raise ValueError("Delimiter must be one of 'csv', 'tab' or 'pipe'")
+            msg = "Delimiter must be one of 'csv', 'tab' or 'pipe'"
+            raise ValueError(msg)
 
         delimiter = delimiter.capitalize()
 
@@ -375,7 +372,8 @@ class FileLoadingJobs:
         # as some urls might not end in ".zip".
 
         if delimiter not in ["csv", "tab", "pipe"]:
-            raise ValueError("Delimiter must be one of 'csv', 'tab' or 'pipe'")
+            msg = "Delimiter must be one of 'csv', 'tab' or 'pipe'"
+            raise ValueError(msg)
 
         delimiter = delimiter.capitalize()
 

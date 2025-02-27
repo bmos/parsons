@@ -11,7 +11,7 @@ import pytest
 from parsons.notifications.sendmail import EmptyListError, SendMail
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def dummy_sendmail():
     """
     Have to create a dummy class that inherits from SendMail and defines a couple
@@ -83,7 +83,7 @@ class TestSendMailCreateMessageAttachments:
         assert message.get_payload()[1].get_content_type() == "text/html"
 
     @pytest.mark.parametrize(
-        "filename,expected_type",
+        ("filename", "expected_type"),
         [
             ("image.png", MIMEImage),
             ("application.exe", MIMEApplication),
@@ -128,7 +128,7 @@ class TestSendMailValidateEmailString:
 
 
 class TestSendMailSendEmail:
-    @pytest.fixture(scope="function")
+    @pytest.fixture
     def patched_sendmail(self):
         class PatchedSendMail(SendMail):
             def __init__(self):

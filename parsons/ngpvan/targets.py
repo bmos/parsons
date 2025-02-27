@@ -17,8 +17,8 @@ class Targets:
     def __init__(self, van_connection):
         self.connection = van_connection
 
-    def obj_dict(obj):
-        return obj.__dict__
+    def obj_dict(self):
+        return self.__dict__
 
     def get_targets(self):
         """
@@ -62,9 +62,9 @@ class Targets:
             return Table(petl.fromcsv(url, encoding="utf-8-sig"))
         if job_status == "Pending" or job_status == "InProcess":
             logger.info(f"Target export job is pending or in process for {export_job_id}.")
-        else:
-            msg = f"Target export failed for {export_job_id}"
-            raise TargetsFailed(msg)
+            return None
+        msg = f"Target export failed for {export_job_id}"
+        raise TargetsFailed(msg)
 
     def create_target_export(self, target_id, webhook_url=None):
         """

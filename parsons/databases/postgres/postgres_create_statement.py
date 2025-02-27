@@ -61,7 +61,8 @@ class PostgresCreateStatement(DatabaseCreateStatement):
         # Postgres.
 
         if tbl.num_rows == 0:
-            raise ValueError("Table is empty. Must have 1 or more rows.")
+            msg = "Table is empty. Must have 1 or more rows."
+            raise ValueError(msg)
 
         # Validate and rename column names if needed
         tbl.table = petl.setheader(tbl.table, self.column_name_validate(tbl.columns))

@@ -202,7 +202,8 @@ def distribute_task(
         depending on how this method is invoked.
     """
     if storage not in ("s3", "local"):
-        raise DistributeTaskException("storage argument must be s3 or local")
+        msg = "storage argument must be s3 or local"
+        raise DistributeTaskException(msg)
     bucket = check("S3_TEMP_BUCKET", bucket)
     csvdata = StringIO()
     outcsv = csv.writer(csvdata)
@@ -250,7 +251,7 @@ def process_task_portion(
         filedata = FAKE_STORAGE.get_range(bucket, storagekey, rangestart, rangeend)
 
     lines = list(csv.reader(TextIOWrapper(BytesIO(filedata), encoding="utf-8-sig")))
-    table = Table([header] + lines)
+    table = Table([header, *lines])
     if catch:
         try:
             func(table, **func_kwargs)
@@ -269,3 +270,4 @@ def process_task_portion(
             }
     else:
         func(table, **func_kwargs)
+        return None

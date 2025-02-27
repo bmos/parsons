@@ -10,7 +10,7 @@ import os
 import tempfile
 import time
 import urllib
-from typing import Dict, List, Optional, Union
+from typing import Optional, Union
 from zipfile import ZipFile
 
 from parsons.etl import Table
@@ -110,8 +110,7 @@ class CatalistMatch:
 
         # Loads to Catalist SFTP bucket are expcted in the client's uploads bucket
         # So we don't need to explicitly include that part of the path
-        result = f"file://{remote_path.replace('myUploads/', '')}"
-        return result
+        return f"file://{remote_path.replace('myUploads/', '')}"
 
     def match(
         self,
@@ -121,7 +120,7 @@ class CatalistMatch:
         export_filename_suffix: Optional[str] = None,
         input_subfolder: Optional[str] = None,
         copy_to_sandbox: bool = False,
-        static_values: Optional[Dict[str, Union[str, int]]] = None,
+        static_values: Optional[dict[str, Union[str, int]]] = None,
         wait: int = 30,
     ) -> Table:
         """
@@ -161,8 +160,7 @@ class CatalistMatch:
             copy_to_sandbox=copy_to_sandbox,
             static_values=static_values,
         )
-        result = self.await_completion(response["id"], wait=wait)
-        return result
+        return self.await_completion(response["id"], wait=wait)
 
     def upload(
         self,
@@ -173,7 +171,7 @@ class CatalistMatch:
         export_filename_suffix: Optional[str] = None,
         input_subfolder: Optional[str] = None,
         copy_to_sandbox: bool = False,
-        static_values: Optional[Dict[str, Union[str, int]]] = None,
+        static_values: Optional[dict[str, Union[str, int]]] = None,
     ) -> dict:
         """
         Load table to the Catalist Match API, returns response with job metadata.
@@ -207,10 +205,7 @@ class CatalistMatch:
         sftp_file_path = self.load_table_to_sftp(table, input_subfolder)
         sftp_file_path_encoded = base64.b64encode(sftp_file_path.encode("ascii")).decode("ascii")
 
-        if export:
-            action = "export%2Cpublish"
-        else:
-            action = "publish"
+        action = "export%2Cpublish" if export else "publish"
 
         # Create endpoint using options
         endpoint_params = [
@@ -229,7 +224,7 @@ class CatalistMatch:
         endpoint = "/".join(endpoint_params)
 
         # Assemble query parameters
-        query_params: Dict[str, Union[str, int]] = {"token": self.connection.token["access_token"]}
+        query_params: dict[str, Union[str, int]] = {"token": self.connection.token["access_token"]}
         if copy_to_sandbox:
             query_params["copyToSandbox"] = "true"
         if static_values:
@@ -243,18 +238,16 @@ class CatalistMatch:
 
         response = self.connection.get_request(endpoint)
 
-        result = response[0]
-
-        return result
+        return response[0]
 
     def action(
         self,
-        file_ids: Union[str, List[str]],
+        file_ids: Union[str, list[str]],
         match: bool = False,
         export: bool = False,
         export_filename_suffix: Optional[str] = None,
         copy_to_sandbox: bool = False,
-    ) -> List[dict]:
+    ) -> list[dict]:
         """
         Perform actions on existing files.
 
@@ -305,16 +298,13 @@ class CatalistMatch:
 
         endpoint = endpoint + "?" + urllib.parse.urlencode(query_params)
 
-        result = self.connection.get_request(endpoint)
-
-        return result
+        return self.connection.get_request(endpoint)
 
     def status(self, id: str) -> dict:
         """Check status of a match job."""
         endpoint = "/".join(["status", "id", id])
         query_params = {"token": self.connection.token["access_token"]}
-        result = self.connection.get_request(endpoint, params=query_params)
-        return result
+        return self.connection.get_request(endpoint, params=query_params)
 
     def await_completion(
         self,
@@ -341,8 +331,7 @@ class CatalistMatch:
             logger.info(f"Job {id} has status {status}, awaiting completion.")
             time.sleep(wait)
 
-        result = self.load_matches(id=id)
-        return result
+        return self.load_matches(id=id)
 
     def load_matches(self, id: str) -> Table:
         """
@@ -375,7 +364,7 @@ class CatalistMatch:
             raise RuntimeError(err_msg)
 
         remote_filepaths = self.sftp.list_directory("/myDownloads/")
-        remote_filename = [filename for filename in remote_filepaths if id in filename][0]
+        remote_filename = next(filename for filename in remote_filepaths if id in filename)
         remote_filepath = "/myDownloads/" + remote_filename
         temp_file_zip = self.sftp.get_file(
             remote_path=remote_filepath, export_chunk_size=DEFAULT_EXPORT_CHUNK_SIZE
@@ -387,12 +376,11 @@ class CatalistMatch:
 
         filepath = os.listdir(temp_dir)[0]
 
-        result = Table.from_csv(os.path.join(temp_dir, filepath), delimiter="\t")
-        return result
+        return Table.from_csv(os.path.join(temp_dir, filepath), delimiter="\t")
 
     def validate_table(self, table: Table, template_id: str = "48827") -> None:
         """Validate table structure and contents."""
-        if not template_id == "48827":
+        if template_id != "48827":
             logger.warning(f"No validator implemented for template {template_id}.")
             return
 
@@ -414,7 +402,7 @@ class CatalistMatch:
             "matchbackid",
         ]
 
-        required_columns: List[str] = ["first_name", "last_name"]
+        required_columns: list[str] = ["first_name", "last_name"]
         actual_table_columns = table.columns
 
         unexpected_columns = [
@@ -431,5 +419,6 @@ class CatalistMatch:
             errors["missing_required_columns"] = missing_required_columns
 
         if errors:
-            raise ValueError("Input table does not have the right structure. %s", errors)
+            msg = "Input table does not have the right structure. %s"
+            raise ValueError(msg, errors)
         logger.info("Table structure validated.")

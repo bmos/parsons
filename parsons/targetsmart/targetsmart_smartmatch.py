@@ -82,7 +82,7 @@ def _add_join_id(input_table):
 
 
 def _prepare_input(intable, tmpdir):
-    valid = VALID_FIELDS + [INTERNAL_JOIN_ID]
+    valid = [*VALID_FIELDS, INTERNAL_JOIN_ID]
     supported = set(intable.fieldnames()) & set(valid)
     if not supported:
         msg = (
@@ -198,15 +198,16 @@ class SmartMatch:
         poll_url = f"{url}/poll"
 
         if not input_table:
-            raise ValueError(
-                "Missing `input_table`. A Petl table must be provided with valid input rows."
-            )
+            msg = "Missing `input_table`. A Petl table must be provided with valid input rows."
+            raise ValueError(msg)
 
         if not hasattr(input_table, "tocsv"):
-            raise ValueError("`input_table` isn't a valid table.")
+            msg = "`input_table` isn't a valid table."
+            raise ValueError(msg)
 
         if int(max_matches) > 10:
-            raise ValueError("max_matches cannot be greater than 10")
+            msg = "max_matches cannot be greater than 10"
+            raise ValueError(msg)
 
         if not tmp_location:
             tmp_location = tempfile.mkdtemp()
@@ -268,46 +269,44 @@ class SmartMatch:
 
         # Download SmartMatch .csv.gz results, decompress, and Petl table wrap.
         # The final tmp file cannot be deleted due to Petl tables being lazy.
-        with tempfile.NamedTemporaryFile(
-            prefix="smartmatch_output",
-            suffix=".csv.gz",
-            dir=tmp_location,
-            delete=not keep_smartmatch_output_gz_file,
-        ) as tmp_gz:
-            with tempfile.NamedTemporaryFile(
+        with (
+            tempfile.NamedTemporaryFile(
+                prefix="smartmatch_output",
+                suffix=".csv.gz",
+                dir=tmp_location,
+                delete=not keep_smartmatch_output_gz_file,
+            ) as tmp_gz,
+            tempfile.NamedTemporaryFile(
                 prefix="smartmatch_output",
                 suffix=".csv",
                 dir=tmp_location,
                 delete=False,
-            ) as tmp_csv:
-                logger.info(
-                    f"Downloading the '{submit_filename}' SmartMatch results to {tmp_gz.name}."
-                )
-                _smartmatch_download(download_url, tmp_gz)
-                tmp_gz.flush()
+            ) as tmp_csv,
+        ):
+            logger.info(f"Downloading the '{submit_filename}' SmartMatch results to {tmp_gz.name}.")
+            _smartmatch_download(download_url, tmp_gz)
+            tmp_gz.flush()
 
-                logger.info("Decompressing results")
-                with gzip.open(tmp_gz.name, "rb") as gz_reader:
-                    shutil.copyfileobj(gz_reader, tmp_csv)
-                tmp_csv.flush()
+            logger.info("Decompressing results")
+            with gzip.open(tmp_gz.name, "rb") as gz_reader:
+                shutil.copyfileobj(gz_reader, tmp_csv)
+            tmp_csv.flush()
 
-                raw_outtable = petl.fromcsv(tmp_csv.name, encoding="utf8").convert(
-                    INTERNAL_JOIN_ID, int
+            raw_outtable = petl.fromcsv(tmp_csv.name, encoding="utf8").convert(
+                INTERNAL_JOIN_ID, int
+            )
+            logger.info("SmartMatch remote execution successful. Joining results to input table.")
+            outtable = (
+                petl.leftjoin(
+                    input_table,
+                    raw_outtable,
+                    key=INTERNAL_JOIN_ID,
+                    tempdir=tmp_location,
                 )
-                logger.info(
-                    "SmartMatch remote execution successful. Joining results to input table."
-                )
-                outtable = (
-                    petl.leftjoin(
-                        input_table,
-                        raw_outtable,
-                        key=INTERNAL_JOIN_ID,
-                        tempdir=tmp_location,
-                    )
-                    .sort(key=INTERNAL_JOIN_ID)
-                    .cutout(INTERNAL_JOIN_ID)
-                )
-                if INTERNAL_JOIN_ID_CONFLICT in input_table.fieldnames():
-                    input_table = input_table.rename(INTERNAL_JOIN_ID_CONFLICT, INTERNAL_JOIN_ID)
+                .sort(key=INTERNAL_JOIN_ID)
+                .cutout(INTERNAL_JOIN_ID)
+            )
+            if INTERNAL_JOIN_ID_CONFLICT in input_table.fieldnames():
+                input_table = input_table.rename(INTERNAL_JOIN_ID_CONFLICT, INTERNAL_JOIN_ID)
 
-                return Table(outtable)
+            return Table(outtable)
