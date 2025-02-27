@@ -383,7 +383,8 @@ class AzureBlobStorage:
             local_path = table.to_json()
             content_type = "application/json"
         else:
-            raise ValueError(f"Unknown data_type value ({data_type}): must be one of: csv or json")
+            msg = f"Unknown data_type value ({data_type}): must be one of: csv or json"
+            raise ValueError(msg)
 
         return self.put_blob(
             container_name, blob_name, local_path, content_type=content_type, **kwargs

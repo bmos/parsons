@@ -85,9 +85,12 @@ def _prepare_input(intable, tmpdir):
     valid = VALID_FIELDS + [INTERNAL_JOIN_ID]
     supported = set(intable.fieldnames()) & set(valid)
     if not supported:
-        raise SmartMatchError(
+        msg = (
             "No supported field identifiers were found in the input table."
             f" Expecting one or more from: {VALID_FIELDS}"
+        )
+        raise SmartMatchError(
+            msg
         )
     return intable.cut(*supported)
 
@@ -235,8 +238,9 @@ class SmartMatch:
         response_1.raise_for_status()
         response_1_info = response_1.json()
         if response_1_info["error"]:
+            msg = f"SmartMatch workflow registration failed. Error: {response_1_info['error']}"
             raise SmartMatchError(
-                f"SmartMatch workflow registration failed. Error: {response_1_info['error']}"
+                msg
             )
 
         logger.info(

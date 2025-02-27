@@ -130,7 +130,8 @@ class Auth0:
         else:
             ret = requests.post(f"{self.base_url}/api/v2/users", headers=self.headers, data=payload)
         if ret.status_code != 200:
-            raise ValueError(f"Invalid response {ret.json()}")
+            msg = f"Invalid response {ret.json()}"
+            raise ValueError(msg)
         return ret
 
     def block_user(self, user_id, connection="Username-Password-Authentication"):
@@ -152,7 +153,8 @@ class Auth0:
             data=payload,
         )
         if ret.status_code != 200:
-            raise ValueError(f"Invalid response {ret.json()}")
+            msg = f"Invalid response {ret.json()}"
+            raise ValueError(msg)
         return ret
 
     def retrieve_all_users(self, connection="Username-Password-Authentication"):

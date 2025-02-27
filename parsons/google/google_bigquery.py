@@ -886,7 +886,8 @@ class GoogleBigQuery(DatabaseConnector):
             try:
                 schema_row = [i for i in job_config.schema if i.name.lower() == column.lower()][0]
             except IndexError:
-                raise IndexError(f"Column found in Table that was not found in schema: {column}")
+                msg = f"Column found in Table that was not found in schema: {column}"
+                raise IndexError(msg)
             schema.append(schema_row)
         job_config.schema = schema
 
@@ -1287,10 +1288,13 @@ class GoogleBigQuery(DatabaseConnector):
             try:
                 field_type = self._bigquery_type(best_type)
             except KeyError as e:
-                raise KeyError(
+                msg = (
                     "Column type not supported for load to BigQuery. "
                     "Consider converting to another type. "
                     f"[type={best_type}]"
+                )
+                raise KeyError(
+                    msg
                 ) from e
             field = bigquery.schema.SchemaField(stat["name"], field_type)
             fields.append(field)
@@ -1410,12 +1414,16 @@ class GoogleBigQuery(DatabaseConnector):
 
     def _validate_copy_inputs(self, if_exists: str, data_type: str):
         if if_exists not in ["fail", "truncate", "append", "drop"]:
-            raise ValueError(
+            msg = (
                 f"Unexpected value for if_exists: {if_exists}, must be one of "
                 '"append", "drop", "truncate", or "fail"'
             )
+            raise ValueError(
+                msg
+            )
         if data_type not in ["csv", "json"]:
-            raise ValueError(f"Only supports csv or json files [data_type = {data_type}]")
+            msg = f"Only supports csv or json files [data_type = {data_type}]"
+            raise ValueError(msg)
 
     def _load_table_from_uri(
         self, source_uris, destination, job_config, max_timeout, **load_kwargs

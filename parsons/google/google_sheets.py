@@ -58,10 +58,12 @@ class GoogleSheets:
             try:
                 return self.gspread_client.open_by_key(spreadsheet_id).get_worksheet(idx)
             except:  # noqa: E722
-                raise ValueError(f"Couldn't find worksheet {worksheet}")
+                msg = f"Couldn't find worksheet {worksheet}"
+                raise ValueError(msg)
 
         else:
-            raise ValueError(f"Couldn't find worksheet index or title {worksheet}")
+            msg = f"Couldn't find worksheet index or title {worksheet}"
+            raise ValueError(msg)
 
     def list_worksheets(self, spreadsheet_id):
         """
@@ -95,7 +97,8 @@ class GoogleSheets:
         for index, sheet in enumerate(sheets):
             if sheet.title == title:
                 return index
-        raise ValueError(f"Couldn't find sheet with title {title}")
+        msg = f"Couldn't find sheet with title {title}"
+        raise ValueError(msg)
 
     def get_worksheet(self, spreadsheet_id, worksheet=0):
         """

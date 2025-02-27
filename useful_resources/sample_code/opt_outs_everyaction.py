@@ -141,7 +141,8 @@ def attempt_optout(
                 )
                 logger.info("Error log complete.")
 
-            raise Exception(f"Connection Error {connection_error}")
+            err_msg = f"Connection Error {connection_error}"
+            raise Exception(err_msg)
 
 
 def main() -> None:

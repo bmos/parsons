@@ -346,7 +346,8 @@ class GoogleCloudStorage:
             local_file = table.to_json()
             content_type = "application/json"
         else:
-            raise ValueError(f"Unknown data_type value ({data_type}): must be one of: csv or json")
+            msg = f"Unknown data_type value ({data_type}): must be one of: csv or json"
+            raise ValueError(msg)
 
         try:
             blob.upload_from_filename(
@@ -415,7 +416,8 @@ class GoogleCloudStorage:
                 Secret key to authenticate storage transfer
         """
         if source not in ["gcs", "s3"]:
-            raise ValueError(f"Blob transfer only supports gcs and s3 sources [source={source}]")
+            msg = f"Blob transfer only supports gcs and s3 sources [source={source}]"
+            raise ValueError(msg)
         if source_path and source_path[-1] != "/":
             raise ValueError("Source path much end in a '/'")
 
@@ -502,9 +504,12 @@ class GoogleCloudStorage:
                     )
                     error_output = operation_metadata.error_breakdowns
                     if len(error_output) != 0:
-                        raise Exception(
+                        msg = (
                             f"""{blob_storage} to GCS Transfer Job
                             {create_result.name} failed with error: {error_output}"""
+                        )
+                        raise Exception(
+                            msg
                         )
                     logger.info(f"TransferJob: {create_result.name} succeeded.")
                     return

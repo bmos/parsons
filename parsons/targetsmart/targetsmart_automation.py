@@ -239,7 +239,8 @@ class TargetSmartAutomation:
                     if xml["jobcontext"]["state"] == "error":
                         # To Do: Parse these in a pretty way
                         logger.info(f"Match Error: {xml['jobcontext']['errors']}")
-                        raise ValueError(f"Match job failed. {xml['jobcontext']['errors']}")
+                        msg = f"Match job failed. {xml['jobcontext']['errors']}"
+                        raise ValueError(msg)
 
                     if xml["jobcontext"]["state"] == "success":
                         logger.info("Match complete.")

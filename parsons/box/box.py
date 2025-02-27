@@ -252,9 +252,12 @@ class Box:
             A Box File object
         """
         if format not in self.ALLOWED_FILE_FORMATS:
-            raise ValueError(
+            msg = (
                 f"Format argument to upload_table() must be in one "
                 f'of {self.ALLOWED_FILE_FORMATS}; found "{format}"'
+            )
+            raise ValueError(
+                msg
             )
 
         # Create a temp directory in which we will let Parsons create a
@@ -266,8 +269,9 @@ class Box:
             elif format == "json":
                 table.to_json(local_path=temp_file_path)
             else:
+                msg = f'Got (theoretically) impossible format option "{format}"'
                 raise SystemError(
-                    f'Got (theoretically) impossible format option "{format}"'
+                    msg
                 )  # pragma: no cover
 
             new_file = self.client.folder(folder_id).upload(
@@ -334,9 +338,12 @@ class Box:
             A Parsons Table.
         """
         if format not in self.ALLOWED_FILE_FORMATS:
-            raise ValueError(
+            msg = (
                 f"Format argument to upload_table() must be in one "
                 f'of {self.ALLOWED_FILE_FORMATS}; found "{format}"'
+            )
+            raise ValueError(
+                msg
             )
 
         # Temp file will be around as long as enclosing process is running,
@@ -349,8 +356,9 @@ class Box:
             return Table.from_csv(output_file_name)
         if format == "json":
             return Table.from_json(output_file_name)
+        msg = f'Got (theoretically) impossible format option "{format}"'
         raise SystemError(
-            f'Got (theoretically) impossible format option "{format}"'
+            msg
         )  # pragma: no cover
 
     def get_item_id(self, path, base_folder_id=DEFAULT_FOLDER_ID) -> str:
@@ -396,7 +404,8 @@ class Box:
                     break
 
             if item_id is None:
-                raise ValueError(f'No file or folder named "{this_element}"')
+                msg = f'No file or folder named "{this_element}"'
+                raise ValueError(msg)
 
             # If there are no more elements left in path, this is the item we're after.
             if not len(path):
@@ -405,7 +414,8 @@ class Box:
             # If there *are* more elements in the path, we need to check that this item is
             # in fact a folder so we can recurse and search inside it.
             if item.type != "folder":
-                raise ValueError(f'Invalid folder "{this_element}"')
+                msg = f'Invalid folder "{this_element}"'
+                raise ValueError(msg)
 
             return self.get_item_id(path=path, base_folder_id=item_id)
 
@@ -414,5 +424,6 @@ class Box:
         # recursion, just pass it on up.
         except ValueError as e:
             if base_folder_id == DEFAULT_FOLDER_ID:
-                raise ValueError(f'{e}: "{path}"')
+                msg = f'{e}: "{path}"'
+                raise ValueError(msg)
             raise

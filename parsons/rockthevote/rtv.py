@@ -95,7 +95,8 @@ class RockTheVote:
 
         if report_type:
             if report_type not in VALID_REPORT_TYPES:
-                raise RTVFailure(f"Invalid report type. Must be one of {VALID_REPORT_TYPES}")
+                msg = f"Invalid report type. Must be one of {VALID_REPORT_TYPES}"
+                raise RTVFailure(msg)
             report_parameters["report_type"] = report_type
         if since:
             since_date = parse_date(since).strftime(DATETIME_FORMAT)

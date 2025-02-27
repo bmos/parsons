@@ -425,7 +425,8 @@ class NewmodeV2:
         if response.status_code in success_codes:
             response_json = response.json() if client.json_check(response) else None
             return response_json[data_key] if data_key and response_json else response_json
-        raise Exception(f"API request encountered an error. Response: {response}")
+        err_msg = f"API request encountered an error. Response: {response}"
+        raise Exception(err_msg)
 
     def converted_request(
         self,
@@ -640,4 +641,5 @@ class Newmode:
             )
         if api_version.startswith("v1"):
             return NewmodeV1(api_user=api_user, api_password=api_password, api_version=api_version)
-        raise ValueError(f"{api_version} not supported.")
+        msg = f"{api_version} not supported."
+        raise ValueError(msg)

@@ -431,8 +431,9 @@ class GitHub:
         if res.status_code == 404:
             raise UnknownObjectException(status=404, data=res.content)
         if res.status_code != 200:
+            msg = f"Error downloading {path} from repo {repo_name}: {res.content}"
             raise ParsonsGitHubError(
-                f"Error downloading {path} from repo {repo_name}: {res.content}"
+                msg
             )
 
         with open(local_path, "wb") as f:

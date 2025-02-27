@@ -78,9 +78,12 @@ class Table(ETL, ToFrom):
             self.table = lst
 
         else:
-            raise ValueError(
+            msg = (
                 f"Could not initialize table from input type. "
                 f"Got {type(lst)}, expected list, tuple, or petl Table"
+            )
+            raise ValueError(
+                msg
             )
 
         if not self.is_valid_table():

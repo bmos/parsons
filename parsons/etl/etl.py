@@ -59,7 +59,8 @@ class ETL:
             if if_exists == "replace":
                 self.fill_column(column, value)
                 return self
-            raise ValueError(f"Column {column} already exists")
+            msg = f"Column {column} already exists"
+            raise ValueError(msg)
 
         self.table = self.table.addfield(column, value, index)
 
@@ -92,7 +93,8 @@ class ETL:
             `Parsons Table` and also updates self
         """
         if new_column_name in self.columns:
-            raise ValueError(f"Column {new_column_name} already exists")
+            msg = f"Column {new_column_name} already exists"
+            raise ValueError(msg)
 
         self.table = petl.rename(self.table, column_name, new_column_name)
 
@@ -117,9 +119,11 @@ class ETL:
         # Check if old column name exists and new column name does not exist
         for old_name, new_name in column_map.items():
             if old_name not in self.table.columns():
-                raise KeyError(f"Column name {old_name} does not exist")
+                msg = f"Column name {old_name} does not exist"
+                raise KeyError(msg)
             if new_name in self.table.columns():
-                raise ValueError(f"Column name {new_name} already exists")
+                msg = f"Column name {new_name} already exists"
+                raise ValueError(msg)
 
         # Uses the underlying petl method
         self.table = petl.rename(self.table, column_map)
@@ -954,7 +958,8 @@ class ETL:
                 # If we can't find our desired column in our current columns, then it's "missing"
                 if if_missing_columns == "fail":
                     # If our missing strategy is to fail, raise an exception
-                    raise TypeError(f"Table is missing column {desired_column}")
+                    msg = f"Table is missing column {desired_column}"
+                    raise TypeError(msg)
                 if if_missing_columns == "add":
                     # We have to add to our table
                     columns_to_add.append(desired_column)
@@ -964,8 +969,9 @@ class ETL:
                     final_header.append(desired_column)
                 elif if_missing_columns != "ignore":
                     # If it's not ignore, add, or fail, then it's not a valid strategy
+                    msg = f"Invalid option {if_missing_columns} for argument `if_missing_columns`"
                     raise TypeError(
-                        f"Invalid option {if_missing_columns} for argument `if_missing_columns`"
+                        msg
                     )
             else:
                 # We have found this in our current columns, so take it out of our list to search
@@ -980,7 +986,8 @@ class ETL:
             # Figure out what to do with our "extra" columns
             if if_extra_columns == "fail":
                 # If our missing strategy is to fail, raise an exception
-                raise TypeError(f"Table has extra column {current_column}")
+                msg = f"Table has extra column {current_column}"
+                raise TypeError(msg)
             if if_extra_columns == "ignore":
                 # If we're "ignore"ing our extra columns, we should keep them by adding them to
                 # our intermediate and final columns list
@@ -988,8 +995,9 @@ class ETL:
                 final_header.append(current_column)
             elif if_extra_columns != "remove":
                 # If it's not ignore, add, or fail, then it's not a valid strategy
+                msg = f"Invalid option {if_extra_columns} for argument `if_extra_columns`"
                 raise TypeError(
-                    f"Invalid option {if_extra_columns} for argument `if_extra_columns`"
+                    msg
                 )
 
         # Add any columns we need to add

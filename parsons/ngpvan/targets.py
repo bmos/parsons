@@ -63,7 +63,8 @@ class Targets:
         if job_status == "Pending" or job_status == "InProcess":
             logger.info(f"Target export job is pending or in process for {export_job_id}.")
         else:
-            raise TargetsFailed(f"Target export failed for {export_job_id}")
+            msg = f"Target export failed for {export_job_id}"
+            raise TargetsFailed(msg)
 
     def create_target_export(self, target_id, webhook_url=None):
         """

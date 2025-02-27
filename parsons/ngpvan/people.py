@@ -321,7 +321,8 @@ class People:
                 elif isinstance(email, list):
                     json["emails"] = email
                 else:
-                    raise ValueError(f"Unexpected data type for email argument: {type(email)}")
+                    msg = f"Unexpected data type for email argument: {type(email)}"
+                    raise ValueError(msg)
             if phone:  # To Do: Strip out non-integers from phone
                 json["phones"] = [{"phoneNumber": phone, "phoneType": phone_type}]
             if date_of_birth:

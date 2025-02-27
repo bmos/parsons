@@ -72,6 +72,7 @@ class Alchemy:
             schema, table = full_table_name.split(".")
         except ValueError as e:
             if "too many values to unpack" in str(e):
-                raise ValueError(f"Invalid database table {full_table_name}")
+                msg = f"Invalid database table {full_table_name}"
+                raise ValueError(msg)
 
         return schema, table

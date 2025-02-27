@@ -56,19 +56,24 @@ def discover_database(
 
     if len(detected) > 1:
         if default_connector is None:
-            raise OSError(
+            msg = (
                 f"Multiple database configurations detected: {detected}."
                 " Please specify a default connector."
+            )
+            raise OSError(
+                msg
             )
 
         if isinstance(default_connector, list):
             for connector in default_connector:
                 if connector.__name__ in detected:
                     return connector()
-            raise OSError(f"None of the default connectors {default_connector} were detected.")
+            msg = f"None of the default connectors {default_connector} were detected."
+            raise OSError(msg)
         if default_connector.__name__ in detected:
             return default_connector()
-        raise OSError(f"Default connector {default_connector} not detected. Detected: {detected}.")
+        msg = f"Default connector {default_connector} not detected. Detected: {detected}."
+        raise OSError(msg)
 
     if detected:
         return connectors[detected[0]]()

@@ -62,9 +62,12 @@ def parse_date(value, tzinfo=datetime.timezone.utc):
     elif isinstance(value, str):
         parsed = parse(value)
     else:
-        raise TypeError(
+        msg = (
             "Unable to parse value; must be one of string or int or datetime, but got type "
             f"{type(value)}"
+        )
+        raise TypeError(
+            msg
         )
 
     if not parsed.tzinfo:

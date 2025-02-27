@@ -57,7 +57,8 @@ class Person:
                 See :ref:`parsons-table` for output options.
         """
         if search_id_type in ["smartvan", "votebuilder", "voter"] and state is None:
-            raise KeyError(f"Search ID type '{search_id_type}' requires state kwarg")
+            msg = f"Search ID type '{search_id_type}' requires state kwarg"
+            raise KeyError(msg)
 
         if search_id_type not in (
             "voterbase",

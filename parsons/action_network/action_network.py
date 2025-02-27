@@ -1241,9 +1241,12 @@ class ActionNetwork:
             if isinstance(email_address[0], dict):
                 email_addresses_field = email_address
         else:
-            raise ValueError(
+            msg = (
                 f"Unexpected type for email_address. Got {type(email_address)}, "
                 "expected str or list."
+            )
+            raise ValueError(
+                msg
             )
 
         mobile_numbers_field = None

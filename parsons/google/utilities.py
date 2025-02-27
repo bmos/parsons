@@ -48,7 +48,8 @@ def hexavigesimal(n: int) -> str:
             The hexavigeseimal representation of n
     """
     if n < 1:
-        raise ValueError(f"This function only works for positive integers. Provided value {n}.")
+        msg = f"This function only works for positive integers. Provided value {n}."
+        raise ValueError(msg)
 
     chars = ""
     while n != 0:

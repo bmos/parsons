@@ -198,7 +198,8 @@ class NationBuilder:
 
         if not has_required_key:
             _keys = ", ".join(_required_keys)
-            raise ValueError(f"person dict must contain at least one key of {_keys}")
+            msg = f"person dict must contain at least one key of {_keys}"
+            raise ValueError(msg)
 
         url = "people/push"
         response = self.client.request(url, "PUT", data=json.dumps({"person": person}))

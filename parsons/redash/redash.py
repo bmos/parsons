@@ -55,13 +55,15 @@ class Redash:
 
     def _catch_runtime_error(self, res):
         if res.status_code != 200:
-            raise RuntimeError(f"Error. Status code: {res.status_code}. Reason: {res.reason}")
+            msg = f"Error. Status code: {res.status_code}. Reason: {res.reason}"
+            raise RuntimeError(msg)
 
     def _poll_job(self, session, job, query_id):
         start_secs = time.time()
         while job["status"] not in (3, 4):
             if self.timeout and start_secs + self.timeout < time.time():
-                raise RedashTimeout(f"Redash timeout: {self.timeout}")
+                msg = f"Redash timeout: {self.timeout}"
+                raise RedashTimeout(msg)
             poll_url = "{}/api/jobs/{}".format(self.base_url, job["id"])
             response = session.get(poll_url, verify=self.verify)
             response_json = response.json()
@@ -172,7 +174,8 @@ class Redash:
         )
 
         if response.status_code != 200:
-            raise RedashQueryFailed(f"Refresh failed for query {query_id}. {response.text}")
+            msg = f"Refresh failed for query {query_id}. {response.text}"
+            raise RedashQueryFailed(msg)
 
         job = response.json()["job"]
         result_id = self._poll_job(self.session, job, query_id)
@@ -182,11 +185,13 @@ class Redash:
                 verify=self.verify,
             )
             if response.status_code != 200:
+                msg = f"Failed getting results for query {query_id}. {response.text}"
                 raise RedashQueryFailed(
-                    f"Failed getting results for query {query_id}. {response.text}"
+                    msg
                 )
         else:
-            raise RedashQueryFailed(f"Failed getting result {query_id}. {response.text}")
+            msg = f"Failed getting result {query_id}. {response.text}"
+            raise RedashQueryFailed(msg)
         return Table.from_csv_string(response.text)
 
     def get_cached_query_results(self, query_id=None, query_api_key=None):
@@ -214,7 +219,8 @@ class Redash:
             verify=self.verify,
         )
         if response.status_code != 200:
-            raise RedashQueryFailed(f"Failed getting results for query {query_id}. {response.text}")
+            msg = f"Failed getting results for query {query_id}. {response.text}"
+            raise RedashQueryFailed(msg)
         return Table.from_csv_string(response.text)
 
     @classmethod

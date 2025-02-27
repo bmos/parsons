@@ -105,7 +105,8 @@ class APIConnector:
             return r.json()
         if return_format == "content":
             return r.content
-        raise RuntimeError(f"{return_format} is not a valid format, change to json or content")
+        msg = f"{return_format} is not a valid format, change to json or content"
+        raise RuntimeError(msg)
 
     def post_request(
         self, url, params=None, data=None, json=None, success_codes=[200, 201, 202, 204]
@@ -239,7 +240,8 @@ class APIConnector:
 
             # Some errors return JSONs with useful info about the error. Return it if exists.
             if self.json_check(resp):
-                raise HTTPError(f"{message}, json: {resp.json()}")
+                msg = f"{message}, json: {resp.json()}"
+                raise HTTPError(msg)
             raise HTTPError(message)
 
     def data_parse(self, resp):
