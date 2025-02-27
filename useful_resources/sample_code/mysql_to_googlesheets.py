@@ -47,7 +47,7 @@ def try_overwrite(table, request_count, sheet_id, tab_index):
         gsheets.overwrite_sheet(sheet_id, table, worksheet=tab_index, user_entered_value=False)
 
     except APIError as e:
-        print(f"trying to overwrite {tab_index} for the {request_count}th time")
+        logger.info(f"trying to overwrite {tab_index} for the {request_count}th time")
         if request_count > 60:
             raise APIError(e)
         time.sleep(80)
