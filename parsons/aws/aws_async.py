@@ -1,6 +1,7 @@
 import importlib
 import inspect
 import json
+import logging
 import os
 
 import boto3
@@ -115,7 +116,7 @@ def import_and_get_task(task_path, instance_init_kwargs=None):
         return app_function
 
     def init_and_run(*args, **kwargs):
-        print("INITRUN", args, kwargs)
+        logging.info("INITRUN", args, kwargs)
         if len(class_func) == 3:  # instance
             instance = app_function  # actually the class
         else:

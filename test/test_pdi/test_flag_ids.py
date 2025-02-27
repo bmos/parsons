@@ -1,3 +1,4 @@
+import logging
 from contextlib import contextmanager
 
 # import json
@@ -38,7 +39,7 @@ def create_temp_flag_id():
     @contextmanager
     def temp_flag_id(pdi, my_flag_id=None):
         flag_id = my_flag_id or pdi.create_flag_id("amm", True)
-        print(flag_id)
+        logging.info(flag_id)
 
         yield flag_id
 

@@ -1,3 +1,4 @@
+import logging
 import os
 import unittest
 import unittest.mock as mock
@@ -86,7 +87,7 @@ class TestSalesforce(unittest.TestCase):
         )
         response = self.sf.upsert_record("Contact", fake_data, "id")
         self.sf.client.bulk.Contact.upsert.assert_called_with(fake_data.to_dicts(), "id")
-        print(response)
+        logging.info(response)
         assert not response[0]["created"]
         assert response[1]["created"]
 

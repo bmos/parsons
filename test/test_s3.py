@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 import unittest
@@ -49,7 +50,7 @@ class TestS3(unittest.TestCase):
                 self.s3.put_file(self.test_bucket, self.test_key_2, csv_path_2)
                 break
             except Exception:
-                print("Retrying putting file in bucket...")
+                logging.info("Retrying putting file in bucket...")
                 retry += 1
 
     def tearDown(self):

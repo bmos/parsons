@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from base64 import b64decode, b64encode
 
@@ -42,7 +43,7 @@ def decode_credential(credential, save_path=None, export=True, echo=False):
             os.environ[key] = str(val)
 
     if echo:
-        print(decoded_dict)
+        logging.info(decoded_dict)
 
     return decoded_dict
 
@@ -196,7 +197,7 @@ def main(credential, fn, is_file=False, save_path="", no_export=False, suppress=
                 cred = credential.split(",")
                 enc_cred = encode_from_env(cred)
         if not suppress:
-            print(enc_cred)
+            logging.info(enc_cred)
     elif fn == "decode":
         decode_credential(credential, save_path, not no_export, not suppress)
     else:

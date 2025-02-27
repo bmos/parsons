@@ -1,5 +1,6 @@
 import gzip
 import json
+import logging
 import unittest
 import unittest.mock
 
@@ -65,7 +66,7 @@ class TestAuth0(unittest.TestCase):
         connections = [{"id": 1234, "name": "Username-Password-Authentication"}]
         m.get(f"{self.auth0.base_url}/api/v2/connections", json=connections)
         data = self.auth0.retrieve_all_users()
-        print(data)
+        logging.info(data)
 
         assert_matching_tables(self.auth0.retrieve_all_users(), Table(mock_users), True)
 

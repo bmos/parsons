@@ -1,3 +1,4 @@
+import logging
 import unittest
 
 from parsons import Table
@@ -38,19 +39,19 @@ class TestAsync(unittest.TestCase):
     def test_task_path_conversion(self):
         # fake_func
         fake_str = get_func_task_path(fake_func)
-        print("fake_str", fake_str)
+        logging.info("fake_str", fake_str)
         fake_renewed = import_and_get_task(fake_str)
         self.assertEqual(fake_renewed(1, 2, 3), (1, 2, 3, 56))
 
         # Table.from_csv_string @classmethod
         csv_str = get_func_task_path(Table.from_csv_string, Table)
-        print("csv_str", csv_str)
+        logging.info("csv_str", csv_str)
         csv_renewed = import_and_get_task(csv_str)
         assert_matching_tables(csv_renewed("x,y\n1,2"), Table([("x", "y"), ("1", "2")]))
 
         # Table.to_dicts (instance)
         dicts_str = get_func_task_path(Table.to_dicts, Table)
-        print("dicts_str", dicts_str)
+        logging.info("dicts_str", dicts_str)
         dicts_renewed = import_and_get_task(dicts_str, {"lst": [("x", "y"), (1, 2)]})
         self.assertEqual(dicts_renewed(), [{"x": 1, "y": 2}])
 

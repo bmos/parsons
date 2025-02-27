@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import unittest
 
@@ -86,7 +87,7 @@ class TestRockTheVote(unittest.TestCase):
         rtv = RockTheVote(partner_id=partner_id, partner_api_key=partner_api_key)
 
         result = rtv.get_state_requirements("en", "fl", "33314")
-        print(result.columns)
+        logging.info(result.columns)
 
         self.assertEqual(result.num_rows, 1)
         self.assertEqual(result[0]["requires_party"], True)

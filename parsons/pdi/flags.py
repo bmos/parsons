@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from dateutil.parser import parse
@@ -64,7 +65,7 @@ class Flags:
                 )
             except ValueError:
                 raise ValueError("Invalid date format.")
-        print(flag_list)
+        logging.info(flag_list)
         return self._request(self.url_flags, post_data=flag_list, req_type="POST")
 
     def delete_flag(self, id: str):
