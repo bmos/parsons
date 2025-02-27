@@ -186,9 +186,7 @@ class Redash:
             )
             if response.status_code != 200:
                 msg = f"Failed getting results for query {query_id}. {response.text}"
-                raise RedashQueryFailed(
-                    msg
-                )
+                raise RedashQueryFailed(msg)
         else:
             msg = f"Failed getting result {query_id}. {response.text}"
             raise RedashQueryFailed(msg)

@@ -60,9 +60,7 @@ def discover_database(
                 f"Multiple database configurations detected: {detected}."
                 " Please specify a default connector."
             )
-            raise OSError(
-                msg
-            )
+            raise OSError(msg)
 
         if isinstance(default_connector, list):
             for connector in default_connector:

@@ -256,9 +256,7 @@ class Box:
                 f"Format argument to upload_table() must be in one "
                 f'of {self.ALLOWED_FILE_FORMATS}; found "{format}"'
             )
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         # Create a temp directory in which we will let Parsons create a
         # file. Both will go away automatically when we leave scope.
@@ -270,9 +268,7 @@ class Box:
                 table.to_json(local_path=temp_file_path)
             else:
                 msg = f'Got (theoretically) impossible format option "{format}"'
-                raise SystemError(
-                    msg
-                )  # pragma: no cover
+                raise SystemError(msg)  # pragma: no cover
 
             new_file = self.client.folder(folder_id).upload(
                 file_path=temp_file_path, file_name=file_name
@@ -342,9 +338,7 @@ class Box:
                 f"Format argument to upload_table() must be in one "
                 f'of {self.ALLOWED_FILE_FORMATS}; found "{format}"'
             )
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         # Temp file will be around as long as enclosing process is running,
         # which we need, because the Table we return will continue to use it.
@@ -357,9 +351,7 @@ class Box:
         if format == "json":
             return Table.from_json(output_file_name)
         msg = f'Got (theoretically) impossible format option "{format}"'
-        raise SystemError(
-            msg
-        )  # pragma: no cover
+        raise SystemError(msg)  # pragma: no cover
 
     def get_item_id(self, path, base_folder_id=DEFAULT_FOLDER_ID) -> str:
         """

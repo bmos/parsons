@@ -504,13 +504,9 @@ class GoogleCloudStorage:
                     )
                     error_output = operation_metadata.error_breakdowns
                     if len(error_output) != 0:
-                        msg = (
-                            f"""{blob_storage} to GCS Transfer Job
+                        msg = f"""{blob_storage} to GCS Transfer Job
                             {create_result.name} failed with error: {error_output}"""
-                        )
-                        raise Exception(
-                            msg
-                        )
+                        raise Exception(msg)
                     logger.info(f"TransferJob: {create_result.name} succeeded.")
                     return
 

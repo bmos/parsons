@@ -432,9 +432,7 @@ class GitHub:
             raise UnknownObjectException(status=404, data=res.content)
         if res.status_code != 200:
             msg = f"Error downloading {path} from repo {repo_name}: {res.content}"
-            raise ParsonsGitHubError(
-                msg
-            )
+            raise ParsonsGitHubError(msg)
 
         with open(local_path, "wb") as f:
             f.write(res.content)

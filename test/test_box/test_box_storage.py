@@ -36,11 +36,13 @@ class TestBoxStorage(unittest.TestCase):
         self.client = Box()
         # Create test folder that we'll use for all our manipulations
         self.temp_folder_name = generate_random_string(24)
-        logging.info(f"Creating temp folder {self.temp_folder_name}")
+        log_msg = f"Creating temp folder {self.temp_folder_name}"
+        logging.info(log_msg)
         self.temp_folder_id = self.client.create_folder(self.temp_folder_name)
 
     def tearDown(self) -> None:
-        logging.info(f"Deleting temp folder {self.temp_folder_name}")
+        log_msg = f"Deleting temp folder {self.temp_folder_name}"
+        logging.info(log_msg)
         self.client.delete_folder_by_id(self.temp_folder_id)
 
     def test_list_files_by_id(self) -> None:

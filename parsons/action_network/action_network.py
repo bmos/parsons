@@ -1245,9 +1245,7 @@ class ActionNetwork:
                 f"Unexpected type for email_address. Got {type(email_address)}, "
                 "expected str or list."
             )
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         mobile_numbers_field = None
         if isinstance(mobile_number, str):

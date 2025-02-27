@@ -62,7 +62,8 @@ query = """
 source_data = rs.query(query)
 
 if source_data.num_rows > 0:
-    logger.info(f"Will be updating voterbase_id for {source_data.num_rows}...")
+    log_msg = f"Will be updating voterbase_id for {source_data.num_rows}..."
+    logger.info(log_msg)
     for row in source_data:
         user = ak.get_user(user_id=row["id"])
         user_dict = {"fields": {"vb_voterbase_id": row["voterbase_id"]}}

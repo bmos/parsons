@@ -688,9 +688,8 @@ class TestGoogleBigQueryCopyBetweenProjects(TestCase):
     def test_logger_fail_on_dataset_does_not_exist(self, capture):
         # create and set up logger
         logger = logging.getLogger()
-        logger.error(
-            f"Dataset {self.destination_dataset} does not exist and if_dataset_not_exists set to {self.if_dataset_not_exists}"
-        )
+        log_msg = f"Dataset {self.destination_dataset} does not exist and if_dataset_not_exists set to {self.if_dataset_not_exists}"
+        logger.error(log_msg)
 
         # call the method to generate log message
         self.bq.copy_between_projects(
@@ -719,9 +718,8 @@ class TestGoogleBigQueryCopyBetweenProjects(TestCase):
         logger = logging.getLogger()
 
         ## now test with table copy error
-        logger.error(
-            f"BigQuery copy failed, Table {self.destination_table} exists and if_table_exists set to {self.if_table_exists}"
-        )
+        log_msg = f"BigQuery copy failed, Table {self.destination_table} exists and if_table_exists set to {self.if_table_exists}"
+        logger.error(log_msg)
 
         # call the method to generate log message
         self.bq.copy_between_projects(

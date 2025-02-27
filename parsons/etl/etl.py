@@ -970,9 +970,7 @@ class ETL:
                 elif if_missing_columns != "ignore":
                     # If it's not ignore, add, or fail, then it's not a valid strategy
                     msg = f"Invalid option {if_missing_columns} for argument `if_missing_columns`"
-                    raise TypeError(
-                        msg
-                    )
+                    raise TypeError(msg)
             else:
                 # We have found this in our current columns, so take it out of our list to search
                 current_column = current_columns_normalized.pop(normalized_desired)
@@ -996,9 +994,7 @@ class ETL:
             elif if_extra_columns != "remove":
                 # If it's not ignore, add, or fail, then it's not a valid strategy
                 msg = f"Invalid option {if_extra_columns} for argument `if_extra_columns`"
-                raise TypeError(
-                    msg
-                )
+                raise TypeError(msg)
 
         # Add any columns we need to add
         for column in columns_to_add:

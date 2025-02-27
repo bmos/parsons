@@ -13,7 +13,5 @@ def check(env, field, optional=False):
         except KeyError:
             if not optional:
                 msg = f"No {env} found. Store as environment variable or pass as an argument."
-                raise KeyError(
-                    msg
-                )
+                raise KeyError(msg)
     return field

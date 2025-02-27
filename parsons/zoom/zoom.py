@@ -374,10 +374,10 @@ class Zoom:
             logger.debug(f"No poll data returned for meeting ID {meeting_id}")
             return tbl
 
-        logger.info(f"Retrieved {tbl.num_rows} polls for meeting ID {meeting_id}")
-        logger.info(
-            f"Unnesting columns 'question_details' from existing table columns: {tbl.columns}"
-        )
+        log_msg = f"Retrieved {tbl.num_rows} polls for meeting ID {meeting_id}"
+        logger.info(log_msg)
+        log_msg = f"Unnesting columns 'question_details' from existing table columns: {tbl.columns}"
+        logger.info(log_msg)
 
         return self.__handle_nested_json(table=tbl, column="question_details", version=version)
 
@@ -400,12 +400,12 @@ class Zoom:
         tbl = self._get_request(endpoint=endpoint, data_key="questions")
 
         if tbl.num_rows == 0:
-            logger.debug(f"No poll data returned for poll ID {poll_id}")
+            log_msg = f"No poll data returned for poll ID {poll_id}"
+            logger.debug(log_msg)
             return tbl
 
-        logger.info(
-            f"Retrieved {tbl.num_rows} rows of metadata [meeting={webinar_id} poll={poll_id}]"
-        )
+        log_msg = f"Retrieved {tbl.num_rows} rows of metadata [meeting={webinar_id} poll={poll_id}]"
+        logger.info(log_msg)
 
         return self.__handle_nested_json(table=tbl, column="prompts", version=version)
 
@@ -426,10 +426,12 @@ class Zoom:
         tbl = self._get_request(endpoint=endpoint, data_key="polls")
 
         if tbl.num_rows == 0:
-            logger.debug(f"No poll data returned for webinar ID {webinar_id}")
+            log_msg = f"No poll data returned for webinar ID {webinar_id}"
+            logger.debug(log_msg)
             return tbl
 
-        logger.info(f"Retrieved {tbl.num_rows} polls for meeting ID {webinar_id}")
+        log_msg = f"Retrieved {tbl.num_rows} polls for meeting ID {webinar_id}"
+        logger.info(log_msg)
 
         return self.__handle_nested_json(table=tbl, column="questions", version=version)
 
@@ -450,10 +452,12 @@ class Zoom:
         tbl = self._get_request(endpoint=endpoint, data_key="questions")
 
         if tbl.num_rows == 0:
-            logger.debug(f"No poll data returned for webinar ID {webinar_id}")
+            log_msg = f"No poll data returned for webinar ID {webinar_id}"
+            logger.debug(log_msg)
             return tbl
 
-        logger.info(f"Retrieved {tbl.num_rows} polls for meeting ID {webinar_id}")
+        log_msg = f"Retrieved {tbl.num_rows} polls for meeting ID {webinar_id}"
+        logger.info(log_msg)
 
         return self.__handle_nested_json(table=tbl, column="question_details", version=version)
 
@@ -467,10 +471,12 @@ class Zoom:
         tbl = self._get_request(endpoint=endpoint, data_key="questions")
 
         if tbl.num_rows == 0:
-            logger.debug(f"No poll data returned for meeting ID {meeting_id}")
+            log_msg = f"No poll data returned for meeting ID {meeting_id}"
+            logger.debug(log_msg)
             return tbl
 
-        logger.info(f"Retrieved {tbl.num_rows} reults for meeting ID {meeting_id}")
+        log_msg = f"Retrieved {tbl.num_rows} reults for meeting ID {meeting_id}"
+        logger.info(log_msg)
 
         return self.__process_poll_results(tbl=tbl)
 
@@ -484,9 +490,11 @@ class Zoom:
         tbl = self._get_request(endpoint=endpoint, data_key="questions")
 
         if tbl.num_rows == 0:
-            logger.debug(f"No poll data returned for webinar ID {webinar_id}")
+            log_msg = f"No poll data returned for webinar ID {webinar_id}"
+            logger.debug(log_msg)
             return tbl
 
-        logger.info(f"Retrieved {tbl.num_rows} reults for webinar ID {webinar_id}")
+        log_msg = f"Retrieved {tbl.num_rows} reults for webinar ID {webinar_id}"
+        logger.info(log_msg)
 
         return self.__process_poll_results(tbl=tbl)

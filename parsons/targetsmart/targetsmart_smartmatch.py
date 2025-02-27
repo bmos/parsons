@@ -89,9 +89,7 @@ def _prepare_input(intable, tmpdir):
             "No supported field identifiers were found in the input table."
             f" Expecting one or more from: {VALID_FIELDS}"
         )
-        raise SmartMatchError(
-            msg
-        )
+        raise SmartMatchError(msg)
     return intable.cut(*supported)
 
 
@@ -239,9 +237,7 @@ class SmartMatch:
         response_1_info = response_1.json()
         if response_1_info["error"]:
             msg = f"SmartMatch workflow registration failed. Error: {response_1_info['error']}"
-            raise SmartMatchError(
-                msg
-            )
+            raise SmartMatchError(msg)
 
         logger.info(
             f"The SmartMatch workflow registration was successful for file name {submit_filename}."

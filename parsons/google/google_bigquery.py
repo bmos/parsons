@@ -1293,9 +1293,7 @@ class GoogleBigQuery(DatabaseConnector):
                     "Consider converting to another type. "
                     f"[type={best_type}]"
                 )
-                raise KeyError(
-                    msg
-                ) from e
+                raise KeyError(msg) from e
             field = bigquery.schema.SchemaField(stat["name"], field_type)
             fields.append(field)
         return fields
@@ -1418,9 +1416,7 @@ class GoogleBigQuery(DatabaseConnector):
                 f"Unexpected value for if_exists: {if_exists}, must be one of "
                 '"append", "drop", "truncate", or "fail"'
             )
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
         if data_type not in ["csv", "json"]:
             msg = f"Only supports csv or json files [data_type = {data_type}]"
             raise ValueError(msg)
