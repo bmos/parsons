@@ -65,7 +65,7 @@ for state, key in myv_keys.items():
     state_set = records.select_rows(lambda row: row.vb_vf_source_state == state)
     if len(state_set) > 0:
         logger.info(f"Applying {len(state_set)!s} Activist Codes in {state}...")
-        for vanid in state_set:
+        for _vanid in state_set:
             # TODO: row undefined, select row form record?
             row = None
             key.toggle_activist_code(row["vb_smartvan_id"], row["activist_code_id"], "apply")
