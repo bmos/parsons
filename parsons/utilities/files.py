@@ -13,6 +13,7 @@ __all__ = [
     "suffix_for_compression_type",
 ]
 
+from pathlib import Path
 
 # Maximum number of times to try to open a new temp file before giving up.
 TMP_MAX = 1000
@@ -211,7 +212,7 @@ def string_to_temp_file(string, suffix=None):
     """
     temp_file_path = create_temp_file(suffix=suffix)
 
-    with open(temp_file_path, "w") as f:
+    with Path(temp_file_path).open(mode="w") as f:
         f.write(string)
 
     return temp_file_path
@@ -299,7 +300,7 @@ def generate_tempfile(suffix=None, create=False):
             # open it in read mode later, they won't get an error about the file not existing.
             # Also, use mode='x' (exclusive create) to make sure we get an error if the file already
             # exists
-            with open(path, mode="x") as _:
+            with Path(path).open(mode="x") as _:
                 pass
             return path
         # PermissionError can be Windows' way of saying the file exists

@@ -1,5 +1,6 @@
 import os
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -25,7 +26,7 @@ class TestGitHub(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_get_repo(self, m):
-        with open(os.path.join(_dir, "test_data", "test_get_repo.json")) as f:
+        with (Path(_dir) / "test_data" / "test_get_repo.json").open() as f:
             m.get(requests_mock.ANY, text=f.read())
         repo = self.github.get_repo("octocat/Hello-World")
         assert repo["id"] == 1296269
@@ -33,9 +34,9 @@ class TestGitHub(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_list_repo_issues(self, m):
-        with open(os.path.join(_dir, "test_data", "test_get_repo.json")) as f:
+        with (Path(_dir) / "test_data" / "test_get_repo.json").open() as f:
             m.get("https://api.github.com:443/repos/octocat/Hello-World", text=f.read())
-        with open(os.path.join(_dir, "test_data", "test_list_repo_issues.json")) as f:
+        with (Path(_dir) / "test_data" / "test_list_repo_issues.json").open() as f:
             m.get(
                 "https://api.github.com:443/repos/octocat/Hello-World/issues",
                 text=f.read(),
@@ -48,16 +49,16 @@ class TestGitHub(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_download_file(self, m):
-        with open(os.path.join(_dir, "test_data", "test_get_repo.json")) as f:
+        with (Path(_dir) / "test_data" / "test_get_repo.json").open() as f:
             m.get("https://api.github.com:443/repos/octocat/Hello-World", text=f.read())
-        with open(os.path.join(_dir, "test_data", "test_download_file.csv")) as f:
+        with (Path(_dir) / "test_data" / "test_download_file.csv").open() as f:
             m.get(
                 "https://raw.githubusercontent.com/octocat/Hello-World/testing/data.csv",
                 text=f.read(),
             )
 
         file_path = self.github.download_file("octocat/Hello-World", "data.csv", branch="testing")
-        with open(file_path) as f:
+        with Path(file_path).open() as f:
             file_contents = f.read()
 
         assert file_contents == "header\ndata\n"

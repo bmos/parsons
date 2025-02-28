@@ -2,6 +2,7 @@ import json
 import os
 import tempfile
 import unittest
+from pathlib import Path
 
 import pytest
 
@@ -19,7 +20,7 @@ class FakeCredentialTest(unittest.TestCase):
             "refresh_token": str(hash("foobarfoobar")),
             "type": "authorized_user",
         }
-        with open(self.cred_path, "w") as f:
+        with Path(self.cred_path).open(mode="w") as f:
             json.dump(self.cred_contents, f)
 
     def tearDown(self) -> None:
@@ -42,7 +43,7 @@ class TestSetupGoogleApplicationCredentials(FakeCredentialTest):
         util.setup_google_application_credentials(self.cred_contents, self.TEST_ENV_NAME)
         actual = os.environ[self.TEST_ENV_NAME]
         assert os.path.exists(actual)
-        with open(actual) as f:
+        with Path(actual).open() as f:
             assert json.load(f) == self.cred_contents
 
     def test_accepts_string(self):
@@ -50,14 +51,14 @@ class TestSetupGoogleApplicationCredentials(FakeCredentialTest):
         util.setup_google_application_credentials(cred_str, self.TEST_ENV_NAME)
         actual = os.environ[self.TEST_ENV_NAME]
         assert os.path.exists(actual)
-        with open(actual) as f:
+        with Path(actual).open() as f:
             assert json.load(f) == self.cred_contents
 
     def test_accepts_file_path(self):
         util.setup_google_application_credentials(self.cred_path, self.TEST_ENV_NAME)
         actual = os.environ[self.TEST_ENV_NAME]
         assert os.path.exists(actual)
-        with open(actual) as f:
+        with Path(actual).open() as f:
             assert json.load(f) == self.cred_contents
 
     def test_credentials_are_valid_after_double_call(self):
@@ -69,7 +70,7 @@ class TestSetupGoogleApplicationCredentials(FakeCredentialTest):
         util.setup_google_application_credentials(None, self.TEST_ENV_NAME)
         snd = os.environ[self.TEST_ENV_NAME]
 
-        with open(fst) as ffst, open(snd) as fsnd:
+        with Path(fst).open() as ffst, Path(snd).open() as fsnd:
             actual = fsnd.read()
             assert self.cred_contents == json.loads(actual)
             assert ffst.read() == actual

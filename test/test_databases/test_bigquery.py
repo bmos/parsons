@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import unittest.mock as mock
+from pathlib import Path
 from typing import Union
 from unittest import TestCase
 from unittest.mock import Mock
@@ -418,7 +419,7 @@ class TestGoogleBigQuery(FakeCredentialTest):
 
         actual = os.environ[bq.env_credential_path]
 
-        with open(actual) as factual, open(self.cred_path) as fexpected:
+        with Path(actual).open() as factual, Path(self.cred_path).open() as fexpected:
             actual_str = factual.read()
             assert actual_str == fexpected.read()
             assert self.cred_contents == json.loads(actual_str)
@@ -445,7 +446,7 @@ class TestGoogleBigQuery(FakeCredentialTest):
 
         actual = os.environ[bq.env_credential_path]
 
-        with open(actual) as factual, open(self.cred_path) as fexpected:
+        with Path(actual).open() as factual, Path(self.cred_path).open() as fexpected:
             actual_str = factual.read()
             assert actual_str == fexpected.read()
             assert self.cred_contents == json.loads(actual_str)
@@ -456,7 +457,7 @@ class TestGoogleBigQuery(FakeCredentialTest):
         self, load_creds_mock, load_creds_mock_2
     ):
         tbl = self.default_table
-        with open(self.cred_path) as file:
+        with Path(self.cred_path).open() as file:
             cred_dict = json.loads(file.read())
         bq = self._build_mock_client_for_copying(table_exists=False, app_creds=cred_dict)
 
@@ -470,7 +471,7 @@ class TestGoogleBigQuery(FakeCredentialTest):
 
         actual = os.environ[bq.env_credential_path]
 
-        with open(actual) as factual, open(self.cred_path) as fexpected:
+        with Path(actual).open() as factual, Path(self.cred_path).open() as fexpected:
             actual_str = factual.read()
             assert actual_str == fexpected.read()
             assert self.cred_contents == json.loads(actual_str)

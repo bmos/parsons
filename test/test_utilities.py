@@ -56,7 +56,7 @@ def test_create_temp_directory():
     temp_directory = files.create_temp_directory()
     test_file1 = f"{temp_directory}/test.txt"
     test_file2 = f"{temp_directory}/test2.txt"
-    with open(test_file1, "w") as fh1, open(test_file2, "w") as fh2:
+    with Path(test_file1).open(mode="w") as fh1, Path(test_file2).open(mode="w") as fh2:
         fh1.write("TEST")
         fh2.write("TEST")
 
@@ -67,7 +67,7 @@ def test_create_temp_directory():
 
     # Verify the temp file no longer exists
     with pytest.raises(FileNotFoundError):
-        open(test_file1)
+        Path(test_file1).open()
 
 
 def test_close_temp_file():
@@ -76,7 +76,7 @@ def test_close_temp_file():
 
     # Verify the temp file no longer exists
     with pytest.raises(FileNotFoundError):
-        open(temp)
+        Path(temp).open()
 
 
 def test_is_gzip_path():
@@ -100,7 +100,7 @@ def test_compression_type_for_path():
 def test_empty_file():
     # Create fake files.
     tmp_folder = tempfile.mkdtemp()
-    with open(Path(tmp_folder) / "empty.csv", "w+") as _:
+    with (Path(tmp_folder) / "empty.csv").open(mode="w+") as _:
         pass
 
     Table([["1"], ["a"]]).to_csv(str(Path(tmp_folder) / "full.csv"))

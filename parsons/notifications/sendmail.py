@@ -12,6 +12,7 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import parseaddr
+from pathlib import Path
 
 from validate_email import validate_email
 
@@ -153,9 +154,8 @@ class SendMail(ABC):
                 file_bytes = f.getvalue()
             else:
                 filename = os.path.basename(f)
-                fp = open(f, "rb")
-                file_bytes = fp.read()
-                fp.close()
+                with Path(f).open(mode="rb") as f:
+                    file_bytes = f.read()
 
             content_type, encoding = mimetypes.guess_type(filename)
             self.log.debug(f"(File: {f}, Content-type: {content_type}, Encoding: {encoding})")

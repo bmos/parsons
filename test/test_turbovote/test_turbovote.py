@@ -1,5 +1,6 @@
 import os
 import unittest
+from pathlib import Path
 
 import requests_mock
 
@@ -60,7 +61,7 @@ class TestTurboVote(unittest.TestCase):
             "sms subscribed",
         ]
 
-        with open(f"{_dir}/users.txt") as users_text:
+        with Path(f"{_dir}/users.txt").open() as users_text:
             # Mock endpoints
             m.post(self.tv.uri + "login", json=fake_token)
             m.get(

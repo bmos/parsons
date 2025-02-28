@@ -1,6 +1,7 @@
 import csv
 import os
 import unittest
+from pathlib import Path
 
 import requests_mock
 
@@ -27,7 +28,7 @@ class TestScytl(unittest.TestCase):
     def test_get_summary_results_succeeds(self):
         result = self.scy.get_summary_results()
 
-        with open(f"{_DIR}/114729_summary_expected.csv") as expected:
+        with Path(f"{_DIR}/114729_summary_expected.csv").open() as expected:
             expectedResult = list(csv.DictReader(expected, delimiter=","))
 
             for i, row in enumerate(result):
@@ -56,7 +57,7 @@ class TestScytl(unittest.TestCase):
     def test_get_detailed_results_succeeds(self):
         result = self.scy.get_detailed_results()
 
-        with open(f"{_DIR}/114729_county_expected.csv") as expected:
+        with Path(f"{_DIR}/114729_county_expected.csv").open() as expected:
             expectedResult = list(csv.DictReader(expected, delimiter=","))
 
             for i in range(len(result)):
@@ -85,7 +86,7 @@ class TestScytl(unittest.TestCase):
     def test_get_detailed_results_for_participating_counties_succeeds(self):
         _, result = self.scy.get_detailed_results_for_participating_counties()
 
-        with open(f"{_DIR}/114729_precinct_expected.csv") as expected:
+        with Path(f"{_DIR}/114729_precinct_expected.csv").open() as expected:
             expectedResult = list(csv.DictReader(expected, delimiter=","))
 
             for i in range(len(result)):
@@ -105,7 +106,7 @@ class TestScytl(unittest.TestCase):
 
         _, result = self.scy.get_detailed_results_for_participating_counties(county_names=counties)
 
-        with open(f"{_DIR}/114729_precinct_expected.csv") as expected:
+        with Path(f"{_DIR}/114729_precinct_expected.csv").open() as expected:
             expectedResult = csv.DictReader(expected, delimiter=",")
 
             filteredExpectedResults = list(
@@ -192,11 +193,11 @@ class TestScytl(unittest.TestCase):
             state=TEST_STATE, election_id=TEST_ELECTION_ID, version_num=TEST_VERSION_NUM
         )
 
-        with open(f"{_DIR}/GA_114729_296262_county_election_settings.json") as details_file:
+        with Path(f"{_DIR}/GA_114729_296262_county_election_settings.json").open() as details_file:
             m.get(mock_election_settings_url, text=details_file.read())
 
         for file in os.listdir(f"{_DIR}/mock_responses"):
-            with open(f"{_DIR}/mock_responses/{file}", "rb") as details_file:
+            with Path(f"{_DIR}/mock_responses/{file}").open(mode="rb") as details_file:
                 file_url = f"https://results.enr.clarityelections.com/{file}".replace("_", "/")
                 m.get(file_url, content=details_file.read())
 
@@ -206,7 +207,7 @@ class TestScytl(unittest.TestCase):
             version_num=TEST_VERSION_NUM,
         )
 
-        with open(f"{_DIR}/114729_summary.zip", "rb") as summary:
+        with Path(f"{_DIR}/114729_summary.zip").open(mode="rb") as summary:
             m.get(mock_summary_csv_url, content=summary.read())
 
         mock_detail_xml_url = scytl.DETAIL_XML_ZIP_URL_TEMPLATE.format(
@@ -215,7 +216,7 @@ class TestScytl(unittest.TestCase):
             version_num=TEST_VERSION_NUM,
         )
 
-        with open(f"{_DIR}/114729_detailxml.zip", "rb") as detailxml:
+        with Path(f"{_DIR}/114729_detailxml.zip").open(mode="rb") as detailxml:
             m.get(mock_detail_xml_url, content=detailxml.read())
 
         m.start()

@@ -5,6 +5,7 @@ import os
 import shutil
 import tempfile
 import unittest
+from pathlib import Path
 
 import pytest
 import requests_mock
@@ -21,7 +22,7 @@ class TestGmail(unittest.TestCase):
         self.credentials_file = f"{self.tmp_folder}/credentials.json"
         self.token_file = f"{self.tmp_folder}/token.json"
 
-        with open(self.credentials_file, "w") as f:
+        with Path(self.credentials_file).open(mode="w") as f:
             f.write(
                 json.dumps(
                     {
@@ -41,7 +42,7 @@ class TestGmail(unittest.TestCase):
                 )
             )
 
-        with open(self.token_file, "w") as f:
+        with Path(self.token_file).open(mode="w") as f:
             f.write(
                 json.dumps(
                     {
@@ -237,7 +238,7 @@ class TestGmail(unittest.TestCase):
         else:
             file = f"{_dir}/assets/loremipsum_b64_txt.txt"
 
-        with open(file) as f:
+        with Path(file).open() as f:
             b64_txt = f.read()
         assert parts[2].get_payload() == b64_txt
 
@@ -289,7 +290,7 @@ class TestGmail(unittest.TestCase):
         assert parts[0].get_payload() == message_text
         assert parts[1].get_payload() == message_html
 
-        with open(f"{_dir}/assets/loremipsum_b64_jpeg.txt") as f:
+        with Path(f"{_dir}/assets/loremipsum_b64_jpeg.txt").open() as f:
             b64_txt = f.read()
         assert parts[2].get_payload() == b64_txt
 
@@ -343,7 +344,7 @@ class TestGmail(unittest.TestCase):
         assert parts[0].get_payload() == message_text
         assert parts[1].get_payload() == message_html
 
-        with open(f"{_dir}/assets/loremipsum_b64_m4a.txt") as f:
+        with Path(f"{_dir}/assets/loremipsum_b64_m4a.txt").open() as f:
             b64_txt = f.read()
         assert parts[2].get_payload() == b64_txt
 
@@ -395,7 +396,7 @@ class TestGmail(unittest.TestCase):
         assert parts[0].get_payload() == message_text
         assert parts[1].get_payload() == message_html
 
-        with open(f"{_dir}/assets/loremipsum_b64_mp3.txt") as f:
+        with Path(f"{_dir}/assets/loremipsum_b64_mp3.txt").open() as f:
             b64_txt = f.read()
         assert parts[2].get_payload() == b64_txt
 
@@ -447,7 +448,7 @@ class TestGmail(unittest.TestCase):
         assert parts[0].get_payload() == message_text
         assert parts[1].get_payload() == message_html
 
-        with open(f"{_dir}/assets/loremipsum_b64_mp4.txt") as f:
+        with Path(f"{_dir}/assets/loremipsum_b64_mp4.txt").open() as f:
             b64_txt = f.read()
         assert parts[2].get_payload() == b64_txt
 
@@ -500,7 +501,7 @@ class TestGmail(unittest.TestCase):
         assert parts[0].get_payload() == message_text
         assert parts[1].get_payload() == message_html
 
-        with open(f"{_dir}/assets/loremipsum_b64_pdf.txt") as f:
+        with Path(f"{_dir}/assets/loremipsum_b64_pdf.txt").open() as f:
             b64_txt = f.read()
         assert parts[2].get_payload() == b64_txt
 

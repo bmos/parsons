@@ -1,6 +1,7 @@
 import logging
 import re
 from contextlib import contextmanager
+from pathlib import Path
 from stat import S_ISDIR, S_ISREG
 from typing import Optional
 
@@ -220,7 +221,7 @@ class SFTP:
         logger.info(f"Reading from {remote_path} to {local_path} in {export_chunk_size}B chunks")
 
         with connection.open(remote_path, "rb") as _remote_file:
-            with open(local_path, "wb") as _local_file:
+            with Path(local_path).open(mode="wb") as _local_file:
                 # This disables paramiko's prefetching behavior
                 _remote_file.set_pipelined(False)
 

@@ -4,6 +4,7 @@ import random
 import string
 import unittest
 import warnings
+from pathlib import Path
 
 import pytest
 from boxsdk.exception import BoxAPIException, BoxOAuthException
@@ -191,7 +192,7 @@ class TestBoxStorage(unittest.TestCase):
 
         downloaded_file = box.download_file(path_filename)
 
-        with open(uploaded_file) as uploaded, open(downloaded_file) as downloaded:
+        with Path(uploaded_file).open() as uploaded, Path(downloaded_file).open() as downloaded:
             assert str(uploaded.read()) == str(downloaded.read())
 
     def test_get_item_id(self) -> None:

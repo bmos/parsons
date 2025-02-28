@@ -150,7 +150,7 @@ class TestParsonsTable(unittest.TestCase):
             "</tbody>\n"
             "</table>\n"
         )
-        with open(html_file) as f:
+        with Path(html_file).open() as f:
             assert f.read() == html
 
     def test_to_temp_html(self):
@@ -174,7 +174,7 @@ class TestParsonsTable(unittest.TestCase):
             "</tbody>\n"
             "</table>\n"
         )
-        with open(path) as f:
+        with Path(path).open() as f:
             assert f.read() == html
 
     def _assert_expected_csv(self, path, orig_tbl):
@@ -204,7 +204,7 @@ class TestParsonsTable(unittest.TestCase):
     def test_from_csv_string(self):
         path = self.tbl.to_csv()
         # Pull the file into a string
-        with open(path) as f:
+        with Path(path).open() as f:
             csv_string = f.read()
 
         result_tbl = Table.from_csv_string(csv_string)
@@ -224,7 +224,7 @@ class TestParsonsTable(unittest.TestCase):
         # Create empty file
         with TemporaryDirectory() as tempdir:
             path = str(Path(tempdir) / "empty.csv")
-            open(path, "a").close()
+            Path(path).open(mode="a").close()
 
             pytest.raises(ValueError, Table.from_csv, path)
 

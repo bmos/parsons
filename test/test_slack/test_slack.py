@@ -1,6 +1,7 @@
 import json
 import os
 import unittest
+from pathlib import Path
 
 import pytest
 import requests_mock
@@ -34,7 +35,7 @@ class TestSlack(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_channels(self, m):
-        with open(f"{responses_dir}/channels.json") as f:
+        with Path(f"{responses_dir}/channels.json").open() as f:
             slack_resp = json.load(f)
 
         m.post("https://slack.com/api/conversations.list", json=slack_resp)
@@ -49,7 +50,7 @@ class TestSlack(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_channels_all_fields(self, m):
-        with open(f"{responses_dir}/channels.json") as f:
+        with Path(f"{responses_dir}/channels.json").open() as f:
             slack_resp = json.load(f)
 
         m.post("https://slack.com/api/conversations.list", json=slack_resp)
@@ -112,7 +113,7 @@ class TestSlack(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_users(self, m):
-        with open(f"{responses_dir}/users.json") as f:
+        with Path(f"{responses_dir}/users.json").open() as f:
             slack_resp = json.load(f)
 
         m.post("https://slack.com/api/users.list", json=slack_resp)
@@ -133,7 +134,7 @@ class TestSlack(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_users_all_fields(self, m):
-        with open(f"{responses_dir}/users.json") as f:
+        with Path(f"{responses_dir}/users.json").open() as f:
             slack_resp = json.load(f)
 
         m.post("https://slack.com/api/users.list", json=slack_resp)
@@ -231,7 +232,7 @@ class TestSlack(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_message_channel(self, m):
-        with open(f"{responses_dir}/message_channel.json") as f:
+        with Path(f"{responses_dir}/message_channel.json").open() as f:
             slack_resp = json.load(f)
 
         m.post("https://slack.com/api/chat.postMessage", json=slack_resp)
@@ -264,7 +265,7 @@ class TestSlack(unittest.TestCase):
     @requests_mock.Mocker()
     def test_file_upload(self, m):
         file_path = f"{responses_dir}/file_upload.json"
-        with open(file_path) as f:
+        with Path(file_path).open() as f:
             slack_resp = json.load(f)
 
         m.post("https://slack.com/api/files.upload", json=slack_resp)

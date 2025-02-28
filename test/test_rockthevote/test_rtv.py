@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import unittest
+from pathlib import Path
 
 import requests_mock
 
@@ -36,7 +37,7 @@ class TestRockTheVote(unittest.TestCase):
         )
         mocker.get(
             "https://register.rockthevote.com/download/whatever",
-            text=open(f"{_dir}/sample.csv").read(),
+            text=Path(f"{_dir}/sample.csv").open().read(),
         )
 
         rtv = RockTheVote(partner_id=partner_id, partner_api_key=partner_api_key)
@@ -61,7 +62,7 @@ class TestRockTheVote(unittest.TestCase):
         )
         mocker.get(
             "https://register.rockthevote.com/download/whatever",
-            text=open(f"{_dir}/sample.csv").read(),
+            text=Path(f"{_dir}/sample.csv").open().read(),
         )
 
         rtv = RockTheVote(partner_id=partner_id, partner_api_key=partner_api_key)
@@ -76,7 +77,7 @@ class TestRockTheVote(unittest.TestCase):
         partner_id = "1"
         partner_api_key = "abcd"
 
-        with open(f"{_dir}/sample.json") as j:
+        with (Path(_dir) / "sample.json").open() as j:
             expected_json = json.load(j)
 
         mocker.get(

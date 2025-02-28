@@ -1,5 +1,6 @@
 import logging
 from functools import partial, wraps
+from pathlib import Path
 
 import petl
 import requests
@@ -435,7 +436,7 @@ class GitHub:
             msg = f"Error downloading {path} from repo {repo_name}: {res.content}"
             raise ParsonsGitHubError(msg)
 
-        with open(local_path, "wb") as f:
+        with Path(local_path).open(mode="wb") as f:
             f.write(res.content)
 
         logger.info(f"Downloaded {path} to {local_path}")

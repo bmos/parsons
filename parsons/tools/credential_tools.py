@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from base64 import b64decode, b64encode
+from pathlib import Path
 
 import click
 
@@ -36,7 +37,7 @@ def decode_credential(credential, save_path=None, export=True, echo=False):
     decoded_dict = json.loads(decoded_str)
 
     if save_path:
-        with open(save_path, "w") as f:
+        with Path(save_path).open(mode="w") as f:
             f.write(json.dumps(decoded_dict))
 
     if export:
@@ -77,7 +78,7 @@ def encode_from_json_file(credential_file):
         str
             The encoded credential.
     """
-    with open(credential_file) as f:
+    with Path(credential_file).open() as f:
         data = json.load(f)
 
     json_str = json.dumps(data)

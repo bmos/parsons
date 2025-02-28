@@ -3,6 +3,7 @@ import os
 import shutil
 import tempfile
 import unittest
+from pathlib import Path
 
 import pytest
 
@@ -17,7 +18,7 @@ class TestCredentialTool(unittest.TestCase):
         self.tmp_folder = tempfile.mkdtemp()
         self.json_file = "credentials.json"
 
-        with open(f"{self.tmp_folder}/{self.json_file}", "w") as f:
+        with Path(f"{self.tmp_folder}/{self.json_file}").open(mode="w") as f:
             f.write(json.dumps({"json": "file"}))
 
     def tearDown(self):
@@ -68,7 +69,7 @@ class TestCredentialTool(unittest.TestCase):
 
         assert os.path.isfile(file_path)
 
-        with open(file_path) as f:
+        with Path(file_path).open() as f:
             cred = json.load(f)
 
         self.assertDictEqual(cred, expected)

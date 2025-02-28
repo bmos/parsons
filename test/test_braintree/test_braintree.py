@@ -2,6 +2,7 @@ import datetime
 import decimal
 import os
 import unittest
+from pathlib import Path
 
 import requests_mock
 
@@ -21,11 +22,12 @@ class TestBraintree(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_dispute_search(self, m):
-        m.post(
-            "https://api.braintreegateway.com:443"
-            "/merchants/abcd1234abcd1234/disputes/advanced_search?page=1",
-            text=open(f"{_dir}/test_data/dispute_example.xml").read(),
-        )
+        with Path(f"{_dir}/test_data/dispute_example.xml").open() as f:
+            m.post(
+                "https://api.braintreegateway.com:443"
+                "/merchants/abcd1234abcd1234/disputes/advanced_search?page=1",
+                text=f.read(),
+            )
         table = self.braintree.get_disputes(start_date="2020-01-01", end_date="2020-01-02")
 
         assert len(table.table) == 3
@@ -54,11 +56,12 @@ class TestBraintree(unittest.TestCase):
             just_ids=True,
         )
         assert_matching_tables(table, Table([["id"], ["1234abcd"], ["0987asdf"]]))
-        m.post(
-            "https://api.braintreegateway.com:443"
-            "/merchants/abcd1234abcd1234/transactions/advanced_search",
-            text=open(f"{_dir}/test_data/transaction_example.xml").read(),
-        )
+        with Path(f"{_dir}/test_data/transaction_example.xml").open() as f:
+            m.post(
+                "https://api.braintreegateway.com:443"
+                "/merchants/abcd1234abcd1234/transactions/advanced_search",
+                text=f.read(),
+            )
         full_table = self.braintree.get_transactions(
             disbursement_start_date="2020-01-01",
             disbursement_end_date="2020-01-02",
@@ -92,11 +95,12 @@ class TestBraintree(unittest.TestCase):
             start_date="2022-08-22", end_date="2022-08-23", just_ids=True
         )
         assert_matching_tables(table, Table([["id"], ["aabbcc"], ["1a2b3c"]]))
-        m.post(
-            "https://api.braintreegateway.com:443"
-            "/merchants/abcd1234abcd1234/subscriptions/advanced_search",
-            text=open(f"{_dir}/test_data/subscription_example.xml").read(),
-        )
+        with Path(f"{_dir}/test_data/subscription_example.xml").open() as f:
+            m.post(
+                "https://api.braintreegateway.com:443"
+                "/merchants/abcd1234abcd1234/subscriptions/advanced_search",
+                text=f.read(),
+            )
         full_table = self.braintree.get_subscriptions(
             start_date="2020-01-01",
             end_date="2020-01-02",
