@@ -42,7 +42,7 @@ class TestSetupGoogleApplicationCredentials(FakeCredentialTest):
     def test_accepts_dictionary(self):
         util.setup_google_application_credentials(self.cred_contents, self.TEST_ENV_NAME)
         actual = os.environ[self.TEST_ENV_NAME]
-        assert os.path.exists(actual)
+        assert Path(actual).exists()
         with Path(actual).open() as f:
             assert json.load(f) == self.cred_contents
 
@@ -50,14 +50,14 @@ class TestSetupGoogleApplicationCredentials(FakeCredentialTest):
         cred_str = json.dumps(self.cred_contents)
         util.setup_google_application_credentials(cred_str, self.TEST_ENV_NAME)
         actual = os.environ[self.TEST_ENV_NAME]
-        assert os.path.exists(actual)
+        assert Path(actual).exists()
         with Path(actual).open() as f:
             assert json.load(f) == self.cred_contents
 
     def test_accepts_file_path(self):
         util.setup_google_application_credentials(self.cred_path, self.TEST_ENV_NAME)
         actual = os.environ[self.TEST_ENV_NAME]
-        assert os.path.exists(actual)
+        assert Path(actual).exists()
         with Path(actual).open() as f:
             assert json.load(f) == self.cred_contents
 

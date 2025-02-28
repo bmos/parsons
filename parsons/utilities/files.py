@@ -288,7 +288,7 @@ def generate_tempfile(suffix=None, create=False):
         path = os.path.join(temp_dir, name)
 
         # Check to see if the path already exists.
-        if os.path.exists(path):
+        if Path(path).exists():
             continue
 
         # If we aren't creating it here, then just return the name
