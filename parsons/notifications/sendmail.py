@@ -158,7 +158,8 @@ class SendMail(ABC):
                     file_bytes = f.read()
 
             content_type, encoding = mimetypes.guess_type(filename)
-            self.log.debug(f"(File: {f}, Content-type: {content_type}, Encoding: {encoding})")
+            log_msg = f"(File: {f}, Content-type: {content_type}, Encoding: {encoding})"
+            self.log.debug(log_msg)
 
             if content_type is None or encoding is not None:
                 content_type = "application/octet-stream"
@@ -194,7 +195,8 @@ class SendMail(ABC):
         return message
 
     def _validate_email_string(self, str):
-        self.log.debug(f"Validating email {str}...")
+        log_msg = f"Validating email {str}..."
+        self.log.debug(log_msg)
         realname, email_addr = parseaddr(str)
 
         if not email_addr:
@@ -263,7 +265,8 @@ class SendMail(ABC):
                 sender, to, subject, message_text, files, message_html
             )
 
-        self.log.info(f"Sending a(n) {msg_type} email...")
+        log_msg = f"Sending a(n) {msg_type} email..."
+        self.log.info(log_msg)
 
         self._send_message(msg)
 

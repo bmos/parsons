@@ -45,7 +45,8 @@ class SurveyQuestions:
         }
 
         tbl = Table(self.connection.get_request("surveyQuestions", params=params))
-        logger.info(f"Found {tbl.num_rows} survey questions.")
+        log_msg = f"Found {tbl.num_rows} survey questions."
+        logger.info(log_msg)
         return tbl
 
     def get_survey_question(self, survey_question_id):
@@ -60,7 +61,8 @@ class SurveyQuestions:
                 See :ref:`parsons-table` for output options.
         """
         r = self.connection.get_request(f"surveyQuestions/{survey_question_id}")
-        logger.info(f"Found survey question {survey_question_id}.")
+        log_msg = f"Found survey question {survey_question_id}."
+        logger.info(log_msg)
         return r
 
     def apply_survey_response(
@@ -105,7 +107,8 @@ class SurveyQuestions:
             "type": "surveyResponse",
         }
 
-        logger.info(f"Applying survey question {survey_question_id} to {id_type} {id}")
+        log_msg = f"Applying survey question {survey_question_id} to {id_type} {id}"
+        logger.info(log_msg)
         self.apply_response(
             id,
             response,

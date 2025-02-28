@@ -68,9 +68,11 @@ def query_through_ssh(
         cursor.execute(query)
         records = cursor.fetchall()
         output = records
-        logging.info(f"Query executed successfully: {records}")
+        log_msg = f"Query executed successfully: {records}"
+        logging.info(log_msg)
     except Exception as e:
-        logging.error(f"Error during query execution: {e}")
+        log_msg = f"Error during query execution: {e}"
+        logging.error(log_msg)
         raise e
     finally:
         if con:

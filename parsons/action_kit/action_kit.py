@@ -1318,7 +1318,7 @@ class ActionKit:
         upload_client = self._conn({"accepts": "application/json"})
         upload_file = csv_file
         if isinstance(csv_file, str):
-            upload_file = Path(csv_file).open(mode="rb") # noqa: SIM115
+            upload_file = Path(csv_file).open(mode="rb")  # noqa: SIM115
 
         url = self._base_endpoint("upload")
         files = {"upload": upload_file}

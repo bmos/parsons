@@ -119,7 +119,8 @@ class TargetSmartAutomation:
         try:
             # Upload table
             self.sftp.put_file(table.to_csv(), f"{self.sftp_dir}/{job_name}_input.csv")
-            logger.info(f"Table with {table.num_rows} rows uploaded to TargetSmart.")
+            log_msg = f"Table with {table.num_rows} rows uploaded to TargetSmart."
+            logger.info(log_msg)
 
             # Create/upload XML configuration
             xml = self.create_job_xml(
@@ -130,9 +131,8 @@ class TargetSmartAutomation:
                 call_back=call_back,
             )
             self.sftp.put_file(xml, f"{self.sftp_dir}/{job_name}.job.xml")
-            logger.info(
-                f"Payload uploaded to TargetSmart. Job type: {job_type}. Job name: {job_name}"
-            )
+            log_msg = f"Payload uploaded to TargetSmart. Job type: {job_type}. Job name: {job_name}"
+            logger.info(log_msg)
 
             # Check xml configuration status
             self.poll_config_status(job_name)
@@ -200,7 +200,8 @@ class TargetSmartAutomation:
             time.sleep(polling_interval)
             if self.config_status(job_name):
                 return True
-            logger.info(f"Waiting on {job_name} job configuration...")
+            log_msg = f"Waiting on {job_name} job configuration..."
+            logger.info(log_msg)
 
     def config_status(self, job_name):
         # Check the status of the configuration by parsing the
@@ -208,11 +209,13 @@ class TargetSmartAutomation:
 
         for f in self.sftp.list_directory(remote_path=self.sftp_dir):
             if f == f"{job_name}.job.xml.good":
-                logger.info(f"Match job {job_name} configured.")
+                log_msg = f"Match job {job_name} configured."
+                logger.info(log_msg)
                 return True
 
             if f == f"{job_name}.job.xml.bad":
-                logger.info(f"Match job {job_name} configuration error.")
+                log_msg = f"Match job {job_name} configuration error."
+                logger.info(log_msg)
                 #  To Do: Lift up the configuration error.
                 msg = (
                     "Job configuration failed. If you provided an email"
@@ -240,7 +243,8 @@ class TargetSmartAutomation:
 
                     if xml["jobcontext"]["state"] == "error":
                         # To Do: Parse these in a pretty way
-                        logger.info(f"Match Error: {xml['jobcontext']['errors']}")
+                        log_msg = f"Match Error: {xml['jobcontext']['errors']}"
+                        logger.info(log_msg)
                         msg = f"Match job failed. {xml['jobcontext']['errors']}"
                         raise ValueError(msg)
 
@@ -257,4 +261,5 @@ class TargetSmartAutomation:
         for file_name in self.sftp.list_directory(remote_path=self.sftp_dir):
             if job_name in file_name:
                 self.sftp.remove_file(f"{self.sftp_dir}/{file_name}")
-                logger.info(f"{file_name} removed from SFTP.")
+                log_msg = f"{file_name} removed from SFTP."
+                logger.info(log_msg)

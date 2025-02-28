@@ -60,6 +60,7 @@ class TurboVote:
         logger.debug(r)
         r.raise_for_status()
         tbl = Table.from_csv_string(r.text)
-        logger.info(f"{tbl.num_rows} users retrieved.")
+        log_msg = f"{tbl.num_rows} users retrieved."
+        logger.info(log_msg)
 
         return tbl

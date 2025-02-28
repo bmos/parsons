@@ -218,7 +218,8 @@ class SFTP:
             export_chunk_size: int
                 Optional. Size in bytes to iteratively export from the remote server.
         """
-        logger.info(f"Reading from {remote_path} to {local_path} in {export_chunk_size}B chunks")
+        log_msg = f"Reading from {remote_path} to {local_path} in {export_chunk_size}B chunks"
+        logger.info(log_msg)
 
         with connection.open(remote_path, "rb") as _remote_file:
             with Path(local_path).open(mode="wb") as _local_file:
@@ -235,7 +236,8 @@ class SFTP:
 
                     # Write to the destination file
                     _local_file.write(response)
-                    logger.debug(f"Successfully read {export_chunk_size} rows to {local_path}")
+                    log_msg = f"Successfully read {export_chunk_size} rows to {local_path}"
+                    logger.debug(log_msg)
 
     @connect
     def get_files(
@@ -337,10 +339,9 @@ class SFTP:
         """Return progress every 5 MB"""
         if self._convert_bytes_to_megabytes(transferred) % 5 != 0:
             return
-        logger.info(
-            f"Transferred: {self._convert_bytes_to_megabytes(transferred)} MB \t"
-            f"out of: {self._convert_bytes_to_megabytes(to_be_transferred)} MB"
-        )
+        log_msg = f"Transferred: {self._convert_bytes_to_megabytes(transferred)} MB \t"
+        f"out of: {self._convert_bytes_to_megabytes(to_be_transferred)} MB"
+        logger.info(log_msg)
 
     def put_file(
         self, local_path: str, remote_path: str, connection=None, verbose: bool = True
@@ -498,11 +499,10 @@ class SFTP:
                 the file list will consist of local paths, if not, remote paths.
         """
         if max_depth > 3:
-            logger.warning(
-                f"Calling `walk_tree` with `max_depth` {max_depth}.  "
-                "Recursively walking a remote directory will be much slower than a "
-                "similar operation on a local file system."
-            )
+            log_msg = f"Calling `walk_tree` with `max_depth` {max_depth}.  "
+            "Recursively walking a remote directory will be much slower than a "
+            "similar operation on a local file system."
+            logger.warning(log_msg)
 
         return self._walk_tree(
             remote_path,

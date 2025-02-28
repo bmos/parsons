@@ -75,7 +75,8 @@ class Salesforce:
         """
         q = self.client.query_all(soql)
         q = json.loads(json.dumps(q))
-        logger.info(f"Found {q['totalSize']} results")
+        log_msg = f"Found {q['totalSize']} results"
+        logger.info(log_msg)
         return q
 
     def insert_record(self, object, data_table):
@@ -99,9 +100,8 @@ class Salesforce:
         """
         r = getattr(self.client.bulk, object).insert(data_table.to_dicts())
         s = [x for x in r if x.get("success") is True]
-        logger.info(
-            f"Successfully inserted {len(s)} out of {data_table.num_rows} records to {object}"
-        )
+        log_msg = f"Successfully inserted {len(s)} out of {data_table.num_rows} records to {object}"
+        logger.info(log_msg)
         return r
 
     def update_record(self, object, data_table):
@@ -125,9 +125,8 @@ class Salesforce:
         """
         r = getattr(self.client.bulk, object).update(data_table.to_dicts())
         s = [x for x in r if x.get("success") is True]
-        logger.info(
-            f"Successfully updated {len(s)} out of {data_table.num_rows} records in {object}"
-        )
+        log_msg = f"Successfully updated {len(s)} out of {data_table.num_rows} records in {object}"
+        logger.info(log_msg)
         return r
 
     def upsert_record(self, object, data_table, id_col):
@@ -154,9 +153,8 @@ class Salesforce:
         """
         r = getattr(self.client.bulk, object).upsert(data_table.to_dicts(), id_col)
         s = [x for x in r if x.get("success") is True]
-        logger.info(
-            f"Successfully upserted {len(s)} out of {data_table.num_rows} records to {object}"
-        )
+        log_msg = f"Successfully upserted {len(s)} out of {data_table.num_rows} records to {object}"
+        logger.info(log_msg)
         return r
 
     def delete_record(self, object, id_table, hard_delete=False):
@@ -185,9 +183,8 @@ class Salesforce:
             r = getattr(self.client.bulk, object).delete(id_table.to_dicts())
 
         s = [x for x in r if x.get("success") is True]
-        logger.info(
-            f"Successfully deleted {len(s)} out of {id_table.num_rows} records from {object}"
-        )
+        log_msg = f"Successfully deleted {len(s)} out of {id_table.num_rows} records from {object}"
+        logger.info(log_msg)
         return r
 
     @property

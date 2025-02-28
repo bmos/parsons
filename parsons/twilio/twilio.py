@@ -47,7 +47,8 @@ class Twilio:
             dict
         """
         r = self.client.api.accounts(account_sid)
-        logger.info(f"Retrieved {account_sid} account.")
+        log_msg = f"Retrieved {account_sid} account."
+        logger.info(log_msg)
         return r.__dict__
 
     def get_accounts(self, name=None, status=None):
@@ -66,7 +67,8 @@ class Twilio:
         r = self.client.api.accounts.list(friendly_name=name, status=status)
         tbl = self._table_convert(r)
 
-        logger.info(f"Retrieved {tbl.num_rows} accounts.")
+        log_msg = f"Retrieved {tbl.num_rows} accounts."
+        logger.info(log_msg)
         return tbl
 
     def get_account_usage(
@@ -167,5 +169,6 @@ class Twilio:
         )
 
         tbl = self._table_convert(r)
-        logger.info(f"Retrieved {tbl.num_rows} messages.")
+        log_msg = f"Retrieved {tbl.num_rows} messages."
+        logger.info(log_msg)
         return tbl

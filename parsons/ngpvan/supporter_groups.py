@@ -20,7 +20,8 @@ class SupporterGroups:
                 See :ref:`parsons-table` for output options.
         """
         tbl = Table(self.connection.get_request("supporterGroups"))
-        logger.info(f"Found {tbl.num_rows} supporter groups.")
+        log_msg = f"Found {tbl.num_rows} supporter groups."
+        logger.info(log_msg)
         return tbl
 
     def get_supporter_group(self, supporter_group_id):
@@ -34,7 +35,8 @@ class SupporterGroups:
             dict
         """
         r = self.connection.get_request(f"supporterGroups/{supporter_group_id}")
-        logger.info(f"Found supporter group {supporter_group_id}.")
+        log_msg = f"Found supporter group {supporter_group_id}."
+        logger.info(log_msg)
         return r
 
     def create_supporter_group(self, name, description):
@@ -64,7 +66,8 @@ class SupporterGroups:
             ``None``
         """
         r = self.connection.delete_request(f"supporterGroups/{supporter_group_id}")
-        logger.info(f"Deleted supporter group {supporter_group_id}.")
+        log_msg = f"Deleted supporter group {supporter_group_id}."
+        logger.info(log_msg)
         return r
 
     def add_person_supporter_group(self, supporter_group_id, vanid):
@@ -80,7 +83,8 @@ class SupporterGroups:
             ``None``
         """
         r = self.connection.put_request(f"supporterGroups/{supporter_group_id}/people/{vanid}")
-        logger.info(f"Added person {vanid} to {supporter_group_id} supporter group.")
+        log_msg = f"Added person {vanid} to {supporter_group_id} supporter group."
+        logger.info(log_msg)
         return r
 
     def delete_person_supporter_group(self, supporter_group_id, vanid):
@@ -96,5 +100,6 @@ class SupporterGroups:
             ``None``
         """
         r = self.connection.delete_request(f"supporterGroups/{supporter_group_id}/people/{vanid}")
-        logger.info(f"Deleted person {vanid} from {supporter_group_id} supporter group.")
+        log_msg = f"Deleted person {vanid} from {supporter_group_id} supporter group."
+        logger.info(log_msg)
         return r

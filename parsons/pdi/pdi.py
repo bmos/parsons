@@ -73,7 +73,8 @@ class PDI(
             "ApiToken": self.api_token,
         }
         res = requests.post(f"{self.base_url}/sessions", json=login, headers=headers)
-        logger.debug(f"{res.status_code} - {res.url}")
+        log_msg = f"{res.status_code} - {res.url}"
+        logger.debug(log_msg)
         res.raise_for_status()
         # status_code == 200
         data = res.json()
@@ -118,7 +119,8 @@ class PDI(
         args = self._clean_dict(args) if args else args
         post_data = self._clean_dict(post_data) if post_data else post_data
         res = request_fn[req_type](url, headers=headers, json=post_data, params=args)
-        logger.debug(f"{res.url} - {res.status_code}")
+        log_msg = f"{res.url} - {res.status_code}"
+        logger.debug(log_msg)
         logger.debug(res.request.body)
 
         res.raise_for_status()

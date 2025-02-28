@@ -29,7 +29,8 @@ class Targets:
                 See :ref:`parsons-table` for output options.
         """
         tbl = Table(self.connection.get_request("targets"))
-        logger.info(f"Found {tbl.num_rows} targets.")
+        log_msg = f"Found {tbl.num_rows} targets."
+        logger.info(log_msg)
         return tbl
 
     def get_target(self, target_id):
@@ -44,7 +45,8 @@ class Targets:
                 The target
         """
         r = self.connection.get_request(f"targets/{target_id}")
-        logger.info(f"Found target {target_id}.")
+        log_msg = f"Found target {target_id}."
+        logger.info(log_msg)
         return r
 
     def get_target_export(self, export_job_id):
@@ -61,7 +63,8 @@ class Targets:
             url = response["file"]["downloadUrl"]
             return Table(petl.fromcsv(url, encoding="utf-8-sig"))
         if job_status == "Pending" or job_status == "InProcess":
-            logger.info(f"Target export job is pending or in process for {export_job_id}.")
+            log_msg = f"Target export job is pending or in process for {export_job_id}."
+            logger.info(log_msg)
             return None
         msg = f"Target export failed for {export_job_id}"
         raise TargetsFailed(msg)
@@ -80,5 +83,6 @@ class Targets:
         target_export = {"targetId": target_id}
 
         r = self.connection.post_request("targetExportJobs", json=target_export)
-        logger.info(f"Created new target export job for {target_id}.")
+        log_msg = f"Created new target export job for {target_id}."
+        logger.info(log_msg)
         return r

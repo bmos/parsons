@@ -55,7 +55,8 @@ class SmartMatchError(Exception):
 
 
 def _smartmatch_upload(url, fname):
-    logger.info(f"Uploading {fname} to {url} to begin SmartMatch workflow execution.")
+    log_msg = f"Uploading {fname} to {url} to begin SmartMatch workflow execution."
+    logger.info(log_msg)
     with Path(fname).open(mode="rb") as reader:
         response_2 = requests.put(url, data=reader, headers={"Content-Type": ""})
 
@@ -241,9 +242,10 @@ class SmartMatch:
             msg = f"SmartMatch workflow registration failed. Error: {response_1_info['error']}"
             raise SmartMatchError(msg)
 
-        logger.info(
+        log_msg = (
             f"The SmartMatch workflow registration was successful for file name {submit_filename}."
         )
+        logger.info(log_msg)
 
         # Write Petl table to CSV and upload for SmartMatch to process
         with tempfile.NamedTemporaryFile(
@@ -259,11 +261,10 @@ class SmartMatch:
             tmp.flush()
             _smartmatch_upload(response_1_info["url"], tmp.name)
 
-        logger.info(
-            "The SmartMatch workflow execution has been submitted using file"
-            f" name '{submit_filename}'. Now polling for results which can take"
-            " minutes/hours depending on data size and queuing."
-        )
+        log_msg = "The SmartMatch workflow execution has been submitted using file"
+        f" name '{submit_filename}'. Now polling for results which can take"
+        " minutes/hours depending on data size and queuing."
+        logger.info(log_msg)
 
         # Poll SmartMatch endpoint waiting for workflow completion
         download_url = self._smartmatch_poll(poll_url, submit_filename)
@@ -284,7 +285,8 @@ class SmartMatch:
                 delete=False,
             ) as tmp_csv,
         ):
-            logger.info(f"Downloading the '{submit_filename}' SmartMatch results to {tmp_gz.name}.")
+            log_msg = f"Downloading the '{submit_filename}' SmartMatch results to {tmp_gz.name}."
+            logger.info(log_msg)
             _smartmatch_download(download_url, tmp_gz)
             tmp_gz.flush()
 
