@@ -11,7 +11,7 @@ TEST_STATE = "GA"
 TEST_ELECTION_ID = "114729"
 TEST_VERSION_NUM = "296262"
 
-_DIR = os.path.dirname(__file__)
+_DIR = Path(__file__).parent
 
 
 class TestScytl(unittest.TestCase):

@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import sys
 import unittest
 from pathlib import Path
@@ -21,7 +20,7 @@ logger.addHandler(strm_hdlr)
 
 logger.setLevel(logging.INFO)
 
-_dir = os.path.dirname(__file__)
+_dir = Path(__file__).parent
 
 fake_search = [{"id": "fake"}]
 

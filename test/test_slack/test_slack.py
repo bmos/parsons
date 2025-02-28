@@ -9,7 +9,7 @@ from slackclient.exceptions import SlackClientError
 
 from parsons import Slack, Table
 
-_dir = os.path.dirname(__file__)
+_dir = Path(__file__).parent
 responses_dir = f"{_dir}/responses"
 
 

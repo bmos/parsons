@@ -12,7 +12,7 @@ import requests_mock
 
 from parsons import Gmail
 
-_dir = os.path.dirname(__file__)
+_dir = Path(__file__).parent
 
 
 class TestGmail(unittest.TestCase):

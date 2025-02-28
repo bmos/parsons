@@ -75,7 +75,7 @@ def main():
         }
         extras_require["all"] = sorted({lib for libs in extras_require.values() for lib in libs})
     else:
-        THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+        THIS_DIR = os.path.abspath(Path(__file__).parent)
         with open(os.path.join(THIS_DIR, "requirements.txt")) as reqs:
             install_requires = reqs.read().strip().split("\n")
         # No op for forward-compatibility

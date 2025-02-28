@@ -1,4 +1,3 @@
-import os
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -10,7 +9,7 @@ from github.GithubException import UnknownObjectException
 from parsons import GitHub, Table
 from parsons.github.github import ParsonsGitHubError
 
-_dir = os.path.dirname(__file__)
+_dir = Path(__file__).parent
 
 
 class TestGitHub(unittest.TestCase):

@@ -1,6 +1,7 @@
 import os
 import unittest
 from abc import ABC
+from pathlib import Path
 from typing import Optional
 
 import pytest
@@ -10,7 +11,7 @@ from parsons.databases.database_connector import DatabaseConnector
 from test.test_databases.fakes import FakeDatabase
 from test.utils import assert_matching_tables
 
-_dir = os.path.dirname(__file__)
+_dir = Path(__file__).parent
 
 TEMP_SCHEMA = "parsons_test"
 

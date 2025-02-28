@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import unittest
 from pathlib import Path
 
@@ -8,7 +7,7 @@ import requests_mock
 
 from parsons import RockTheVote
 
-_dir = os.path.dirname(__file__)
+_dir = Path(__file__).parent
 
 
 class TestRockTheVote(unittest.TestCase):
