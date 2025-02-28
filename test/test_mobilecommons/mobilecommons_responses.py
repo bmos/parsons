@@ -1,4 +1,4 @@
-class get_profiles_response:
+class GetProfilesResponse:
     status_code = 200
     text = """<?xml version="1.0" encoding="UTF-8"?>
 <response success="true">
@@ -83,7 +83,7 @@ class get_profiles_response:
 """
 
 
-class get_broadcasts_response:
+class GetBroadcastsResponse:
     status_code = 200
     text = """<?xml version="1.0" encoding="UTF-8"?>
 <response success="true">
@@ -162,7 +162,7 @@ Reply STOP to quit. Msg&amp;DataRatesMayApply</body>
 """
 
 
-class post_profile_response:
+class PostProfileMessage:
     status_code = 200
     text = """<?xml version="1.0" encoding="UTF-8"?>
 <response success="true">

@@ -2,9 +2,9 @@ import unittest
 
 import requests_mock
 from mobilecommons_responses import (
-    get_broadcasts_response,
-    get_profiles_response,
-    post_profile_response,
+    GetBroadcastsResponse,
+    GetProfilesResponse,
+    PostProfileMessage,
 )
 
 from parsons.etl import Table
@@ -31,8 +31,8 @@ class TestMobileCommons(unittest.TestCase):
     def test_parse_get_request(self, m):
         m.get(
             self.base_uri + DEFAULT_GET_ENDPOINT,
-            status_code=get_profiles_response.status_code,
-            text=get_profiles_response.text,
+            status_code=GetProfilesResponse.status_code,
+            text=GetProfilesResponse.text,
         )
         parsed_get_request_text = self.mc._parse_get_request(
             endpoint=DEFAULT_GET_ENDPOINT, params=DEFAULT_GET_PARAMS
@@ -43,8 +43,8 @@ class TestMobileCommons(unittest.TestCase):
     def test_mc_get_request(self, m):
         m.get(
             self.base_uri + DEFAULT_GET_ENDPOINT,
-            status_code=get_broadcasts_response.status_code,
-            text=get_broadcasts_response.text,
+            status_code=GetBroadcastsResponse.status_code,
+            text=GetBroadcastsResponse.text,
         )
         parsed_get_response_text = self.mc._mc_get_request(
             params=DEFAULT_GET_PARAMS,
@@ -60,8 +60,8 @@ class TestMobileCommons(unittest.TestCase):
     def test_get_profiles(self, m):
         m.get(
             self.base_uri + "profiles",
-            status_code=get_profiles_response.status_code,
-            text=get_profiles_response.text,
+            status_code=GetProfilesResponse.status_code,
+            text=GetProfilesResponse.text,
         )
         profiles = self.mc.get_profiles(limit=1000)
         assert isinstance(profiles, Table), (
@@ -75,8 +75,8 @@ class TestMobileCommons(unittest.TestCase):
     def test_get_broadcasts(self, m):
         m.get(
             self.base_uri + "broadcasts",
-            status_code=get_broadcasts_response.status_code,
-            text=get_broadcasts_response.text,
+            status_code=GetBroadcastsResponse.status_code,
+            text=GetBroadcastsResponse.text,
         )
         broadcasts = self.mc.get_broadcasts(limit=1000)
         assert isinstance(broadcasts, Table), (
@@ -88,7 +88,7 @@ class TestMobileCommons(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_mc_post_request(self, m):
-        m.post(self.base_uri + "profile_update", text=post_profile_response.text)
+        m.post(self.base_uri + "profile_update", text=PostProfileMessage.text)
         response_dict = self.mc._mc_post_request(
             endpoint=DEFAULT_POST_ENDPOINT, params=DEFAULT_POST_PARAMS
         )
@@ -101,7 +101,7 @@ class TestMobileCommons(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_create_profile(self, m):
-        m.post(self.base_uri + "profile_update", text=post_profile_response.text)
+        m.post(self.base_uri + "profile_update", text=PostProfileMessage.text)
         profile_id = self.mc.create_profile(phone=13073997994)
         assert profile_id == "602169563", (
             "MobileCommons.create_profile does not return expected profile_id"
