@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from io import BytesIO, StringIO
 
-import defusedxml.ElementTree as ET
+import defusedxml.ElementTree as ElementTree
 import requests
 from dateutil.parser import parse as parsedate
 from pytz import timezone
@@ -220,7 +220,7 @@ class Scytl:
             list[dict]
             The list of election results by precinct and vote method in the file.
         """
-        tree = ET.fromstring(county_data)
+        tree = ElementTree.fromstring(county_data)
 
         precinct_dict = {}
         precinct_votes = []
@@ -301,7 +301,7 @@ class Scytl:
             list[dict]
             The list of election results by state and vote method in the file.
         """
-        root = ET.fromstring(state_data)
+        root = ElementTree.fromstring(state_data)
 
         county_dict = {}
         county_votes = []

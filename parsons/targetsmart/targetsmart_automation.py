@@ -27,7 +27,7 @@ import time
 import uuid
 from pathlib import Path
 
-import defusedxml.ElementTree as ET
+import defusedxml.ElementTree as ElementTree
 import xmltodict
 
 from parsons.etl.table import Table
@@ -163,33 +163,33 @@ class TargetSmartAutomation:
     def create_job_xml(self, job_type, job_name, emails=None, status_key=None, call_back=None):
         # Internal method to create a valid job xml
 
-        job = ET.Element("job")
+        job = ElementTree.Element("job")
 
         # Generate Base XML
-        input_file = ET.SubElement(job, "inputfile")
+        input_file = ElementTree.SubElement(job, "inputfile")
         input_file.text = job_name + "_input.csv"
-        output_file = ET.SubElement(job, "outputfile")
+        output_file = ElementTree.SubElement(job, "outputfile")
         output_file.text = job_name + "_output.csv"
-        jobtype = ET.SubElement(job, "jobtype", text=job_type)
+        jobtype = ElementTree.SubElement(job, "jobtype", text=job_type)
         jobtype.text = job_type
 
         # Add status key
-        args = ET.SubElement(job, "args")
-        statuskey = ET.SubElement(args, "arg", name="__status_key")
+        args = ElementTree.SubElement(job, "args")
+        statuskey = ElementTree.SubElement(args, "arg", name="__status_key")
         statuskey.text = status_key or job_name
 
         # Option args
         if call_back:
-            callback = ET.SubElement(args, "arg", name="__http_callback")
+            callback = ElementTree.SubElement(args, "arg", name="__http_callback")
             callback.text = call_back
 
         if emails:
-            emails_el = ET.SubElement(args, "arg", name="__emails")
+            emails_el = ElementTree.SubElement(args, "arg", name="__emails")
             emails_el.text = ",".join(emails)
 
         # Write xml to file object
         local_path = create_temp_file(suffix=".xml")
-        tree = ET.ElementTree(job)
+        tree = ElementTree.ElementTree(job)
         tree.write(local_path)
         return local_path
 

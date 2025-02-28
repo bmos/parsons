@@ -3,14 +3,14 @@ import unittest
 import pytest
 import requests_mock
 
-from parsons import NationBuilder as NB
+from parsons import NationBuilder
 
 from .fixtures import GET_PEOPLE_RESPONSE, PERSON_RESPONSE
 
 
 class TestNationBuilder(unittest.TestCase):
     def test_client(self):
-        nb = NB("test-slug", "test-token")
+        nb = NationBuilder("test-slug", "test-token")
         assert nb.client.uri == "https://test-slug.nationbuilder.com/api/v1/"
         assert nb.client.headers == {
             "authorization": "Bearer test-token",
@@ -19,58 +19,58 @@ class TestNationBuilder(unittest.TestCase):
         }
 
     def test_get_uri_success(self):
-        assert NB.get_uri("foo") == "https://foo.nationbuilder.com/api/v1"
-        assert NB.get_uri("bar") == "https://bar.nationbuilder.com/api/v1"
+        assert NationBuilder.get_uri("foo") == "https://foo.nationbuilder.com/api/v1"
+        assert NationBuilder.get_uri("bar") == "https://bar.nationbuilder.com/api/v1"
 
     def test_get_uri_errors(self):
         values = ["", "  ", None, 1337, {}, []]
 
         for v in values:
             with pytest.raises(ValueError):
-                NB.get_uri(v)
+                NationBuilder.get_uri(v)
 
     def test_get_auth_headers_success(self):
-        assert NB.get_auth_headers("foo") == {"authorization": "Bearer foo"}
-        assert NB.get_auth_headers("bar") == {"authorization": "Bearer bar"}
+        assert NationBuilder.get_auth_headers("foo") == {"authorization": "Bearer foo"}
+        assert NationBuilder.get_auth_headers("bar") == {"authorization": "Bearer bar"}
 
     def test_get_auth_headers_errors(self):
         values = ["", "  ", None, 1337, {}, []]
 
         for v in values:
             with pytest.raises(ValueError):
-                NB.get_auth_headers(v)
+                NationBuilder.get_auth_headers(v)
 
     def test_parse_next_params_success(self):
-        n, t = NB.parse_next_params("/a/b/c?__nonce=foo&__token=bar")
+        n, t = NationBuilder.parse_next_params("/a/b/c?__nonce=foo&__token=bar")
         assert n == "foo"
         assert t == "bar"
 
     def test_get_next_params_errors(self):
         with pytest.raises(ValueError):
-            NB.parse_next_params("/a/b/c?baz=1")
+            NationBuilder.parse_next_params("/a/b/c?baz=1")
 
         with pytest.raises(ValueError):
-            NB.parse_next_params("/a/b/c?__nonce=1")
+            NationBuilder.parse_next_params("/a/b/c?__nonce=1")
 
         with pytest.raises(ValueError):
-            NB.parse_next_params("/a/b/c?__token=1")
+            NationBuilder.parse_next_params("/a/b/c?__token=1")
 
     def test_make_next_url(self):
         assert (
-            NB.make_next_url("example.com", "bar", "baz")
-            == "example.com?limit=100&__nonce=bar&__token=baz"
+                NationBuilder.make_next_url("example.com", "bar", "baz")
+                == "example.com?limit=100&__nonce=bar&__token=baz"
         )
 
     @requests_mock.Mocker()
     def test_get_people_handle_empty_response(self, m):
-        nb = NB("test-slug", "test-token")
+        nb = NationBuilder("test-slug", "test-token")
         m.get("https://test-slug.nationbuilder.com/api/v1/people", json={"results": []})
         table = nb.get_people()
         assert table.num_rows == 0
 
     @requests_mock.Mocker()
     def test_get_people(self, m):
-        nb = NB("test-slug", "test-token")
+        nb = NationBuilder("test-slug", "test-token")
         m.get(
             "https://test-slug.nationbuilder.com/api/v1/people",
             json=GET_PEOPLE_RESPONSE,
@@ -87,7 +87,7 @@ class TestNationBuilder(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_people_with_next(self, m):
         """Make two requests and get the same data twice. This will exercise the while loop."""
-        nb = NB("test-slug", "test-token")
+        nb = NationBuilder("test-slug", "test-token")
 
         GET_PEOPLE_RESPONSE_WITH_NEXT = GET_PEOPLE_RESPONSE.copy()
         GET_PEOPLE_RESPONSE_WITH_NEXT["next"] = (
@@ -114,7 +114,7 @@ class TestNationBuilder(unittest.TestCase):
         assert table[1]["email"] == "bar@example.com"
 
     def test_update_person_raises_with_bad_params(self):
-        nb = NB("test-slug", "test-token")
+        nb = NationBuilder("test-slug", "test-token")
 
         with pytest.raises(ValueError):
             nb.update_person(None, {})
@@ -134,7 +134,7 @@ class TestNationBuilder(unittest.TestCase):
     @requests_mock.Mocker()
     def test_update_person(self, m):
         """Requests the correct URL, returns the correct data and doesn't raise exceptions."""
-        nb = NB("test-slug", "test-token")
+        nb = NationBuilder("test-slug", "test-token")
 
         m.put(
             "https://test-slug.nationbuilder.com/api/v1/people/1",
@@ -150,7 +150,7 @@ class TestNationBuilder(unittest.TestCase):
         assert person["email"] == "foo@example.com"
 
     def test_upsert_person_raises_with_bad_params(self):
-        nb = NB("test-slug", "test-token")
+        nb = NationBuilder("test-slug", "test-token")
 
         with pytest.raises(ValueError):
             nb.upsert_person({"tags": ["zoot", "boot"]})
@@ -158,7 +158,7 @@ class TestNationBuilder(unittest.TestCase):
     @requests_mock.Mocker()
     def test_upsert_person(self, m):
         """Requests the correct URL, returns the correct data and doesn't raise exceptions."""
-        nb = NB("test-slug", "test-token")
+        nb = NationBuilder("test-slug", "test-token")
 
         m.put(
             "https://test-slug.nationbuilder.com/api/v1/people/push",
