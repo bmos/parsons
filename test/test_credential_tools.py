@@ -63,11 +63,11 @@ class TestCredentialTool(unittest.TestCase):
         expected = {"ENC_VAR1": "encoded-variable-1", "ENC_VAR2": "enc-var-2"}
 
         file_path = f"{self.tmp_folder}/saved_credentials.json"
-        assert not os.path.isfile(file_path)
+        assert not Path(file_path).is_file()
 
         ct.decode_credential(encoded_cred, export=False, save_path=file_path)
 
-        assert os.path.isfile(file_path)
+        assert Path(file_path).is_file()
 
         with Path(file_path).open() as f:
             cred = json.load(f)
