@@ -12,7 +12,7 @@ from parsons.google import utilities as util
 class FakeCredentialTest(unittest.TestCase):
     def setUp(self) -> None:
         self.dir = tempfile.TemporaryDirectory()
-        self.cred_path = os.path.join(self.dir.name, "mycred.json")
+        self.cred_path = Path(self.dir.name) / "mycred.json"
         self.cred_contents = {
             "client_id": "foobar.apps.googleusercontent.com",
             "client_secret": str(hash("foobar")),

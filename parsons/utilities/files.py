@@ -285,7 +285,7 @@ def generate_tempfile(suffix=None, create=False):
         name = next(names)
         if suffix:
             name = f"{name}{suffix}"
-        path = os.path.join(temp_dir, name)
+        path = Path(temp_dir) / name
 
         # Check to see if the path already exists.
         if Path(path).exists():
