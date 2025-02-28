@@ -66,8 +66,8 @@ def test_create_temp_directory():
     files.cleanup_temp_directory(temp_directory)
 
     # Verify the temp file no longer exists
-    with pytest.raises(FileNotFoundError):
-        Path(test_file1).open()
+    with pytest.raises(FileNotFoundError), Path(test_file1).open():
+        pass
 
 
 def test_close_temp_file():
@@ -75,8 +75,8 @@ def test_close_temp_file():
     files.close_temp_file(temp)
 
     # Verify the temp file no longer exists
-    with pytest.raises(FileNotFoundError):
-        Path(temp).open()
+    with pytest.raises(FileNotFoundError), Path(temp).open():
+        pass
 
 
 def test_is_gzip_path():

@@ -1316,11 +1316,12 @@ class ActionKit:
         """
         # self.conn defaults to JSON, but this has to be form/multi-part....
         upload_client = self._conn({"accepts": "application/json"})
+        upload_file = csv_file
         if isinstance(csv_file, str):
-            csv_file = Path(csv_file).open(mode="rb")
+            upload_file = Path(csv_file).open(mode="rb") # noqa: SIM115
 
         url = self._base_endpoint("upload")
-        files = {"upload": csv_file}
+        files = {"upload": upload_file}
         data = {
             "page": import_page,
             "autocreate_user_fields": int(autocreate_user_fields),

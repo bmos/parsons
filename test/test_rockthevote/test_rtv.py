@@ -35,10 +35,11 @@ class TestRockTheVote(unittest.TestCase):
             "https://register.rockthevote.com/api/v4/registrant_reports/1",
             json={"download_url": "https://register.rockthevote.com/download/whatever"},
         )
-        mocker.get(
-            "https://register.rockthevote.com/download/whatever",
-            text=Path(f"{_dir}/sample.csv").open().read(),
-        )
+        with Path(f"{_dir}/sample.csv").open() as f:
+            mocker.get(
+                "https://register.rockthevote.com/download/whatever",
+                text=f.read(),
+            )
 
         rtv = RockTheVote(partner_id=partner_id, partner_api_key=partner_api_key)
 
@@ -60,10 +61,11 @@ class TestRockTheVote(unittest.TestCase):
             "https://register.rockthevote.com/api/v4/registrant_reports/123",
             json={"download_url": "https://register.rockthevote.com/download/whatever"},
         )
-        mocker.get(
-            "https://register.rockthevote.com/download/whatever",
-            text=Path(f"{_dir}/sample.csv").open().read(),
-        )
+        with Path(f"{_dir}/sample.csv").open() as f:
+            mocker.get(
+                "https://register.rockthevote.com/download/whatever",
+                text=f.read(),
+            )
 
         rtv = RockTheVote(partner_id=partner_id, partner_api_key=partner_api_key)
 
