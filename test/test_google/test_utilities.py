@@ -77,10 +77,10 @@ class TestSetupGoogleApplicationCredentials(FakeCredentialTest):
 
 
 class TestHexavigesimal(unittest.TestCase):
-    def test_returns_A_on_1(self):
+    def test_returns_a_on_1(self):
         assert util.hexavigesimal(1) == "A"
 
-    def test_returns_AA_on_27(self):
+    def test_returns_aa_on_27(self):
         assert util.hexavigesimal(27) == "AA"
 
     def test_returns_error_on_0(self):
