@@ -57,8 +57,8 @@ class TestNationBuilder(unittest.TestCase):
 
     def test_make_next_url(self):
         assert (
-                NationBuilder.make_next_url("example.com", "bar", "baz")
-                == "example.com?limit=100&__nonce=bar&__token=baz"
+            NationBuilder.make_next_url("example.com", "bar", "baz")
+            == "example.com?limit=100&__nonce=bar&__token=baz"
         )
 
     @requests_mock.Mocker()

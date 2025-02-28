@@ -229,7 +229,12 @@ class ActionBuilder:
             identifier = [identifier]
 
         # Default to assuming identifier comes from Action Builder and add prefix if missing
-        identifiers = [f"action_builder:{action_builder_id}" if ":" not in action_builder_id else action_builder_id for action_builder_id in identifier]
+        identifiers = [
+            f"action_builder:{action_builder_id}"
+            if ":" not in action_builder_id
+            else action_builder_id
+            for action_builder_id in identifier
+        ]
 
         if not isinstance(data, dict):
             data = {}
