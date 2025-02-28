@@ -122,9 +122,9 @@ class ActionBuilder:
         `Returns:`
             Parsons Table of data found on tag in Action Builder from searching by name.
         """
-        filter = f"name eq '{tag_name}'"
+        formatted_filter = f"name eq '{tag_name}'"
 
-        return self.get_campaign_tags(campaign=campaign, filter=filter)
+        return self.get_campaign_tags(campaign=campaign, filter=formatted_filter)
 
     def insert_new_tag(self, tag_name, tag_field, tag_section, campaign=None):
         """
@@ -229,7 +229,7 @@ class ActionBuilder:
             identifier = [identifier]
 
         # Default to assuming identifier comes from Action Builder and add prefix if missing
-        identifiers = [f"action_builder:{id}" if ":" not in id else id for id in identifier]
+        identifiers = [f"action_builder:{action_builder_id}" if ":" not in action_builder_id else action_builder_id for action_builder_id in identifier]
 
         if not isinstance(data, dict):
             data = {}

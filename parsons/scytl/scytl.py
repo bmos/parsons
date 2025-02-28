@@ -150,8 +150,8 @@ class Scytl:
 
             zf = zipfile.ZipFile(zipdata)
 
-            with zf.open(file_name) as input:
-                return input.read()
+            with zf.open(file_name) as input_file:
+                return input_file.read()
 
     def _get_latest_counties_scytl_info(
         self, state: str, election_id: str, version_num: str

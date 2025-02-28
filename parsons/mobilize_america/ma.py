@@ -341,8 +341,8 @@ class MobilizeAmerica:
         """
         if isinstance(organization_id, collections.abc.Iterable):
             data = Table()
-            for id in organization_id:
-                data.concat(self.get_people(id, updated_since))
+            for org_id in organization_id:
+                data.concat(self.get_people(org_id, updated_since))
             return data
         url = self.uri + "organizations/" + str(organization_id) + "/people"
         args = {"updated_since": date_to_timestamp(updated_since)}

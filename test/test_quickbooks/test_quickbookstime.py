@@ -139,7 +139,7 @@ class TestQuickBooksTime(unittest.TestCase):
         ids = [1, 2, 3]
         parent_ids = [4, 5, 6]
         name = "test"
-        type = "test"
+        job_type = "test"
         active = True
         customfields = {"test": "test"}
         modified_before = "2022-01-01"
@@ -153,7 +153,7 @@ class TestQuickBooksTime(unittest.TestCase):
             ids=ids,
             parent_ids=parent_ids,
             name=name,
-            type=type,
+            type=job_type,
             active=active,
             customfields=customfields,
             modified_before=modified_before,

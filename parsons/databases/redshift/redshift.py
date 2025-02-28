@@ -707,7 +707,7 @@ class Redshift(
         max_file_size="6.2 GB",
         extension=None,
         aws_region=None,
-        format=None,
+        format_type=None,
         aws_access_key_id=None,
         aws_secret_access_key=None,
     ):
@@ -758,7 +758,7 @@ class Redshift(
             The AWS Region where the target Amazon S3 bucket is located. REGION is required for
             UNLOAD to an Amazon S3 bucket that is not in the same AWS Region as the Amazon Redshift
             cluster.
-        format: str
+        format_type: str
             The format of the unload file (CSV, PARQUET, JSON) - Optional.
         aws_access_key_id:
             An AWS access key granted to the bucket where the file is located. Not required
@@ -784,18 +784,18 @@ class Redshift(
         statement += f"EXTENSION '{extension}' \n" if extension else ""
 
         # Format-specific parameters
-        if format:
-            format = format.lower()
-            if format == "csv":
+        if format_type:
+            format_type = format_type.lower()
+            if format_type == "csv":
                 statement += f"DELIMITER AS '{delimiter}' \n" if delimiter else ""
                 statement += f"NULL AS '{null_as}' \n" if null_as else ""
                 statement += "HEADER \n" if header else ""
                 statement += "ESCAPE \n" if escape else ""
                 statement += "FORMAT AS CSV \n"
                 statement += f"{compression.upper()} \n" if compression else ""
-            elif format == "parquet":
+            elif format_type == "parquet":
                 statement += "FORMAT AS PARQUET \n"
-            elif format == "json":
+            elif format_type == "json":
                 statement += "FORMAT AS JSON \n"
                 statement += f"{compression.upper()} \n" if compression else ""
         else:

@@ -89,37 +89,37 @@ class TestNewmodeV1(unittest.TestCase):
         assert response[0]["title"] == "Tool 1"
 
     def test_get_tool(self):
-        id = 1
-        response = self.nm.get_tool(id)
-        self.nm.client.getTool.assert_called_with(id, params={})
+        test_id = 1
+        response = self.nm.get_tool(test_id)
+        self.nm.client.getTool.assert_called_with(test_id, params={})
         assert response["name"] == "Tool 1"
 
     def test_lookup_targets(self):
-        id = 1
-        response = self.nm.lookup_targets(id)
-        self.nm.client.lookupTargets.assert_called_with(id, None, params={})
+        test_id = 1
+        response = self.nm.lookup_targets(test_id)
+        self.nm.client.lookupTargets.assert_called_with(test_id, None, params={})
         assert response[0]["full_name"] == "John Doe"
 
     def test_get_action(self):
-        id = 1
-        response = self.nm.get_action(id)
-        self.nm.client.getAction.assert_called_with(id, params={})
+        test_id = 1
+        response = self.nm.get_action(test_id)
+        self.nm.client.getAction.assert_called_with(test_id, params={})
         assert response["required_fields"][0]["key"] == "first_name"
 
     def test_run_action(self):
-        id = 1
+        test_id = 1
         payload = {
             "email": "john.doe@example.com",
             "first_name": "John",
         }
-        response = self.nm.run_action(id, payload)
-        self.nm.client.runAction.assert_called_with(id, payload, params={})
+        response = self.nm.run_action(test_id, payload)
+        self.nm.client.runAction.assert_called_with(test_id, payload, params={})
         assert response == 1
 
     def test_get_target(self):
-        id = "TESTMODE-aasfff"
-        response = self.nm.get_target(id)
-        self.nm.client.getTarget.assert_called_with(id, params={})
+        test_id = "TESTMODE-aasfff"
+        response = self.nm.get_target(test_id)
+        self.nm.client.getTarget.assert_called_with(test_id, params={})
         assert response["id"] == 1
         assert response["full_name"] == "John Doe"
 
@@ -130,9 +130,9 @@ class TestNewmodeV1(unittest.TestCase):
         assert response[0]["title"] == "Campaign 1"
 
     def test_get_campaign(self):
-        id = 1
-        response = self.nm.get_campaign(id)
-        self.nm.client.getCampaign.assert_called_with(id, params={})
+        test_id = 1
+        response = self.nm.get_campaign(test_id)
+        self.nm.client.getCampaign.assert_called_with(test_id, params={})
         assert response["name"] == "Campaign 1"
 
     def test_get_organizations(self):
@@ -142,9 +142,9 @@ class TestNewmodeV1(unittest.TestCase):
         assert response[0]["title"] == "Organization 1"
 
     def test_get_organization(self):
-        id = 1
-        response = self.nm.get_organization(id)
-        self.nm.client.getOrganization.assert_called_with(id, params={})
+        test_id = 1
+        response = self.nm.get_organization(test_id)
+        self.nm.client.getOrganization.assert_called_with(test_id, params={})
         assert response["name"] == "Organization 1"
 
     def test_get_services(self):
@@ -154,22 +154,22 @@ class TestNewmodeV1(unittest.TestCase):
         assert response[0]["title"] == "Service 1"
 
     def test_get_service(self):
-        id = 1
-        response = self.nm.get_service(id)
-        self.nm.client.getService.assert_called_with(id, params={})
+        test_id = 1
+        response = self.nm.get_service(test_id)
+        self.nm.client.getService.assert_called_with(test_id, params={})
         assert response["name"] == "Service 1"
 
     def test_get_outreaches(self):
-        id = 1
+        test_id = 1
         args = {}
-        response = self.nm.get_outreaches(id, args)
-        self.nm.client.getOutreaches.assert_called_with(id, params=args)
+        response = self.nm.get_outreaches(test_id, args)
+        self.nm.client.getOutreaches.assert_called_with(test_id, params=args)
         assert response[0]["title"] == "Outreach 1"
 
     def test_get_outreach(self):
-        id = 1
-        response = self.nm.get_outreach(id)
-        self.nm.client.getOutreach.assert_called_with(id, params={})
+        test_id = 1
+        response = self.nm.get_outreach(test_id)
+        self.nm.client.getOutreach.assert_called_with(test_id, params={})
         assert response["name"] == "Outreach 1"
 
 

@@ -289,7 +289,7 @@ class People:
 
     def _people_search(
         self,
-        id=None,
+        van_id=None,
         id_type=None,
         first_name=None,
         last_name=None,
@@ -336,19 +336,19 @@ class People:
         else:
             json = match_json
             if "vanId" in match_json:
-                id = match_json["vanId"]
+                van_id = match_json["vanId"]
 
         if kwargs:
             json.update(kwargs)
 
         url = "people/"
 
-        if id:
+        if van_id:
             if create:
                 id_type = "" if id_type in ("vanid", None) else f"{id_type}:"
-                url += id_type + str(id)
+                url += id_type + str(van_id)
             else:
-                return self.get_person(id, id_type=id_type)
+                return self.get_person(van_id, id_type=id_type)
 
         else:
             url += "find"
