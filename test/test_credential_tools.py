@@ -33,7 +33,7 @@ class TestCredentialTool(unittest.TestCase):
 
         expected = {"ENC_VAR1": "encoded-variable-1", "ENC_VAR2": "enc-var-2"}
 
-        self.assertDictEqual(ct.decode_credential(encoded_cred, export=False), expected)
+        assert ct.decode_credential(encoded_cred, export=False) == expected
 
     def test_decode_credential_export(self):
         encoded_cred = (
@@ -72,7 +72,7 @@ class TestCredentialTool(unittest.TestCase):
         with Path(file_path).open() as f:
             cred = json.load(f)
 
-        self.assertDictEqual(cred, expected)
+        assert cred == expected
 
     def test_decode_credential_error(self):
         non_json = "non-json string"

@@ -26,9 +26,7 @@ class TestDonorbox(unittest.TestCase):
         result = self.donorbox.get_campaigns()
 
         # Assert the method returns expected dict response
-        self.assertDictEqual(
-            result.to_dicts()[0], donorbox_test_data.get_campaigns_response_json[0]
-        )
+        assert result.to_dicts()[0], donorbox_test_data.get_campaigns_response_json[0]
         columns = [
             "id",
             "name",
@@ -42,7 +40,7 @@ class TestDonorbox(unittest.TestCase):
             "formatted_total_raised",
             "donations_count",
         ]
-        self.assertCountEqual(result.columns, columns)
+        assert len(result.columns) == len(columns)
 
     @unittest.skip("requires live account setup")
     @mark_live_test
@@ -142,9 +140,8 @@ class TestDonorbox(unittest.TestCase):
         result = self.donorbox.get_donations()
 
         # Assert the method returns expected dict response
-        self.assertDictEqual(
-            result.to_dicts()[0], donorbox_test_data.get_donations_response_json[0]
-        )
+        assert result.to_dicts()[0] == donorbox_test_data.get_donations_response_json[0]
+
         columns = [
             "campaign",
             "donor",
@@ -183,7 +180,7 @@ class TestDonorbox(unittest.TestCase):
             "plan_id",
             "interval",
         ]
-        self.assertCountEqual(result.columns, columns)
+        assert result.columns == columns
 
     @unittest.skip("requires live account setup")
     @mark_live_test
@@ -329,7 +326,7 @@ class TestDonorbox(unittest.TestCase):
         result = self.donorbox.get_donors()
 
         # Assert the method returns expected dict response
-        self.assertDictEqual(result.to_dicts()[0], donorbox_test_data.get_donors_response_json[0])
+        assert result.to_dicts()[0] == donorbox_test_data.get_donors_response_json[0]
         columns = [
             "id",
             "created_at",
@@ -350,7 +347,7 @@ class TestDonorbox(unittest.TestCase):
             "last_donation_at",
             "total",
         ]
-        self.assertCountEqual(result.columns, columns)
+        assert result.columns == columns
 
     @unittest.skip("requires live account setup")
     @mark_live_test

@@ -45,7 +45,7 @@ class TestSlack(unittest.TestCase):
         assert isinstance(tbl, Table)
 
         expected_columns = ["id", "name"]
-        self.assertListEqual(tbl.columns, expected_columns)
+        assert tbl.columns == expected_columns
         assert tbl.num_rows == 2
 
     @requests_mock.Mocker()
@@ -108,7 +108,7 @@ class TestSlack(unittest.TestCase):
             "num_members",
         ]
 
-        self.assertListEqual(sorted(tbl.columns), sorted(expected_columns))
+        assert sorted(tbl.columns) == sorted(expected_columns)
         assert tbl.num_rows == 2
 
     @requests_mock.Mocker()
@@ -129,7 +129,7 @@ class TestSlack(unittest.TestCase):
             "profile_email",
             "profile_real_name_normalized",
         ]
-        self.assertListEqual(tbl.columns, expected_columns)
+        assert tbl.columns == expected_columns
         assert tbl.num_rows == 2
 
     @requests_mock.Mocker()
@@ -227,7 +227,7 @@ class TestSlack(unittest.TestCase):
             "profile_team",
             "profile_title",
         ]
-        self.assertListEqual(sorted(tbl.columns), sorted(expected_columns))
+        assert sorted(tbl.columns) == sorted(expected_columns)
         assert tbl.num_rows == 2
 
     @requests_mock.Mocker()
@@ -240,7 +240,7 @@ class TestSlack(unittest.TestCase):
         dct = self.slack.message_channel("C1H9RESGL", "Here's a message for you")
 
         assert isinstance(dct, dict)
-        self.assertListEqual(sorted(dct), sorted(slack_resp))
+        assert sorted(dct) == sorted(slack_resp)
 
         m.post(
             "https://slack.com/api/chat.postMessage",
@@ -273,7 +273,7 @@ class TestSlack(unittest.TestCase):
         dct = self.slack.upload_file(["D0L4B9P0Q"], file_path)
 
         assert isinstance(dct, dict)
-        self.assertListEqual(sorted(dct), sorted(slack_resp))
+        assert sorted(dct) == sorted(slack_resp)
 
         m.post(
             "https://slack.com/api/files.upload",

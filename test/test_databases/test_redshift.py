@@ -1,6 +1,8 @@
 import os
 import re
 import unittest
+from functools import reduce
+from operator import and_
 
 import pytest
 from testfixtures import LogCapture
@@ -216,7 +218,7 @@ class TestRedshift(unittest.TestCase):
         ]
 
         # Check that all of the expected options are there:
-        [self.assertNotEqual(sql.find(o), -1, o) for o in expected_options]
+        assert reduce(and_, [sql.find(o) != -1 for o in expected_options])
 
     def test_copy_statement_statupdate(self):
         sql = self.rs.copy_statement(
@@ -246,7 +248,7 @@ class TestRedshift(unittest.TestCase):
         ]
 
         # Check that all of the expected options are there:
-        [self.assertNotEqual(sql.find(o), -1) for o in expected_options]
+        assert reduce(and_, [sql.find(o) != -1 for o in expected_options])
 
         sql2 = self.rs.copy_statement(
             "test_schema.test",
@@ -275,7 +277,7 @@ class TestRedshift(unittest.TestCase):
         ]
 
         # Check that all of the expected options are there:
-        [self.assertNotEqual(sql2.find(o), -1) for o in expected_options]
+        assert reduce(and_, [sql2.find(o) != -1 for o in expected_options])
 
     def test_copy_statement_compupdate(self):
         sql = self.rs.copy_statement(
@@ -305,7 +307,7 @@ class TestRedshift(unittest.TestCase):
         ]
 
         # Check that all of the expected options are there:
-        [self.assertNotEqual(sql.find(o), -1) for o in expected_options]
+        assert reduce(and_, [sql.find(o) != -1 for o in expected_options])
 
         sql2 = self.rs.copy_statement(
             "test_schema.test",
@@ -334,7 +336,7 @@ class TestRedshift(unittest.TestCase):
         ]
 
         # Check that all of the expected options are there:
-        [self.assertNotEqual(sql2.find(o), -1) for o in expected_options]
+        assert reduce(and_, [sql2.find(o) != -1 for o in expected_options])
 
     def test_copy_statement_columns(self):
         cols = ["a", "b", "c"]
@@ -365,7 +367,7 @@ class TestRedshift(unittest.TestCase):
         ]
 
         # Check that all of the expected options are there:
-        [self.assertNotEqual(sql.find(o), -1) for o in expected_options]
+        assert reduce(and_, [sql.find(o) != -1 for o in expected_options])
 
 
 # These tests interact directly with the Redshift database

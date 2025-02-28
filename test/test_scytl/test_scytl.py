@@ -39,7 +39,7 @@ class TestScytl(unittest.TestCase):
                 )
                 expectedResultRow["total_counties"] = expectedResultRow["total_counties"] or None
 
-                self.assertDictEqual(row, expectedResultRow)
+                assert row == expectedResultRow
 
     def test_get_summary_results_skips_if_no_version_update(self):
         result = self.scy.get_summary_results()
@@ -68,7 +68,7 @@ class TestScytl(unittest.TestCase):
                     expectedResultRow["timestamp_last_updated"]
                 )
 
-                self.assertDictEqual(result[i], expectedResultRow)
+                assert result[i] == expectedResultRow
 
     def test_get_detailed_results_skips_if_no_version_update(self):
         result = self.scy.get_detailed_results()
@@ -97,7 +97,7 @@ class TestScytl(unittest.TestCase):
                     expectedResultRow["timestamp_last_updated"]
                 )
 
-                self.assertDictEqual(result[i], expectedResultRow)
+                assert result[i] == expectedResultRow
 
     def test_get_detailed_results_for_participating_counties_succeeds_for_two_counties(
         self,
@@ -121,7 +121,7 @@ class TestScytl(unittest.TestCase):
                     expectedResultRow["timestamp_last_updated"]
                 )
 
-                self.assertDictEqual(row, expectedResultRow)
+                assert row == expectedResultRow
 
     def test_get_detailed_results_for_participating_counties_missing_counties_update(
         self,

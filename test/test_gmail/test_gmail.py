@@ -98,7 +98,7 @@ class TestGmail(unittest.TestCase):
         ]
 
         # Check the metadata
-        self.assertListEqual(decoded.items(), expected_items)
+        assert decoded.items() == expected_items
 
         # Check the message
         assert decoded.get_payload() == message_text
@@ -137,7 +137,7 @@ class TestGmail(unittest.TestCase):
                 updated_items.append((i[0], i[1]))
 
         # Check the metadata
-        self.assertListEqual(updated_items, expected_items)
+        assert updated_items == expected_items
 
         # Check the message
         # The first part is just a container for the text and html parts
@@ -179,7 +179,7 @@ class TestGmail(unittest.TestCase):
                 updated_items.append((i[0], i[1]))
 
         # Check the metadata
-        self.assertListEqual(updated_items, expected_items)
+        assert updated_items == expected_items
 
         # Check the message
         # The first part is just a container for the text and html parts
@@ -224,7 +224,7 @@ class TestGmail(unittest.TestCase):
                 updated_items.append((i[0], i[1]))
 
         # Check the metadata
-        self.assertListEqual(updated_items, expected_items)
+        assert updated_items == expected_items
 
         # Check the message
         # The first part is just a container for the text and html parts
@@ -281,7 +281,7 @@ class TestGmail(unittest.TestCase):
                 updated_items.append((i[0], i[1]))
 
         # Check the metadata
-        self.assertListEqual(updated_items, expected_items)
+        assert updated_items == expected_items
 
         # Check the message
         # The first part is just a container for the text and html parts
@@ -335,7 +335,7 @@ class TestGmail(unittest.TestCase):
                 updated_items.append((i[0], i[1]))
 
         # Check the metadata
-        self.assertListEqual(updated_items, expected_items)
+        assert updated_items == expected_items
 
         # Check the message
         # The first part is just a container for the text and html parts
@@ -387,7 +387,7 @@ class TestGmail(unittest.TestCase):
                 updated_items.append((i[0], i[1]))
 
         # Check the metadata
-        self.assertListEqual(updated_items, expected_items)
+        assert updated_items == expected_items
 
         # Check the message
         # The first part is just a container for the text and html parts
@@ -439,7 +439,7 @@ class TestGmail(unittest.TestCase):
                 updated_items.append((i[0], i[1]))
 
         # Check the metadata
-        self.assertListEqual(updated_items, expected_items)
+        assert updated_items == expected_items
 
         # Check the message
         # The first part is just a container for the text and html parts
@@ -492,7 +492,7 @@ class TestGmail(unittest.TestCase):
                 updated_items.append((i[0], i[1]))
 
         # Check the metadata
-        self.assertListEqual(updated_items, expected_items)
+        assert updated_items == expected_items
 
         # Check the message
         # The first part is just a container for the text and html parts
