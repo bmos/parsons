@@ -275,8 +275,7 @@ class TestAirmeet(unittest.TestCase):
         self.airmeet.client.get_request = mock.MagicMock(
             return_value={
                 "statusCode": 202,
-                "statusMessage": "Preparing your results. Try after 5 minutes"
-                + "to get the updated results",
+                "statusMessage": "Preparing your results. Try after 5 minutes to get the updated results",
             }
         )
 

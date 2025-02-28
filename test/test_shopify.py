@@ -119,24 +119,19 @@ class TestShopify(unittest.TestCase):
     def test_get_query_url(self, m):
         assert (
             self.shopify.get_query_url(None, None, "orders", True)
-            == f"https://{SUBDOMAIN}.myshopify.com/admin/api/{API_VERSION}/orders/"
-            + "count.json?limit=250&status=any"
+            == f"https://{SUBDOMAIN}.myshopify.com/admin/api/{API_VERSION}/orders/count.json?limit=250&status=any"
         )
         assert (
             self.shopify.get_query_url("2020-10-20", None, "orders", True)
-            == f"https://{SUBDOMAIN}.myshopify.com/admin/api/{API_VERSION}/orders/"
-            + "count.json?limit=250&status=any&created_at_min=2020-10-20T00:00:00&"
-            + "created_at_max=2020-10-21T00:00:00"
+            == f"https://{SUBDOMAIN}.myshopify.com/admin/api/{API_VERSION}/orders/count.json?limit=250&status=any&created_at_min=2020-10-20T00:00:00&created_at_max=2020-10-21T00:00:00"
         )
         assert (
             self.shopify.get_query_url(None, 2, "orders", True)
-            == f"https://{SUBDOMAIN}.myshopify.com/admin/api/{API_VERSION}/orders/"
-            + "count.json?limit=250&status=any&since_id=2"
+            == f"https://{SUBDOMAIN}.myshopify.com/admin/api/{API_VERSION}/orders/count.json?limit=250&status=any&since_id=2"
         )
         assert (
             self.shopify.get_query_url(None, None, "orders", False)
-            == f"https://{SUBDOMAIN}.myshopify.com/admin/api/{API_VERSION}/orders.json?"
-            + "limit=250&status=any"
+            == f"https://{SUBDOMAIN}.myshopify.com/admin/api/{API_VERSION}/orders.json?limit=250&status=any"
         )
 
     @requests_mock.Mocker()
