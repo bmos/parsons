@@ -1,5 +1,8 @@
-# Testing Requirements
+# Development Requirements
 bandit[toml]==1.8.3
+ruff==0.11.0
+
+## Pytest
 coverage==7.6.12
 pytest-cov==6.0.0
 pytest-datadir==1.6.1
@@ -7,7 +10,6 @@ pytest-mock==3.14.0
 pytest-xdist==3.6.1
 pytest==8.3.5
 requests-mock==1.12.1
-ruff==0.9.10
 testfixtures==8.3.0
 
 # Docs Requirements
