@@ -9,3 +9,4 @@ repos:
     hooks:
       - id: bandit
         args: ['-c pyproject.toml', '-r', '.', '-ll', '-ii']
+        additional_dependencies: ['bandit[toml]']
