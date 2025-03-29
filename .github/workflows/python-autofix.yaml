@@ -106,11 +106,12 @@ jobs:
           commit_message: Ruff check safe auto-fixes
 
       - name: Run ruff
+        id: run-ruff-recheck
         run: |
           ruff check --output-format=github --diff .
 
       - uses: thollander/actions-comment-pull-request@ddf65fcf3bc9d98bf0b8cde671a2214ffa7995f8+
-        if: failure()
+        if: steps.run-ruff-recheck.conclusion == 'failure'
         with:
           comment-tag: auto-fix-promo
           message: |
@@ -174,11 +175,12 @@ jobs:
           commit_message: Ruff check (potentially) unsafe auto-fixes
 
       - name: Run ruff
+        id: run-ruff-recheck
         run: |
           ruff check --output-format=github --diff .
 
       - uses: thollander/actions-comment-pull-request@ddf65fcf3bc9d98bf0b8cde671a2214ffa7995f8+
-        if: failure()
+        if: steps.run-ruff-recheck.conclusion == 'failure'
         with:
           comment-tag: auto-fix-promo
           message: |
