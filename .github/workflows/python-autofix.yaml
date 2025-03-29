@@ -111,7 +111,7 @@ jobs:
           ruff check --output-format=github --diff .
 
       - uses: thollander/actions-comment-pull-request@ddf65fcf3bc9d98bf0b8cde671a2214ffa7995f8+
-        if: steps.run-ruff-recheck.conclusion == 'failure'
+        if: steps.run-ruff-recheck.outcome == 'failure'
         with:
           comment-tag: auto-fix-promo
           message: |
@@ -180,7 +180,7 @@ jobs:
           ruff check --output-format=github --diff .
 
       - uses: thollander/actions-comment-pull-request@ddf65fcf3bc9d98bf0b8cde671a2214ffa7995f8+
-        if: steps.run-ruff-recheck.conclusion == 'failure'
+        if: steps.run-ruff-recheck.outcome == 'failure'
         with:
           comment-tag: auto-fix-promo
           message: |
