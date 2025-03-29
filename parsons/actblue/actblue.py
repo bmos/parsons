@@ -12,9 +12,6 @@ ACTBLUE_API_ENDPOINT = "https://secure.actblue.com/api/v1"
 
 
 class ActBlue(object):
-
-
-
     """
     Instantiate class.
 
