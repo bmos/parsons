@@ -419,7 +419,6 @@ class ActionBuilder(object):
             "connection": {
                 # person_id is used even if entity is not Person
                 "person_id": identifiers[1],
-                "person_id": identifiers[1],
             }
         }
 
