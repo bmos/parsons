@@ -16,18 +16,15 @@ jobs:
         if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
 
         permissions:
-            # Gives the action the necessary permissions for publishing new
-            # comments in pull requests.
             pull-requests: write
-            # Gives the action the necessary permissions for editing existing
-            # comments (to avoid publishing multiple comments in the same PR)
             contents: write
-            # Gives the action the necessary permissions for looking up the
-            # workflow that launched this workflow, and download the related
-            # artifact that contains the comment to be published
-            actions: read
 
         steps:
+            - name: Harden Runner
+              uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+              with:
+                  egress-policy: audit
+
             # DO NOT run actions/checkout here, for security reasons
             # For details, refer to https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
             - name: Post comment
