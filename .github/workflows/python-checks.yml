@@ -116,6 +116,18 @@ jobs:
               run: |
                   ruff format --diff .
 
+            - uses: thollander/actions-comment-pull-request@ddf65fcf3bc9d98bf0b8cde671a2214ffa7995f8
+              if: failure() && steps.run-ruff.outcome == 'failure'
+              with:
+                  comment-tag: auto-fix-promo
+                  message: >
+                      ### Ruff
+
+                      Ruff has found at least one issue.
+
+                      Comment `#ruff auto fix` or `#ruff unsafe auto fix` to
+                      have available fixes automatically applied.
+
     ruff-check:
         runs-on: ubuntu-latest
 
@@ -164,6 +176,18 @@ jobs:
               id: run-ruff
               run: |
                   ruff check --output-format=github .
+
+            - uses: thollander/actions-comment-pull-request@ddf65fcf3bc9d98bf0b8cde671a2214ffa7995f8
+              if: failure() && steps.run-ruff.outcome == 'failure'
+              with:
+                  comment-tag: auto-fix-promo
+                  message: >
+                      ### Ruff
+
+                      Ruff has found at least one issue.
+
+                      Comment `#ruff auto fix` or `#ruff unsafe auto fix` to
+                      have available fixes automatically applied.
 
     bandit:
         runs-on: ubuntu-latest
