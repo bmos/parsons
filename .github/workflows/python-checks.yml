@@ -215,7 +215,7 @@ jobs:
 
             - name: Run bandit scan
               run: |
-                  bandit --confidence-level=high --severity-level=high -c pyproject.toml -r .
+                  bandit --confidence-level high --severity-level high --configfile pyproject.toml --recursive .
 
     pre-commit:
         runs-on: ubuntu-latest
