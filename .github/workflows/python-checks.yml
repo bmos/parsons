@@ -63,7 +63,7 @@ jobs:
               uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684
               with:
                   path: .pytest_cache
-                  key: ${{ runner.os }}-pytest-${{ matrix.python-version }}-${{ github.run_id }}
+                  key: ${{ runner.os }}-pytest-${{ matrix.python-version }}-${{ hashFiles(requirements*.txt) }}
 
             - name: Test with pytest
               run: |
@@ -109,7 +109,7 @@ jobs:
               uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684
               with:
                   path: .ruff_cache
-                  key: ${{ runner.os }}-ruff-3.13-${{ github.run_id }}
+                  key: ${{ runner.os }}-ruff-3.13-${{ hashFiles(requirements*.txt) }}
 
             - name: Run ruff format
               id: run-ruff
@@ -160,7 +160,7 @@ jobs:
               uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684
               with:
                   path: .ruff_cache
-                  key: ${{ runner.os }}-ruff-3.13-${{ github.run_id }}
+                  key: ${{ runner.os }}-ruff-3.13-${{ hashFiles(requirements*.txt) }}
 
             - name: Generate SARIF file with ruff check
               id: run-ruff-sarif
@@ -255,7 +255,7 @@ jobs:
               uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684
               with:
                   path: .pre-commit-cache
-                  key: ${{ runner.os }}-pre-commit-3.13
+                  key: ${{ runner.os }}-pre-commit-3.13-${{ hashFiles(requirements*.txt) }}
 
             - name: Run pre-commit
               run: |
