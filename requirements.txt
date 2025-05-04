@@ -48,6 +48,7 @@ xmltodict>=0.14,<1
 # Min versions for version range matrix
 aiohttp>=3.11
 cffi>=1.17
+cryptography>=40
 frozenlist>=1.5
 greenlet>=3.1
 lxml>=5.3
