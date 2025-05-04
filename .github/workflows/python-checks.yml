@@ -35,13 +35,13 @@ jobs:
               uses: install-pinned/uv@1c7d0f99e461f01263da2a57156b20090118ead3  # 0.4.12
 
             - name: Install dependencies
-              if: ${{ matrix.resolution }} ~= 'limited-dependencies'
+              if: matrix.resolution != 'limited-dependencies'
               run: |
                 uv pip install --system --resolution ${{ matrix.resolution }} -e .[all]
                 uv pip install --system --resolution ${{ matrix.resolution }} -r requirements-dev.txt
 
             - name: Install with limited dependencies
-              if: ${{ matrix.resolution }} == 'limited-dependencies'
+              if: matrix.resolution == 'limited-dependencies'
               env:
                   PARSONS_LIMITED_DEPENDENCIES: 'TRUE'
               run: |
@@ -229,13 +229,13 @@ jobs:
                   cache: pip
 
             - name: Install dependencies
-              if: ${{ matrix.resolution }} ~= 'limited-dependencies'
+              if: matrix.resolution != 'limited-dependencies'
               run: |
                   pip install -r requirements-dev.txt
                   pip install -e .[all]
 
             - name: Install with limited dependencies
-              if: ${{ matrix.resolution }} == 'limited-dependencies'
+              if: matrix.resolution == 'limited-dependencies'
               env:
                   PARSONS_LIMITED_DEPENDENCIES: 'TRUE'
               run: |
