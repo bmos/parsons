@@ -14,9 +14,10 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-                os: ["ubuntu-latest", "windows-latest", "macos-latest"]
                 limited-dependencies: ["", "TRUE"]
+                os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+                python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+                resolution: ["highest", "lowest"]
 
         runs-on: ${{ matrix.os }}
 
@@ -38,20 +39,20 @@ jobs:
               env:
                   PARSONS_LIMITED_DEPENDENCIES: ${{ matrix.limited-dependencies }}
               run: |
-                uv pip install --system -e .[all]
-                uv pip install --system -r requirements-dev.txt
+                uv pip install --system --resolution ${{ matrix.resolution }} -e .[all]
+                uv pip install --system --resolution ${{ matrix.resolution }} -r requirements-dev.txt
 
             - name: Test with pytest
               run: |
                 pytest
               env:
-                  COVERAGE_FILE: ".coverage.${{ matrix.os }}.${{ matrix.python-version }}${{ matrix.limited-dependencies }}"
+                  COVERAGE_FILE: ".coverage.${{ matrix.os }}.${{ matrix.python-version }}${{ matrix.limited-dependencies }}${{ matrix.resolution }}"
 
             - name: Store coverage file
               uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
               with:
-                  name: coverage-${{ matrix.os }}${{ matrix.python-version }}${{ matrix.limited-dependencies }}
-                  path: .coverage.${{ matrix.os }}.${{ matrix.python-version }}${{ matrix.limited-dependencies }}
+                  name: coverage-${{ matrix.os }}${{ matrix.python-version }}${{ matrix.limited-dependencies }}${{ matrix.resolution }}
+                  path: .coverage.${{ matrix.os }}.${{ matrix.python-version }}${{ matrix.limited-dependencies }}${{ matrix.resolution }}
                   include-hidden-files: true
 
     ruff-format:
