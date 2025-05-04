@@ -210,7 +210,7 @@ jobs:
             matrix:
                 os: ["ubuntu-latest", "windows-latest", "macos-latest"]
                 python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-                limited-dependencies: ["", "TRUE"]
+                resolution: ["highest", "limited-dependencies"]
 
         runs-on: ${{ matrix.os }}
 
@@ -229,8 +229,15 @@ jobs:
                   cache: pip
 
             - name: Install dependencies
+              if: ${{ matrix.resolution }} ~= 'limited-dependencies'
+              run: |
+                  pip install -r requirements-dev.txt
+                  pip install -e .[all]
+
+            - name: Install with limited dependencies
+              if: ${{ matrix.resolution }} == 'limited-dependencies'
               env:
-                  PARSONS_LIMITED_DEPENDENCIES: ${{ matrix.limited-dependencies }}
+                  PARSONS_LIMITED_DEPENDENCIES: 'TRUE'
               run: |
                   pip install -r requirements-dev.txt
                   pip install -e .[all]
