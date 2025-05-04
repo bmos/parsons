@@ -25,7 +25,7 @@ newmode>=0.1.6,<2
 oauth2client>=4.1,<5
 paramiko>=3.5,<4
 petl>=1.7,<2
-psycopg2-binary>=2.9,<2.9.10;python_version<"3.13"
+psycopg2-binary>=2.9.7,<2.9.10;python_version<"3.13"
 psycopg2-binary>=2.9.10,<3;python_version>="3.13"
 pyairtable>=3.0,<4
 PyGitHub>=2.6,<3
