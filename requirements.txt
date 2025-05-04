@@ -48,7 +48,7 @@ xmltodict>=0.14,<1
 
 # Transient Requirements minimum versions
 aiohttp>=3.11
-cachetools>=3
+cachetools>=4
 cffi>=1.17
 cryptography>=40
 deprecated>=1.2
