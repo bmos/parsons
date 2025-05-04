@@ -63,6 +63,7 @@ pydantic-core>=2.33
 pytz>=2023
 pyyaml>=6.0.2
 zeep>=4.0
+wrapt>=1.14
 
 # TMC Requirements
 # TODO Remove when we have a TMC-specific Docker image
