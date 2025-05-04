@@ -49,12 +49,17 @@ xmltodict>=0.14,<1
 aiohttp>=3.11
 cffi>=1.17
 cryptography>=40
+deprecated>=1.2
 frozenlist>=1.5
 greenlet>=3.1
+inflection>=0.4
 lxml>=5.3
 nodeenv>=1.6
+ply>=3.8
+pycparser>=2.20
 pydantic-core>=2.33
 pyyaml>=6.0.2
+zeep>=4.0
 
 # Stuff for TMC scripts
 # TODO Remove when we have a TMC-specific Docker image
