@@ -1,7 +1,7 @@
 # Parsons Requirements
 azure-storage-blob>=12.25,<13
 beautifulsoup4>=4.10,<5
-boto3>=1.17,<2
+boto3>=1.34,<2
 boxsdk>=3.13,<4
 braintree>=4.31,<5
 censusgeocode>=0.5.2,<1
