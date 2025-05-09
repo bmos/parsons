@@ -8,7 +8,7 @@ pytest-mock==3.14.0
 pytest-xdist==3.6.1
 pytest==8.3.5
 requests-mock==1.12.1
-ruff==0.11.7
+ruff==0.11.8
 testfixtures==8.3.0
 
 # Docs Requirements
@@ -17,4 +17,12 @@ Sphinx==7.4.7;python_version<'3.10'
 sphinx-rtd-theme==3.0.2
 myst-parser==4.0.1;python_version>='3.10'
 myst-parser==3.0.1;python_version<'3.10'
-sphinx-multiversion
+sphinx-multiversion==0.2.4
+
+# Transient Requirements minimum versions
+iniconfig>=2
+rich>=14
+sphinxcontrib-applehelp>=2
+sphinxcontrib-devhelp>=2
+sphinxcontrib-jsmath>=1
+sphinxcontrib-qthelp>=2
