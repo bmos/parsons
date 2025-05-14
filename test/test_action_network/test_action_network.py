@@ -3,8 +3,7 @@ import unittest
 
 import requests_mock
 
-from parsons import Table
-from parsons.action_network import ActionNetwork
+from parsons import ActionNetwork, Table
 from test.utils import assert_matching_tables
 
 

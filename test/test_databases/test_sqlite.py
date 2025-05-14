@@ -1,8 +1,7 @@
 import tempfile
 import unittest
 
-from parsons import Table
-from parsons.databases.sqlite import Sqlite
+from parsons import Sqlite, Table
 from test.utils import assert_matching_tables
 
 
