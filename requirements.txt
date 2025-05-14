@@ -53,7 +53,7 @@ deprecated>=1.2
 greenlet>=3.1
 inflection>=0.4
 pycparser>=2.20
-zeep>=4,<5
+zeep>=4
 
 # Additional minimum versions for compatibility
 aiohttp>=3.11  # facebook-business depends on aiohttp and there were c++ errors until 3.11
@@ -69,7 +69,7 @@ pyyaml>=6.0.1  # civis depends on pyyaml and there was an AttributeError until 6
 requests-toolbelt>=0.10  # needed to resolve ImportError: cannot import name 'Mapping' from 'collections'
 six>=1.16  # needed to resolve ModuleNotFoundError: No module named 'six.moves'
 wrapt>=1.14  # need to resolve ImportError: cannot import name 'formatargspec' from 'inspect'
-zeep>=4.3,<5;python_version>="3.13"  # python cgi package was deprecated in Python 3.11 and removed in 3.13
+zeep>=4.3;python_version>="3.13"  # python cgi package was deprecated in Python 3.11 and removed in 3.13
 
 # Stuff for TMC scripts
 # TODO Remove when we have a TMC-specific Docker image
