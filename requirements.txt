@@ -59,6 +59,7 @@ zeep>=4,<5
 aiohttp>=3.11  # facebook-business depends on aiohttp and there were c++ errors until 3.11
 cachetools>=4  # needed to resolve AttributeError: module 'collections' has no attribute 'MutableMapping'
 cloudpickle>2  # needed to resolve ModuleNotFoundError: No module named 'imp'
+cryptography>37  # needed to resolve error: 'openssl/opensslv.h' file not found
 cffi>=1.17  # dbt-core depends on cffi and there were c++ errors until 1.17
 frozenlist>=1.5  # aiohttp depends on frozenlist and there were c++ errors until 1.5
 lxml>=5.3  # zeep depends on lxml and there were c++ errors until 5.3
