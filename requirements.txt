@@ -28,8 +28,8 @@ oauth2client>=4.1,<5
 paramiko>=3.5,<4
 petl>=1.7.10,<2;python_version<"3.11"
 petl>=1.7.15,<2;python_version>="3.11"
-psycopg2-binary>=2.9.7,<2.9.10;python_version<"3.13"
-psycopg2-binary>=2.9.10,<3;python_version>="3.13"
+psycopg2-binary>=2.9.7,<2.9.10;python_version<"3.12"
+psycopg2-binary>=2.9.10,<3;python_version>="3.12"
 pyairtable>=3.0,<4
 PyGitHub>=2.6,<3
 python-dateutil>=2.9,<3
