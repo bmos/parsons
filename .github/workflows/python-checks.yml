@@ -243,7 +243,7 @@ jobs:
           name: python-coverage-comment-action
           path: python-coverage-comment-action.txt
 
-  pre-commit:
+  prek:
     runs-on: ubuntu-latest
     needs:
       - ruff-format
@@ -259,10 +259,12 @@ jobs:
           disable-sudo: true
           egress-policy: block
           allowed-endpoints: >
+            api.github.com:443
             files.pythonhosted.org:443
             github.com:443
             proxy.golang.org:443
             pypi.org:443
+            release-assets.githubusercontent.com:443
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
@@ -275,14 +277,12 @@ jobs:
 
       - run: uv pip install --system -r requirements-dev.txt
 
-      - id: cache-pre-commit
+      - id: cache-prek
         uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7
         with:
-          path: .pre-commit-cache
-          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}-${{ hashFiles('pyproject.toml') }}
+          path: .prek-cache
+          key: prek-${{ hashFiles('.pre-commit-config.yaml') }}-${{ hashFiles('requirements-dev.txt') }}-${{ hashFiles('pyproject.toml') }}
 
-      - run: |
-          pre-commit install
-          pre-commit run --all-files
+      - uses: j178/prek-action@9d6a3097e0c1865ecce00cfb89fe80f2ee91b547
         env:
-          PRE_COMMIT_HOME: .pre-commit-cache
+          PREK_HOME: .prek-cache
