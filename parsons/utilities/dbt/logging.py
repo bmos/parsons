@@ -17,14 +17,6 @@ from parsons.utilities.dbt.models import EnhancedNodeResult, Manifest
 logger = logging.getLogger(__name__)
 
 
-STATUS_ICONS = {
-    "Error": "🔴",
-    "Warning": "🟠",
-    "Skipped": "🔵",
-    "Success": "🟢",
-}
-
-
 def human_readable_duration(seconds: int | float) -> str:
     time_struct = time.gmtime(seconds)
 
@@ -74,49 +66,48 @@ class dbtLogger(ABC):
 class dbtLoggerMarkdown(dbtLogger):
     """Formats dbt results into a structured Markdown summary."""
 
+    # Centralized mapping for status UI elements
+    STATUS_MAP = {
+        "error": {"icon": "🔴", "text": "failed"},
+        "fail": {"icon": "🔴", "text": "failed"},
+        "warning": {"icon": "🟠", "text": "succeeded with warnings"},
+        "skipped": {"icon": "🔵", "text": "skipped"},
+        "success": {"icon": "🟢", "text": "succeeded"},
+    }
+
+    def _get_status_assets(self, manifest: Manifest = None, manifests: list[Manifest] = None):
+        """Helper to determine the emoji and text based on manifest status."""
+        key = manifest.overall_status.lower()
+        return self.STATUS_MAP.get(key, self.STATUS_MAP["success"])
+
     def format_command_result(self, manifest: Manifest) -> str:
-        status = manifest.overall_status
-        icon = STATUS_ICONS.get(status, "")
+        assets = self._get_status_assets(manifest=manifest)
         time_str = human_readable_duration(manifest.elapsed_time)
 
-        log_message = f"{icon} Invoke dbt with `dbt {manifest.command}` ({status} in {time_str})"
+        log_message = f"{assets['icon']} Invoke dbt with `dbt {manifest.command}` ({manifest.overall_status} in {time_str})"
 
-        log_summary_str = ", ".join(
-            [f"{node}: {count}" for node, count in manifest.summary.items()]
+        log_summary_str = (
+            ", ".join([f"{node}: {count}" for node, count in manifest.summary.items()])
+            or "No models ran."
         )
-        if not log_summary_str:
-            log_summary_str = "No models ran."
         log_message += f"\n*Summary*: `{log_summary_str}`"
-
         log_message += f"\n*GB Processed*: {manifest.total_gb_processed:.2f}"
         log_message += f"\n*Slot hours*: {manifest.total_slot_hours:.2f}"
 
-        # Errors
-        if manifest.errors or manifest.fails:
-            log_message += "\nError messages:\n```{}```".format(
-                "\n\n".join(
-                    [
-                        i.node.name + ": " + (EnhancedNodeResult.log_message(i) or "")
-                        for i in [*manifest.errors, *manifest.fails]
-                    ]
+        # Error/Warning Blocks
+        for label, nodes in [
+            ("Error", [*manifest.errors, *manifest.fails]),
+            ("Warn", manifest.warnings),
+        ]:
+            if nodes:
+                msgs = "\n\n".join(
+                    [f"{i.node.name}: {EnhancedNodeResult.log_message(i) or ''}" for i in nodes]
                 )
-            )
+                log_message += f"\n{label} messages:\n```\n{msgs}\n```"
 
-        # Warnings
-        if manifest.warnings:
-            log_message += "\nWarn messages:\n```{}```".format(
-                "\n\n".join(
-                    [
-                        i.node.name + ": " + (EnhancedNodeResult.log_message(i) or "")
-                        for i in manifest.warnings
-                    ]
-                )
-            )
-
-        # Skips
         if manifest.skips:
             skips = {i.node.name for i in manifest.skips}
-            log_message += "\nSkipped:\n```{}```".format(", ".join(skips))
+            log_message += f"\nSkipped:\n```\n{', '.join(skips)}\n```"
 
         return log_message
 
@@ -125,33 +116,18 @@ class dbtLoggerMarkdown(dbtLogger):
         Aggregates results from multiple dbt commands into a single
         report, determining an overall 'worst-case' status for the header.
         """
-
-        # Header
-        if any(command.errors or command.fails for command in self.commands):
-            status_text = "failed"
-            icon = "\U0001f534"  # 🔴
-        elif any(command.warnings for command in self.commands):
-            status_text = "succeeded with warnings"
-            icon = "\U0001f7e0"  # 🟠
-        elif all(not command.results and command.skips for command in self.commands):
-            status_text = "skipped"
-            icon = "\U0001f535"  # 🔵
-        else:
-            status_text = "succeeded"
-            icon = "\U0001f7e2"  # 🟢
-
+        assets = self._get_status_assets(manifests=self.commands)
         now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M")
-        full_log_message = f"{icon} *dbt run {status_text} - {now}*"
 
         total_duration = sum([command.elapsed_time for command in self.commands])
-        duration_time_str = human_readable_duration(total_duration)
-        full_log_message += f"\n*Duration:* {duration_time_str}\n\n"
+        duration_str = human_readable_duration(total_duration)
 
-        # Formatted results from each command
-        log_messages = [self.format_command_result(command) for command in self.commands]
-        full_log_message += "\n".join(log_messages)
+        header = (
+            f"{assets['icon']} *dbt run {assets['text']} - {now}*\n*Duration:* {duration_str}\n\n"
+        )
+        body = "\n".join([self.format_command_result(cmd) for cmd in self.commands])
 
-        return full_log_message
+        return header + body
 
 
 class dbtLoggerStdout(dbtLoggerMarkdown):
