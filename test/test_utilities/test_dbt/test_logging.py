@@ -46,3 +46,33 @@ class TestLoggers:
         output = logger.format_command_result(manifest)
 
         assert icon in output
+
+    def test_format_result_aggregation(self, dbt_node_factory, mock_manifest_data):
+        """
+        Verify that format_result aggregates multiple commands and chooses
+        the correct overall status.
+        """
+        success_node = dbt_node_factory(status=NodeStatus.Success)
+        fail_node = dbt_node_factory(status=NodeStatus.Fail)
+
+        m1_data = mock_manifest_data(results=[success_node])
+        m1_data.metadata.elapsed_time = 10.5
+
+        m2_data = mock_manifest_data(results=[fail_node])
+        m2_data.metadata.elapsed_time = 20.0
+
+        manifest_success = Manifest(command="run", dbt_manifest=m1_data)
+        manifest_fail = Manifest(command="test", dbt_manifest=m2_data)
+
+        logger = ConcreteMarkdownLogger()
+        logger.commands = [manifest_success, manifest_fail]
+
+        output = logger.format_result()
+
+        assert "\U0001f534" in output
+        assert "dbt run failed" in output
+
+        assert "30 seconds" in output
+
+        assert "Invoke dbt with `dbt run`" in output
+        assert "Invoke dbt with `dbt test`" in output
