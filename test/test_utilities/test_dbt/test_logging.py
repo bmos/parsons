@@ -47,32 +47,46 @@ class TestLoggers:
 
         assert icon in output
 
-    def test_format_result_aggregation(self, dbt_node_factory, mock_manifest_data):
+    @pytest.mark.parametrize(
+        ("statuses", "expected_overall_icon", "expected_overall_text"),
+        [
+            ([NodeStatus.Success, NodeStatus.Success], "\U0001f7e2", "succeeded"),
+            ([NodeStatus.Success, NodeStatus.Fail], "\U0001f534", "failed"),
+            ([NodeStatus.Error, NodeStatus.Warn], "\U0001f534", "failed"),
+            ([NodeStatus.Warn, NodeStatus.Success], "\U0001f7e0", "succeeded with warnings"),
+            ([NodeStatus.Skipped, NodeStatus.Success], "\U0001f535", "skipped"),
+            ([NodeStatus.Fail, NodeStatus.Skipped], "\U0001f534", "failed"),
+        ],
+    )
+    def test_format_result_prioritization(
+        self,
+        statuses,
+        expected_overall_icon,
+        expected_overall_text,
+        dbt_node_factory,
+        mock_manifest_data,
+    ):
         """
         Verify that format_result aggregates multiple commands and chooses
-        the correct overall status.
+        the correct overall 'worst-case' status for the header.
         """
-        success_node = dbt_node_factory(status=NodeStatus.Success)
-        fail_node = dbt_node_factory(status=NodeStatus.Fail)
-
-        m1_data = mock_manifest_data(results=[success_node])
-        m1_data.metadata.elapsed_time = 10.5
-
-        m2_data = mock_manifest_data(results=[fail_node])
-        m2_data.metadata.elapsed_time = 20.0
-
-        manifest_success = Manifest(command="run", dbt_manifest=m1_data)
-        manifest_fail = Manifest(command="test", dbt_manifest=m2_data)
+        manifests = []
+        for i, status in enumerate(statuses):
+            node = dbt_node_factory(status=status)
+            data = mock_manifest_data(results=[node])
+            data.metadata.elapsed_time = 10.0
+            manifests.append(Manifest(command=f"cmd_{i}", dbt_manifest=data))
 
         logger = ConcreteMarkdownLogger()
-        logger.commands = [manifest_success, manifest_fail]
+        logger.commands = manifests
 
         output = logger.format_result()
 
-        assert "\U0001f534" in output
-        assert "dbt run failed" in output
+        # Check the header (the first line of the output)
+        header = output.split("\n")[0]
+        assert expected_overall_icon in header
+        assert expected_overall_text in header
 
-        assert "30 seconds" in output
-
-        assert "Invoke dbt with `dbt run`" in output
-        assert "Invoke dbt with `dbt test`" in output
+        # Verify duration summed correctly (10s * number of statuses)
+        expected_duration = f"{int(10 * len(statuses))} seconds"
+        assert expected_duration in output
