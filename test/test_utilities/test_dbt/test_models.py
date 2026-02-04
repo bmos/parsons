@@ -13,10 +13,10 @@ def test_skips_filter_uses_resource_type(dbt_node_factory, mock_manifest_data):
     Validate that the Manifest class uses dbt's 'resource_type' attribute to filter
     results, providing a more robust alternative to string-parsing node names.
     """
-    model_node = dbt_node_factory(status=NodeStatus.Skipped, name="my_model")
+    model_node = dbt_node_factory(status=NodeStatus.Skipped, name="my_model1")
     model_node.node.resource_type = NodeType.Model
 
-    test_node = dbt_node_factory(status=NodeStatus.Skipped, name="my_test")
+    test_node = dbt_node_factory(status=NodeStatus.Skipped, name="my_model2")
     test_node.node.resource_type = NodeType.Test
 
     dbt_obj = mock_manifest_data(results=[model_node, test_node])
