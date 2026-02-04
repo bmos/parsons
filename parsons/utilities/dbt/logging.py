@@ -75,7 +75,9 @@ class dbtLoggerMarkdown(dbtLogger):
         "success": {"icon": "🟢", "text": "succeeded"},
     }
 
-    def _get_status_assets(self, manifest: Manifest = None, manifests: list[Manifest] = None):
+    def _get_status_assets(
+        self, manifest: Manifest | None = None, manifests: list[Manifest] | None = None
+    ):
         """Helper to determine the emoji and text based on manifest status."""
         priority = ["error", "fail", "warning", "skipped"]
 
