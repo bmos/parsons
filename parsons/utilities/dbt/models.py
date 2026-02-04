@@ -55,7 +55,7 @@ class Manifest:
         return [
             node
             for node in self.filter_results(status=NodeStatus.Skipped)
-            if node.node.name.split(".")[0] == NodeType.Model
+            if getattr(node.node, "resource_type", None) == NodeType.Model
         ]
 
     @property
