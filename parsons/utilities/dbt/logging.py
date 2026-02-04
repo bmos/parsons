@@ -17,6 +17,14 @@ from parsons.utilities.dbt.models import EnhancedNodeResult, Manifest
 logger = logging.getLogger(__name__)
 
 
+STATUS_ICONS = {
+    "Error": "🔴",
+    "Warning": "🟠",
+    "Skipped": "🔵",
+    "Success": "🟢",
+}
+
+
 def human_readable_duration(seconds: int | float) -> str:
     time_struct = time.gmtime(seconds)
 
@@ -64,25 +72,14 @@ class dbtLogger(ABC):
 
 
 class dbtLoggerMarkdown(dbtLogger):
-    def format_command_result(
-        self,
-        manifest: Manifest,
-    ) -> str:
-        log_message = ""
+    """Formats dbt results into a structured Markdown summary."""
 
-        # Header
-        if manifest.errors:
-            log_message += "\U0001f534"  # Red box
-            status = "Error"
-        elif manifest.warnings:
-            log_message += "\U0001f7e0"  # Orange circle
-            status = "Warning"
-        else:
-            log_message += "\U0001f7e2"  # Green circle
-            status = "Success"
-
+    def format_command_result(self, manifest: Manifest) -> str:
+        status = manifest.overall_status
+        icon = STATUS_ICONS.get(status, "")
         time_str = human_readable_duration(manifest.elapsed_time)
-        log_message += f"Invoke dbt with `dbt {manifest.command}` ({status} in {time_str})"
+
+        log_message = f"{icon} Invoke dbt with `dbt {manifest.command}` ({status} in {time_str})"
 
         log_summary_str = ", ".join(
             [f"{node}: {count}" for node, count in manifest.summary.items()]
@@ -124,19 +121,27 @@ class dbtLoggerMarkdown(dbtLogger):
         return log_message
 
     def format_result(self) -> str:
-        """Format result string from all commands."""
-        full_log_message = ""
+        """
+        Aggregates results from multiple dbt commands into a single
+        report, determining an overall 'worst-case' status for the header.
+        """
 
         # Header
-        if any(command.errors for command in self.commands):
-            status = "failed"
-            full_log_message += "\U0001f534"
+        if any(command.errors or command.fails for command in self.commands):
+            status_text = "failed"
+            icon = "\U0001f534"  # 🔴
+        elif any(command.warnings for command in self.commands):
+            status_text = "succeeded with warnings"
+            icon = "\U0001f7e0"  # 🟠
+        elif all(not command.results and command.skips for command in self.commands):
+            status_text = "skipped"
+            icon = "\U0001f535"  # 🔵
         else:
-            status = "succeeded"
-            full_log_message += "\U0001f7e2"
+            status_text = "succeeded"
+            icon = "\U0001f7e2"  # 🟢
 
         now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M")
-        full_log_message += f"*dbt run {status} - {now}*"
+        full_log_message = f"{icon} *dbt run {status_text} - {now}*"
 
         total_duration = sum([command.elapsed_time for command in self.commands])
         duration_time_str = human_readable_duration(total_duration)

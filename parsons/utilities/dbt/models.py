@@ -38,6 +38,23 @@ class Manifest:
         return filtered_results
 
     @property
+    def overall_status(self) -> str:
+        """
+        Determine the state of the command.
+        Returns a clean string: 'Error', 'Warning', 'Skipped', or 'Success'.
+        """
+        if self.errors or self.fails:
+            return "Error"
+        if self.warnings:
+            return "Warning"
+
+        has_success = self.summary.get("success", 0) > 0 or self.summary.get("pass", 0) > 0
+        if self.skips and not has_success:
+            return "Skipped"
+
+        return "Success"
+
+    @property
     def warnings(self) -> list[NodeResult]:
         return self.filter_results(status=NodeStatus.Warn)
 
