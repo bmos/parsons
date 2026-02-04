@@ -77,7 +77,14 @@ class dbtLoggerMarkdown(dbtLogger):
 
     def _get_status_assets(self, manifest: Manifest = None, manifests: list[Manifest] = None):
         """Helper to determine the emoji and text based on manifest status."""
-        key = manifest.overall_status.lower()
+        priority = ["error", "fail", "warning", "skipped"]
+
+        if manifests:
+            statuses = {m.overall_status.lower() for m in manifests}
+            key = next((p for p in priority if p in statuses), "success")
+        else:
+            key = manifest.overall_status.lower() if manifest else "success"
+
         return self.STATUS_MAP.get(key, self.STATUS_MAP["success"])
 
     def format_command_result(self, manifest: Manifest) -> str:
