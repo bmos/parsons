@@ -76,21 +76,23 @@ class dbtLoggerMarkdown(dbtLogger):
     }
 
     def _get_status_assets(
-        self, manifest: Manifest | None = None, manifests: list[Manifest] | None = None
-    ):
+        self, manifest: Manifest | list[Manifest] | None = None
+    ) -> dict[str, str]:
         """Helper to determine the emoji and text based on manifest status."""
         priority = ["error", "fail", "warning", "skipped"]
 
-        if manifests:
-            statuses = {m.overall_status.lower() for m in manifests}
+        if isinstance(manifest, Manifest):
+            key = manifest.overall_status.lower() if manifest else "success"
+        elif isinstance(manifest, list):
+            statuses = {m.overall_status.lower() for m in manifest}
             key = next((p for p in priority if p in statuses), "success")
         else:
-            key = manifest.overall_status.lower() if manifest else "success"
+            raise AttributeError(manifest)
 
         return self.STATUS_MAP.get(key, self.STATUS_MAP["success"])
 
     def format_command_result(self, manifest: Manifest) -> str:
-        assets = self._get_status_assets(manifest=manifest)
+        assets = self._get_status_assets(manifest)
         time_str = human_readable_duration(manifest.elapsed_time)
 
         log_message = f"{assets['icon']} Invoke dbt with `dbt {manifest.command}` ({manifest.overall_status} in {time_str})"
@@ -125,7 +127,7 @@ class dbtLoggerMarkdown(dbtLogger):
         Aggregates results from multiple dbt commands into a single
         report, determining an overall 'worst-case' status for the header.
         """
-        assets = self._get_status_assets(manifests=self.commands)
+        assets = self._get_status_assets(self.commands)
         now = datetime.datetime.today().strftime("%Y-%m-%d %H:%M")
 
         total_duration = sum([command.elapsed_time for command in self.commands])
