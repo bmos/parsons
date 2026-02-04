@@ -7,11 +7,14 @@ from dbt.contracts.results import NodeResult, SourceFreshnessResult
 
 
 class Manifest:
+    """A wrapper for dbt execution results."""
+
     def __init__(self, command: str, dbt_manifest: dbtManifest) -> None:
         self.command = command
         self.dbt_manifest = dbt_manifest
 
     def __getattr__(self, key):
+        """Proxies attribute access to the underlying dbt_manifest or its metadata."""
         if key in dir(self):
             result = getattr(self, key)
         elif (
@@ -24,7 +27,7 @@ class Manifest:
         return result
 
     def filter_results(self, **kwargs) -> list[NodeResult]:
-        """Subset of results based on filter"""
+        """Subset of results based on filter."""
         filtered_results = [
             result
             for result in self.dbt_manifest
@@ -55,7 +58,7 @@ class Manifest:
 
     @property
     def summary(self) -> collections.Counter:
-        """Counts of pass, warn, fail, error & skip."""
+        """Aggregates all node outcomes into a count of status strings."""
         result = collections.Counter([str(i.status) for i in self.dbt_manifest])
         return result
 
