@@ -8,7 +8,7 @@ these tests serve as an early warning system.
 """
 
 from dbt.artifacts.resources.types import NodeType
-from dbt.contracts.results import RunStatus
+from dbt.contracts.results import NodeStatus
 
 from parsons.utilities.dbt.models import Manifest
 
@@ -18,7 +18,7 @@ def test_dbt_core_attribute_consistency(dbt_node_factory, mock_manifest_data):
     Verify that the Manifest wrapper correctly calculates GB processed
     and summarizes run statuses from concrete dbt objects.
     """
-    node = dbt_node_factory(status=RunStatus.Success, bytes_processed=2 * 10**9)
+    node = dbt_node_factory(status=NodeStatus.Success, bytes_processed=2 * 10**9)
     dbt_obj = mock_manifest_data(results=[node])
     manifest = Manifest(command="run", dbt_manifest=dbt_obj)
 
@@ -32,11 +32,11 @@ def test_skips_filter_logic(dbt_node_factory, mock_manifest_data):
     skipped models and skipped tests using dbt's native NodeType.
     """
     model_node = dbt_node_factory(
-        status=RunStatus.Skipped, name="my_model", resource_type=NodeType.Model
+        status=NodeStatus.Skipped, name="my_model", resource_type=NodeType.Model
     )
 
     test_node = dbt_node_factory(
-        status=RunStatus.Skipped,
+        status=NodeStatus.Skipped,
         name="some_test",
         resource_type=NodeType.Test,  # Manifest should filter this out
     )

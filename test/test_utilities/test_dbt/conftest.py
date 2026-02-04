@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 import pytest
 from dbt.artifacts.resources.types import NodeType
 from dbt.contracts.graph.manifest import ManifestMetadata
-from dbt.contracts.results import ExecutionResult, NodeResult, RunStatus
+from dbt.contracts.results import ExecutionResult, NodeResult, NodeStatus
 
 
 @pytest.fixture
@@ -24,7 +24,7 @@ def dbt_node_factory():
     """
 
     def _create_node(
-        status=RunStatus.Success, name="my_model", resource_type=NodeType.Model, bytes_processed=0
+        status=NodeStatus.Success, name="my_model", resource_type=NodeType.Model, bytes_processed=0
     ):
         mock_node = MagicMock()
         mock_node.name = name

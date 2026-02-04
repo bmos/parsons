@@ -8,7 +8,7 @@ corresponding visual indicators (emojis).
 """
 
 import pytest
-from dbt.contracts.results import RunStatus, TestStatus
+from dbt.contracts.results import NodeStatus
 
 from parsons.utilities.dbt.logging import dbtLoggerMarkdown
 from parsons.utilities.dbt.models import Manifest
@@ -25,11 +25,11 @@ class TestLoggers:
     @pytest.mark.parametrize(
         ("dbt_status", "icon"),
         [
-            (RunStatus.Success, "\U0001f7e2"),  # Green: Model/Seed/Snapshot worked
-            (RunStatus.Error, "\U0001f534"),  # Red: Model/Seed/Snapshot crashed
-            (TestStatus.Fail, "\U0001f534"),  # Red: A dbt test failed
-            (RunStatus.Skipped, "\U0001f535"),  # Blue: Node was skipped
-            (TestStatus.Warn, "\U0001f7e0"),  # Orange: Test passed with warning
+            (NodeStatus.Success, "\U0001f7e2"),  # Green: Model/Seed/Snapshot worked
+            (NodeStatus.Error, "\U0001f534"),  # Red: Model/Seed/Snapshot crashed
+            (NodeStatus.Fail, "\U0001f534"),  # Red: A dbt test failed
+            (NodeStatus.Skipped, "\U0001f535"),  # Blue: Node was skipped
+            (NodeStatus.Warn, "\U0001f7e0"),  # Orange: Test passed with warning
         ],
     )
     def test_markdown_formatting(self, dbt_status, icon, dbt_node_factory, mock_manifest_data):
