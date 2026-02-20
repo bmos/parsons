@@ -31,30 +31,28 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v2-dependencies-python3.13-
 
-      - run:
-          name: Install parsons
-          command: |
-            uv sync \\
-              --upgrade \\
-              --no-default-groups \\
-              --group docs \\
-              --all-extras
+      - name: Install parsons
+        run: |
+          uv sync \\
+            --upgrade \\
+            --no-default-groups \\
+            --group docs \\
+            --all-extras
 
       - save_cache:
           paths:
             - ./venv
           key: v2-dependencies-python3.13-{{ checksum "pyproject.toml" }}-{{ checksum "setup.py" }}
 
-      - run:
-          name: Build docs
-          command: |
-            uv sync \\
-              --no-default-groups \\
-              --group docs \\
-              --all-extras
+      - name: Build docs
+        run: |
+          uv sync \\
+            --no-default-groups \\
+            --group docs \\
+            --all-extras
 
-            cd docs/
-            make deploy_docs
+          cd docs/
+          make deploy_docs
 
   docs-build-deploy:
     docker:
@@ -69,19 +67,18 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v2-dependencies-python3.13-
 
-      - run:
-          name: Install parsons
-          # Note that we the circleci node image installs stuff with a user "circleci", rather
-          # than root. So we need to tell npm where to install stuff.
-          command: |
-            npm set prefix=/home/circleci/npm
-            npm install -g --silent gh-pages@2.0.1
+      # Note that we the circleci node image installs stuff with a user "circleci", rather
+      # than root. So we need to tell npm where to install stuff.
+      - name: Install parsons
+        run: |
+          npm set prefix=/home/circleci/npm
+          npm install -g --silent gh-pages@2.0.1
 
-            uv sync \\
-              --upgrade \\
-              --no-default-groups \\
-              --group docs \\
-              --all-extras
+          uv sync \\
+            --upgrade \\
+            --no-default-groups \\
+            --group docs \\
+            --all-extras
 
       - save_cache:
           paths:
@@ -94,25 +91,24 @@ jobs:
           fingerprints:
             - '9a:ec:4d:2b:c3:45:b2:f5:55:ca:0b:2b:36:e2:7f:df'
 
-      - run:
-          name: Build and deploy docs
-          # When running gh-pages, we specify to include dotfiles, so we pick up the .nojerkyll file.
-          # (This file tell Github Pages that we want to include all files in docs/, including those
-          # that start with an underscore like _static/).
-          command: |
-            uv sync \\
-              --no-default-groups \\
-              --group docs \\
-              --all-extras
+      # When running gh-pages, we specify to include dotfiles, so we pick up the .nojerkyll file.
+      # (This file tell Github Pages that we want to include all files in docs/, including those
+      # that start with an underscore like _static/).
+      - name: Build and deploy docs
+        run: |
+          uv sync \\
+            --no-default-groups \\
+            --group docs \\
+            --all-extras
 
-            cd docs/
-            make deploy_docs
+          cd docs/
+          make deploy_docs
 
-            cd ..
+          cd ..
 
-            git config user.email "ci-build@movementcooperative.org"
-            git config user.name "ci-build"
+          git config user.email "ci-build@movementcooperative.org"
+          git config user.name "ci-build"
 
-            export PATH=/home/circleci/npm/bin:$PATH
+          export PATH=/home/circleci/npm/bin:$PATH
 
-            gh-pages --dotfiles --message "[skip ci] Updates" --dist docs
+          gh-pages --dotfiles --message "[skip ci] Updates" --dist docs
