@@ -368,6 +368,10 @@ jobs:
     needs:
       - pytest
 
+    concurrency:
+      group: ${{ github.workflow }}-coverage-${{ github.ref }}
+      cancel-in-progress: true
+
     permissions:
       pull-requests: write
       contents: write
