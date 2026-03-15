@@ -76,15 +76,20 @@
     </style>
     <script type="text/javascript">
       document.addEventListener('DOMContentLoaded', () => {
-        let targetURL = window.location.pathname;
+        const currentPath = window.location.pathname;
+        let targetURL = currentPath;
 
         if (targetURL.includes('/html/')) {
             targetURL = targetURL.replace('/html/', '/');
         }
 
+        const versionMatch = currentPath.match(/\/parsons\/[^/]+\//);
+        const homeBtn = document.getElementById('home-link');
+        if (homeBtn) homeBtn.href = versionMatch ? versionMatch[0] + 'index.html' : '/';
+
         fetch(targetURL, { method: 'HEAD' })
           .then(response => {
-            if (response.ok) {
+            if (response.ok && targetURL !== currentPath) {
               window.location.replace(targetURL);
             } else {
               show404();
@@ -103,7 +108,7 @@
   <body>
     <div class="container">
       <div id="project-logo">
-         <img class="logo" src="/parsons/stable/_static/parsons_logo.png" alt="Parsons logo of a large letter 'P' with a jigsaw puzzle piece cutout, enclosed within a black circular border that resembles a gear or cog.">
+         <img class="logo" src="/parsons/latest/_static/parsons_logo.png" alt="Parsons logo of a large letter 'P' with a jigsaw puzzle piece cutout, enclosed within a black circular border that resembles a gear or cog.">
       </div>
       <div id="redirecting-content">
         <div class="loader"></div>
@@ -112,7 +117,7 @@
       <div id="error-content">
         <h1>404</h1>
         <p>We tried to find a newer version of this page for you, but it looks like it's gone for good.</p>
-        <a href="/" class="btn">Parsons Documentation Home</a>
+        <a href="/parsons/latest/index.html" class="btn">Parsons Documentation Home</a>
       </div>
     </div>
   </body>
