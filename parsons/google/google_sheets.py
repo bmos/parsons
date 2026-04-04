@@ -110,8 +110,9 @@ class GoogleSheets:
             spreadsheet_id: str
                 The ID of the spreadsheet (Tip: Get this from the spreadsheet URL)
             worksheet: str or int
-                The index or the title of the worksheet. The index begins with
-                0.
+                The index or the title of the worksheet. The index begins with 0.
+            skip_header_rows: int, optional
+                Skip the first n rows of the sheet.
 
         Returns:
             Parsons Table
@@ -151,7 +152,7 @@ class GoogleSheets:
                 ``writer``, ``reader``.
             notify: boolean
                 Whether to send an email to the target user/domain.
-            email_message: str
+            notify_message: str
                 The email to be sent if notify kwarg set to True.
             with_link: boolean
                 Whether a link is required for this permission.
@@ -242,6 +243,8 @@ class GoogleSheets:
         Args:
             spreadsheet_id: str
                 The ID of the spreadsheet (Tip: Get this from the spreadsheet URL)
+            title: str, optional
+                The title of the new sheet
             rows: int
                 Number of rows
             cols
@@ -281,7 +284,7 @@ class GoogleSheets:
 
         if not table.num_rows:
             logger.warning("No data provided to append, skipping.")
-            return
+            return None
 
         # This is in here to ensure backwards compatibility with previous versions of Parsons.
         if "sheet_index" in kwargs:
@@ -313,6 +316,7 @@ class GoogleSheets:
         # Update the data in one batch
         sheet.update_cells(cells, value_input_option=value_input_option)
         logger.info(f"Appended {table.num_rows} rows to worksheet.")
+        return None
 
     def paste_data_in_sheet(
         self, spreadsheet_id, table, worksheet=0, header=True, startrow=0, startcol=0
