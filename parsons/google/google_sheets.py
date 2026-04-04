@@ -151,11 +151,11 @@ class GoogleSheets:
             role: str
                 The primary role for this user. Allowed values are: ``owner``,
                 ``writer``, ``reader``.
-            notify: boolean
+            notify: bool
                 Whether to send an email to the target user/domain.
             notify_message: str
                 The email to be sent if notify kwarg set to True.
-            with_link: boolean
+            with_link: bool
                 Whether a link is required for this permission.
 
         """
