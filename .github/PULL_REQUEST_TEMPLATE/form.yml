@@ -7,9 +7,9 @@ body:
     id: what-is-change
     attributes:
       label: What is this change?
+      description: List out each change and link to any relevant Github issues or Slack discussion.
       placeholder: |
-        - List out the changes.
-        - Link to any relevant Github issues or Slack discussion.
+        - List changes here
     validations:
       required: true
 
@@ -17,7 +17,9 @@ body:
     id: considerations
     attributes:
       label: Considerations for discussion
-      placeholder: List out any significant design decisions that were made and why.
+      description: List out any significant design decisions that were made and why.
+      placeholder: |
+        - List decisions / needed discussion here
     validations:
       required: false
 
@@ -25,7 +27,9 @@ body:
     id: testing
     attributes:
       label: How to test the changes (if needed)
-      placeholder: How should a reviewer test this functionality?
+      description: How should a reviewer test this functionality?
+      placeholder: |
+        - List testing steps here
     validations:
       required: false
 
@@ -33,7 +37,9 @@ body:
     id: breaking-changes
     attributes:
       label: Breaking Changes
-      description: Breaking changes are changes to our public API which may require existing users to change their code.
+      description: |
+        Breaking changes are changes to our public API which may require existing users to change their code.
+        If there are no breaking changes, any existing parsons user should not need to do anything after updating their parsons version.
       options:
         - "Non-breaking change — This PR does not introduce breaking changes."
         - "Breaking change — This PR introduces one or more breaking changes."
@@ -44,6 +50,8 @@ body:
     id: breaking-details
     attributes:
       label: Breaking Change Details (if needed)
-      placeholder: List out any changes to the API that may cause breaks for developer implementation.
+      description: List out any changes to the API that may cause breaks for developer implementation.
+      placeholder: |
+        - List breaking changes here
     validations:
       required: false
