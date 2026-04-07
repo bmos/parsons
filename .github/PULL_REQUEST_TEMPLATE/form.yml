@@ -1,0 +1,49 @@
+name: Pull Request
+
+description: File a standard PR for the Parsons project
+
+body:
+  - type: textarea
+    id: what-is-change
+    attributes:
+      label: What is this change?
+      placeholder: |
+        - List out the changes.
+        - Link to any relevant Github issues or Slack discussion.
+    validations:
+      required: true
+
+  - type: textarea
+    id: considerations
+    attributes:
+      label: Considerations for discussion
+      placeholder: List out any significant design decisions that were made and why.
+    validations:
+      required: false
+
+  - type: textarea
+    id: testing
+    attributes:
+      label: How to test the changes (if needed)
+      placeholder: How should a reviewer test this functionality?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: breaking-changes
+    attributes:
+      label: Breaking Changes
+      description: Breaking changes are changes to our public API which may require existing users to change their code.
+      options:
+        - "Non-breaking change — This PR does not introduce breaking changes."
+        - "Breaking change — This PR introduces one or more breaking changes."
+    validations:
+      required: true
+
+  - type: textarea
+    id: breaking-details
+    attributes:
+      label: Breaking Change Details (if needed)
+      placeholder: List out any changes to the API that may cause breaks for developer implementation.
+    validations:
+      required: false
