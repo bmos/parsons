@@ -57,14 +57,11 @@ jobs:
 
       - name: determine key for pytest cache
         id: pytest-run-key
+        shell: bash
         run: |
-          echo "\
-          RUN_KEY=\
-          ${{ hashFiles('pyproject.toml') }}\
-          -${{ matrix.os }}\
-          -${{ matrix.python-version }}\
-          -${{ matrix.resolution }}\
-          " >> $GITHUB_ENV
+          HASH=${{ hashFiles('pyproject.toml') }}
+          VAL="${HASH}-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.resolution }}"
+          echo "RUN_KEY=$VAL" >> $GITHUB_ENV
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
@@ -91,7 +88,11 @@ jobs:
 
       - env:
           COVERAGE_FILE: .coverage.${{ env.RUN_KEY }}
-        run: uv run pytest --failed-first
+        run: >-
+          pytest
+          --failed-first
+          --cov=parsons
+          --no-cov-on-fail
 
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
@@ -130,7 +131,7 @@ jobs:
       - name: create list of all parsons extras
         id: get-extras
         run: |
-          uv run python -c "
+          python -c "
           import json
           from build.util import project_wheel_metadata
           from pathlib import Path
@@ -169,14 +170,11 @@ jobs:
 
       - name: determine key for pytest cache
         id: pytest-run-key
+        shell: bash
         run: |
-          echo "\
-          RUN_KEY=\
-          ${{ hashFiles('pyproject.toml') }}\
-          -${{ matrix.os }}\
-          -${{ matrix.python-version }}\
-          -${{ matrix.resolution }}\
-          " >> $GITHUB_ENV
+          HASH=${{ hashFiles('pyproject.toml') }}
+          VAL="${HASH}-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.resolution }}"
+          echo "RUN_KEY=$VAL" >> $GITHUB_ENV
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
@@ -201,7 +199,7 @@ jobs:
           path: .pytest_cache
           key: pytest-${{ env.RUN_KEY }}
 
-      - run: uv run pytest test/test_${{ matrix.extra }}
+      - run: pytest test/test_${{ matrix.extra }}
 
   ruff-format:
     runs-on: ubuntu-latest
@@ -231,11 +229,10 @@ jobs:
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: .ruff_cache
-          key: ruff-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('setup.py') }}
+          key: ruff-${{ hashFiles('pyproject.toml') }}
 
       - id: run-ruff
         run: >-
-          uv run
           ruff format
           --diff
           .
@@ -271,11 +268,10 @@ jobs:
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: .ruff_cache
-          key: ruff-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('setup.py') }}
+          key: ruff-${{ hashFiles('pyproject.toml') }}
 
       - id: run-ruff-sarif
         run: >-
-          uv run
           ruff check
           --output-format=sarif
           -o results.sarif
@@ -289,7 +285,6 @@ jobs:
       - id: run-ruff
         if: failure() && contains('["failure"]', steps.run-ruff-sarif.outcome)
         run: >-
-          uv run
           ruff check
           --output-format=github
           .
@@ -323,7 +318,6 @@ jobs:
 
       - id: run-bandit-sarif
         run: >-
-          uv run
           bandit
           --confidence-level 'medium'
           --severity-level 'medium'
@@ -339,7 +333,6 @@ jobs:
       - id: run-bandit
         if: failure() && contains('["failure"]', steps.run-bandit-sarif.outcome)
         run: >-
-          uv run
           bandit
           --confidence-level 'medium'
           --severity-level 'medium'
@@ -409,9 +402,9 @@ jobs:
           --no-default-groups
           --group docs
 
-      - run: uv run sphinx-lint docs
+      - run: sphinx-lint docs
 
-      - run: uv run sphinx-lint parsons
+      - run: sphinx-lint parsons
 
   pre-commit:
     runs-on: ubuntu-latest
@@ -450,15 +443,10 @@ jobs:
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: .pre-commit-cache
-          key: |
-            pre-commit\
-            -${{ hashFiles('.pre-commit-config.yaml') }}\
-            -${{ hashFiles('pyproject.toml') }}\
-            -${{ hashFiles('setup.py') }}
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml', 'pyproject.toml') }}
 
       - env:
           PRE_COMMIT_HOME: .pre-commit-cache
         run: >-
-          uv run
           pre-commit run
           --all-files
