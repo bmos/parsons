@@ -14,7 +14,7 @@ class Locations:
                 The max number of locations to return
 
         Returns:
-            parsons.Table
+            Table
                 All requested location data.
 
         """

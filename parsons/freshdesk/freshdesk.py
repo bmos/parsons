@@ -119,12 +119,11 @@ class Freshdesk:
                 Filter by company_id.
             updated_since: str
                 Earliest date to include in results.
-            expand_custom_fields: boolean
+            expand_custom_fields: bool
                 Expand nested custom fields to their own columns.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -166,7 +165,7 @@ class Freshdesk:
             expand_custom_fields (bool): Expand nested custom fields to their own columns.
 
         Returns:
-            parsons.Table: See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -191,12 +190,11 @@ class Freshdesk:
         for more information.
 
         Args:
-            expand_custom_fields: boolean
+            expand_custom_fields: bool
                 Expand nested custom fields to their own columns.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -220,9 +218,9 @@ class Freshdesk:
                 Filter by phone number
             state: str
                 Filter by state
+
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -252,9 +250,9 @@ class Freshdesk:
                 The priority of the ticket.
             status: int
                 The status of the ticket.
-            cc_emails: list (optional)
+            cc_emails: list, optional
                 List of email addresses to CC.
-            custom_fields: dict (optional)
+            custom_fields: dict, optional
                 Custom fields data.
 
         Returns:

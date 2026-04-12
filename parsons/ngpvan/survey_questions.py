@@ -31,8 +31,7 @@ class SurveyQuestions:
                 Filter to survey suestions with the given cycle. A year in the format "YYYY".
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -60,8 +59,7 @@ class SurveyQuestions:
                 The survey question id.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 

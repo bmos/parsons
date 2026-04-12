@@ -466,7 +466,7 @@ class Box:
                  Format in which Table has been saved; for now, only 'csv' or 'json'. Defaults to 'csv'.
 
         Returns:
-            Table: A Parsons Table.
+            Table
 
         """
         file_id = self.get_item_id(path)
@@ -483,7 +483,7 @@ class Box:
                 Defaults to 'csv'.
 
         Returns:
-            Table: A Parsons Table.
+            Table
 
         Raises:
             ValueError:

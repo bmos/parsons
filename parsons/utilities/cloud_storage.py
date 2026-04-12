@@ -20,8 +20,8 @@ def post_file(
     **S3 is the only option allowed.**
 
     Args:
-        tbl: object
-            parsons.Table
+        tbl: Table
+            Data to post to cloud storage
         type: str
             `S3` or `GCS` (Google Cloud Storage)
         file_path: str
@@ -33,7 +33,7 @@ def post_file(
             Optional arguments specific to the file storage.
 
     Returns:
-        ``None``
+        `None`
 
     """
 

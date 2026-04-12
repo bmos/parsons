@@ -58,6 +58,7 @@ docs = [
     "myst-parser~=4.0.1",
     "packaging~=26.0",
     "sphinxcontrib-googleanalytics~=0.5",
+    "sphinx-autodoc-typehints",
     "sphinx-lint==1.0.2",
     "sphinx-multiversion~=0.2.4",
     "Sphinx~=7.4.7;python_version<'3.11'",

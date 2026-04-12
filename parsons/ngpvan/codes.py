@@ -16,7 +16,7 @@ class Codes:
         Get codes.
 
         Args:
-            name : str
+            name: str
                 Filter by name of code.
             supported_entities: str
                 Filter by supported entities.
@@ -26,8 +26,7 @@ class Codes:
                 Filter by code type.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -48,12 +47,11 @@ class Codes:
         Get a code.
 
         Args:
-            code_id : int
+            code_id: int
                 The code id.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 

@@ -18,7 +18,7 @@ class AcquisitionTypes:
                 Specify limit to return.
 
         Returns:
-            parsons.Table
+            Table
 
         """
         return self._request(self.url_acqtypes, limit=limit)
@@ -94,7 +94,7 @@ class AcquisitionTypes:
                 The Acquisition Type id
 
         Returns:
-            parsons.Table
+            Table
 
         """
         return self._request(f"{self.url_acqtypes}/{id}")

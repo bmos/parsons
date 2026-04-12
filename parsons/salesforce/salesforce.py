@@ -27,7 +27,7 @@ class Salesforce:
             Settings > My Personal Information > Reset My Security Token.
             Not required if ``SALESFORCE_SECURITY_TOKEN`` env variable is passed. Used in the 'password' auth method.
         test_environment: bool
-            If ``True`` the client will connect to a Salesforce sandbox instance. Not required if
+            If `True` the client will connect to a Salesforce sandbox instance. Not required if
             ``SALESFORCE_DOMAIN`` env variable is passed.
         consumer_key: str
             consumer key for a connected app. Used in the 'client_credentials' auth method.
@@ -116,7 +116,8 @@ class Salesforce:
                 For reference, see the `Salesforce SOQL documentation <https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm>`_.
 
         Returns:
-            list of dicts with Salesforce data
+            list[dict]
+                Salesforce data
 
         """
 
@@ -133,17 +134,17 @@ class Salesforce:
             object: str
                 The API name of the type of record to insert. Note that custom object names end
                 in `__c`
-            data_table: obj
+            data_table: Table
                 A Parsons Table with data for inserting records. Column names must match object
                 field API names, though case and order need not match. Note that custom field
                 names end in `__c`.
 
         Returns:
-            list of dicts that have the following data:
-            * success: boolean
-            * created: boolean (if new record is created)
-            * id: str (id of record created, if successful)
-            * errors: list of dicts (with error details)
+            list[dict]
+                * success: bool
+                * created: bool (if new record is created)
+                * id: str (id of record created, if successful)
+                * errors: list[dict] (with error details)
 
         """
 
@@ -162,17 +163,17 @@ class Salesforce:
             object: str
                 The API name of the type of record to update. Note that custom object names end
                 in `__c`
-            data_table: obj
+            data_table: Table
                 A Parsons Table with data for updating records. Must contain one column named
                 `id`. Column names must match object field API names, though case and order need
                 not match. Note that custom field names end in `__c`.
 
         Returns:
-                list of dicts that have the following data:
-                * success: boolean
-                * created: boolean (if new record is created)
+            list[dict]
+                * success: bool
+                * created: bool (if new record is created)
                 * id: str (id of record altered, if successful)
-                * errors: list of dicts (with error details)
+                * errors: list[dict] (with error details)
 
         """
 
@@ -191,7 +192,7 @@ class Salesforce:
             object: str
                 The API name of the type of record to upsert. Note that custom object names end
                 in `__c`
-            data_table: obj
+            data_table: Table
                 A Parsons Table with data for upserting records. Column names must match object
                 field API names, though case and order need not match. Note that custom field
                 names end in `__c`.
@@ -200,11 +201,11 @@ class Salesforce:
                 records are new/inserted.
 
         Returns:
-                list of dicts that have the following data:
-                * success: boolean
-                * created: boolean (if new record is created)
+            list[dict]
+                * success: bool
+                * created: bool (if new record is created)
                 * id: str (id of record created or altered, if successful)
-                * errors: list of dicts (with error details)
+                * errors: list[dict] (with error details)
 
         """
 
@@ -223,19 +224,18 @@ class Salesforce:
             object: str
                 The API name of the type of record to delete.
                 Note that custom object names end in `__c`
-            id_table: obj
-                Parsons Table of record IDs to delete.
+            id_table: Table
+                Record IDs to delete.
                 Note that 'Id' is the default Salesforce record ID field name.
-            hard_delete: boolean
+            hard_delete: bool
                 If true, will permanently delete record instead of moving it to trash
 
         Returns:
             list[dict]
-                Each list has the following data:
-                * success: boolean
-                * created: boolean (if new record is created)
+                * success: bool
+                * created: bool (if new record is created)
                 * id: str (id of record deleted, if successful)
-                * errors: list of dicts (with error details)
+                * errors: list[dict] (with error details)
 
         """
 

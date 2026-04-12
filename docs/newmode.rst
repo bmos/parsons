@@ -8,7 +8,7 @@ Overview
 `New/Mode <https://www.newmode.net/>`_ is a multi-channel advocacy and civic engagement platform
 for organizations and campaigns. This Parsons class includes methods for fetching tools, actions, targets, campaigns,
 organizations, services, and outreaches. There are also methods for looking up targets and running actions given a
-``tool_id``. Most methods return either individual items as dictionaries or lists of items as Parsons ``Table`` objects.
+``tool_id``. Most methods return either individual items as dictionaries or lists of items as Parsons `Table` objects.
 
 .. note::
 

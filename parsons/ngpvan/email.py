@@ -21,12 +21,12 @@ class Email:
         Get emails.
 
         Args:
-            ascending : Bool
+            ascending: bool
                 sorts results in ascending or descending order
                 for the dateModified field. Defaults to True (ascending).
 
         Returns:
-            Parsons Table
+            Table
                 Data from the email/messages endpoint. List of columns:
 
                 foreignMessageId, name, createdBy, dateCreated, dateScheduled, campaignID,
@@ -56,8 +56,8 @@ class Email:
         Args:
             email_id : int
                 The email id.
-            expand : bool
-                Optional; expands the email message to include the email content and
+            expand : bool, optional
+                Expands the email message to include the email content and
                 statistics. Defaults to True.
 
         Returns:
@@ -88,7 +88,7 @@ class Email:
                 If A/B test results for emails should get aggregated.
 
         Returns:
-            Parsons Table
+            Table
                 All statistics returned from the get_email added to get_emails. Columns:
 
                 name, createdBy, dateCreated, dateModified, dateScheduled, foreignMessageId,

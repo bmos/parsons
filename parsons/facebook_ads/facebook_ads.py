@@ -357,7 +357,7 @@ class FacebookAds:
         Args:
             audience_id: str
                 The ID of the custom audience to delete.
-            users_table: obj
+            users_table: Table
                 Parsons table
 
         """

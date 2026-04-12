@@ -22,13 +22,8 @@ class PrintedLists:
         """
         Get printed lists.
 
-        Args:
-            folder_id: int
-                Filter by the id for a VAN folder. If included returns only
-                the saved lists in the folder
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 

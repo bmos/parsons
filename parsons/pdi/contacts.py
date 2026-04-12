@@ -31,7 +31,7 @@ class Contacts:
             limit (int): The number of contacts to return
 
         Returns:
-            parsons.Table
+            Table
 
         """
         params = {
@@ -83,7 +83,8 @@ class Contacts:
             pdi_id (str, optional): Ignored when updating.
 
         Returns:
-            parsons.Table: A Table containing the response data.
+            Table
+                Response data.
 
         """
         payload = {
@@ -114,7 +115,7 @@ class Contacts:
                 The Contact id
 
         Returns:
-            parsons.Table
+            Table
 
         """
         # todo not working quite right
@@ -156,8 +157,7 @@ class Contacts:
             gender (str, optional): Options are "F", "M", "U"
 
         Returns:
-            parsons.Table:
-                See :ref:`parsons-table` for output options
+            Table
 
         """
         payload = {

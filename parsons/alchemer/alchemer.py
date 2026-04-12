@@ -64,12 +64,12 @@ class Alchemer:
         Get a table of lists under the account.
 
         Args:
-            page : int
+            page: int
                 Retrieve a specific page of responses. If not given,
                 then all pages are retrieved.
 
         Returns:
-            Table Class
+            Table
 
         """
 
@@ -93,15 +93,15 @@ class Alchemer:
         Get the responses for a given survey.
 
         Args:
-            survey_id: string
+            survey_id: str
                 The id of survey for which to retrieve the responses.
 
-            page : int
+            page: int
                 Retrieve a specific page of responses. If not given,
                 then all pages are retrieved.
 
         Returns:
-            Table Class
+            Table
 
         """
 

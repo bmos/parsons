@@ -62,7 +62,7 @@ class Sqlite(DatabaseConnector):
     def query(self, sql: str, parameters: list | dict | None = None) -> Table | None:
         """
         Execute a query against the database, using the existing connection within the Sqlite object.
-        Will return ``None`` if the query returns zero rows.
+        Will return `None` if the query returns zero rows.
 
         Args:
             sql: str
@@ -71,8 +71,7 @@ class Sqlite(DatabaseConnector):
                 A list of python variables to be converted into SQL values in your query
 
         Returns:
-            parsons.Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
         with self.connection() as connection:
@@ -88,23 +87,22 @@ class Sqlite(DatabaseConnector):
     ):
         """
         Execute a query against the database, with an existing connection. Useful for batching
-        queries together. Will return ``None`` if the query returns zero rows.
+        queries together. Will return `None` if the query returns zero rows.
 
         Args:
             sql: str
                 A valid SQL statement
             connection: obj
-                A connection object obtained from ``redshift.connection()``
+                A connection object obtained from :meth:`Redshift.connection`
             parameters: list
                 A list of python variables to be converted into SQL values in your query
-            commit: boolean
-                Whether to commit the transaction immediately. If ``False`` the transaction will
+            commit: bool
+                Whether to commit the transaction immediately. If `False` the transaction will
                 be committed when the connection goes out of scope and is closed (or you can
                 commit manually with ``connection.commit()``).
 
         Returns:
-            parsons.Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
         # sqlite3 cursor cannot take None for parameters
@@ -202,7 +200,7 @@ class Sqlite(DatabaseConnector):
         Copy a :ref:`parsons-table` to Sqlite.
 
         Args:
-            tbl: parsons.Table
+            tbl: Table
                 A Parsons table object
             table_name: str
                 The destination schema and table (e.g. ``my_schema.my_table``)
@@ -213,7 +211,7 @@ class Sqlite(DatabaseConnector):
                 If the database table needs to be created, strict_length determines whether
                 the created table's column sizes will be sized to exactly fit the current data,
                 or if their size will be rounded up to account for future values being larger
-                then the current dataset. Defaults to ``False``.
+                then the current dataset. Defaults to `False`.
             force_python_sdk: bool
                 Use the python SDK to import data to sqlite3, even if the sqlite3 cli utility is available for more efficient loading. Defaults to False.
 
@@ -291,7 +289,7 @@ class Sqlite(DatabaseConnector):
 
         Args:
             connection: obj
-                A connection object obtained from ``redshift.connection()``
+                A connection object obtained from :meth:`Redshift.connection`
             table_name: str
                 The table to check
             if_exists: str
@@ -335,12 +333,12 @@ class Sqlite(DatabaseConnector):
         Args:
             table_name: str
                 The table name and schema (e.g. ``myschema.mytable``).
-            view: boolean
-                Check to see if a view exists by the same name. Defaults to ``False``.
+            view: bool
+                Check to see if a view exists by the same name. Defaults to `False`.
 
         Returns:
-            boolean
-                ``True`` if the table exists and ``False`` if it does not.
+            bool
+                `True` if the table exists and `False` if it does not.
 
         """
         # Check in pg tables for the table

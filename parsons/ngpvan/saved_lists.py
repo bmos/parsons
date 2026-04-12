@@ -25,8 +25,7 @@ class SavedLists:
                 Filter by the id for a VAN folder. If included returns only
                 the saved lists in the folder
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -60,8 +59,7 @@ class SavedLists:
                 The saved list id.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -94,7 +92,7 @@ class SavedLists:
         must be shared on the target folder.
 
         Args:
-            tbl: parsons.Table
+            tbl: Table
                 A parsons table object containing one column of person ids.
             url_type: str
                 The cloud file storage to use to post the file (``S3`` or ``GCS``).
@@ -105,7 +103,7 @@ class SavedLists:
                 The saved list name.
             description: str
                 Description of the file upload job and the list.
-            callback_url: string
+            callback_url: str
                 The configured HTTP listener to which successful list loads will send
                 a standard webhook.
             columns: list
@@ -114,9 +112,9 @@ class SavedLists:
                 The column name of the VAN ID column in the file. Must be VAN ID.
             delimiter: str
                 The file delimiter used.
-            header: boolean
+            header: bool
                 Whether or not the source file has a header row.
-            quotes: boolean
+            quotes: bool
                  Whether or not fields are enclosed in quotation marks within each
                  column of the file.
             overwrite: int
@@ -199,13 +197,13 @@ class SavedLists:
     ):
         """
             .. warning::
-               .. deprecated:: 0.X Use :func:`parsons.VAN.upload_saved_list_rest` instead.
+               .. deprecated:: 0.X Use :meth:`parsons.VAN.upload_saved_list_rest` instead.
 
         Upload a saved list. Invalid or unmatched person id records will be ignored. Your api user
         must be shared on the target folder.
 
         Args:
-            tbl: parsons.Table
+            tbl: Table
                 A parsons table object containing one column of person ids.
             list_name: str
                 The saved list name.
@@ -217,7 +215,7 @@ class SavedLists:
             id_type: str
                 The primary key type. The options, beyond ``vanid`` are specific to your
                 instance of VAN.
-            replace: boolean
+            replace: bool
                 Replace saved list if already exists.
             `**url_kwargs`: kwargs
                 Arguments to configure your cloud storage url type. See
@@ -294,8 +292,7 @@ class Folders:
         Get all folders owned or shared with the API user.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -312,8 +309,7 @@ class Folders:
                 The folder id.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -331,8 +327,7 @@ class ExportJobs:
         Get export job types
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -380,8 +375,7 @@ class ExportJobs:
                 The xxport job id.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 

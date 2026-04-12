@@ -33,6 +33,7 @@ _EMPTYDEFAULT = _EmptyDefault.token
 class Table(ETL, ToFrom):
     """
     Create a Parsons Table. Accepts one of the following:
+
     - A list of lists, with list[0] holding field names, and the other lists holding data
     - A list of dicts
     - A petl table
@@ -40,10 +41,10 @@ class Table(ETL, ToFrom):
     Args:
         lst: list
             See above for accepted list formats
-        source: str
-            The original data source from which the data was pulled (optional)
-        name: str
-            The name of the table (optional)
+        source: str, optional
+            The original data source from which the data was pulled
+        name: str, optional
+            The name of the table
 
     """
 
@@ -138,6 +139,8 @@ class Table(ETL, ToFrom):
     @property
     def num_rows(self):
         """
+        Count the number of rows.
+
         Returns:
             int
                 Number of rows in the table
@@ -159,9 +162,11 @@ class Table(ETL, ToFrom):
     @property
     def columns(self):
         """
+        List the names of each column.
+
         Returns:
-            list
-                List of the table's column names
+            list[str]
+                Column names
 
         """
         return list(petl.header(self.table))
@@ -186,6 +191,7 @@ class Table(ETL, ToFrom):
 
         Args:
             row_index: int
+
         Returns:
             dict
                 A dictionary of the row with the column as the key and the cell
@@ -214,6 +220,7 @@ class Table(ETL, ToFrom):
         Args:
             column_name: str
                 The name of the column
+
         Returns:
             list
                 A list of data in the column.
@@ -274,8 +281,8 @@ class Table(ETL, ToFrom):
 
     def is_valid_table(self):
         """
-        Performs some simple checks on a Table. Specifically, verifies that we have a valid petl
-        table within the Parsons Table.
+        Performs some simple checks on a Table.
+        Specifically, verifies that we have a valid petl table within the Parsons Table.
 
         Returns:
             bool
@@ -294,12 +301,13 @@ class Table(ETL, ToFrom):
 
     def empty_column(self, column):
         """
-        Checks if a given column is empty. Returns ``True`` if empty and ``False``
+        Checks if a given column is empty. Returns `True` if empty and `False`
         if not empty.
 
         Args:
             column: str
                 The column name
+
         Returns:
             bool
 

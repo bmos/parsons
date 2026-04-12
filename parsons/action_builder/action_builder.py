@@ -17,8 +17,8 @@ class ActionBuilder:
             The OSDI API token
         subdomain: str
             The part of the web app URL preceding '.actionbuilder.org'
-        campaign: str
-            Optional. The 36-character "interact ID" of the campaign whose data is to be retrieved
+        campaign: str, optional
+            The 36-character "interact ID" of the campaign whose data is to be retrieved
             or edited. Can also be supplied in individual methods in case multiple campaigns need
             to be referenced.
 
@@ -94,8 +94,8 @@ class ActionBuilder:
         Retrieve all tags (i.e. custom field values) within provided limit and filters
 
         Args:
-            campaign: str
-                Optional. The 36-character "interact ID" of the campaign whose data is to be
+            campaign: str, optional
+                The 36-character "interact ID" of the campaign whose data is to be
                 retrieved or edited. Not necessary if supplied when instantiating the class.
             limit: int
                 The number of entries to return. When None, returns all entries.
@@ -106,7 +106,8 @@ class ActionBuilder:
                 When None, no filter is applied.
 
         Returns:
-            Parsons Table of full set of tags available in Action Builder.
+            Table
+                Full set of tags available in Action Builder.
 
         """
 
@@ -121,12 +122,13 @@ class ActionBuilder:
         Args:
             tag_name: str
                 The value of the tag to search for.
-            campaign: str
-                Optional. The 36-character "interact ID" of the campaign whose data is to be
+            campaign: str, optional
+                The 36-character "interact ID" of the campaign whose data is to be
                 retrieved or edited. Not necessary if supplied when instantiating the class.
 
         Returns:
-            Parsons Table of data found on tag in Action Builder from searching by name.
+            Table
+                Data found on tag in Action Builder from searching by name.
 
         """
 
@@ -146,12 +148,13 @@ class ActionBuilder:
                 The name of the tag category, i.e. the custom field name.
             tag_section: str
                 The name of the tag section, i.e. the custom field group name.
-            campaign: str
-                Optional. The 36-character "interact ID" of the campaign whose data is to be
+            campaign: str, optional
+                The 36-character "interact ID" of the campaign whose data is to be
                 retrieved or edited. Not necessary if supplied when instantiating the class.
 
         Returns:
-            Dict containing Action Builder tag data.
+            dict
+                Action Builder tag data.
 
         """
 
@@ -188,12 +191,13 @@ class ActionBuilder:
                 for examples, and
                 [the Person endpoint](https://www.actionbuilder.org/docs/v1/people.html#field-names)
                 for full entity object composition.
-            campaign: str
-                Optional. The 36-character "interact ID" of the campaign whose data is to be
+            campaign: str, optional
+                The 36-character "interact ID" of the campaign whose data is to be
                 retrieved or edited. Not necessary if supplied when instantiating the class.
 
         Returns:
-            Dict containing Action Builder entity data.
+            dict
+                Action Builder entity data.
 
         """
 
@@ -233,12 +237,13 @@ class ActionBuilder:
                 for examples, and
                 [the Person endpoint](https://www.actionbuilder.org/docs/v1/people.html#field-names)
                 for full entity object composition.
-            campaign: str
-                Optional. The 36-character "interact ID" of the campaign whose data is to be
+            campaign: str, optional
+                The 36-character "interact ID" of the campaign whose data is to be
                 retrieved or edited. Not necessary if supplied when instantiating the class.
 
         Returns:
-            Dict containing Action Builder entity data.
+            dict
+                Action Builder entity data.
 
         """
 
@@ -271,12 +276,12 @@ class ActionBuilder:
             identifier: str
                 The unique identifier for the record being removed. ID strings will need to begin
                 with the origin system, followed by a colon, e.g. `action_builder:abc123-...`.
-            campaign: str
-                Optional. The 36-character "interact ID" of the campaign whose data is to be
+            campaign: str, optional
+                The 36-character "interact ID" of the campaign whose data is to be
                 retrieved or edited. Not necessary if supplied when instantiating the class.
 
         Returns:
-            Dict with HTTP response.
+            Response | int
 
         """
 
@@ -299,12 +304,13 @@ class ActionBuilder:
                 The name of the tag section, i.e. the custom field group name.
             field_values: dict
                 A collection of field names and tags stored as keys and values.
-            campaign: str
-                Optional. The 36-character "interact ID" of the campaign whose data is to be
+            campaign: str, optional
+                The 36-character "interact ID" of the campaign whose data is to be
                 retrieved or edited. Not necessary if supplied when instantiating the class.
 
         Returns:
-            Dict containing Action Builder entity data of the entity being tagged.
+            dict
+                Action Builder entity data of the entity being tagged.
 
         """
 
@@ -337,26 +343,28 @@ class ActionBuilder:
         connection record is supplied instead.
 
         Args:
-            identifier: str
-                Optional. The unique identifier for an entity or connection record being updated.
+            identifier: str, optional
+                The unique identifier for an entity or connection record being updated.
                 If omitted, `tagging_id` must be provided.
-            tag_id: str
-                Optional. The unique identifier for the tag being removed. If omitted, `tag_name`
+            tag_id: str, optional
+                The unique identifier for the tag being removed. If omitted, `tag_name`
                 must be provided.
-            tag_name: str
-                Optional. The exact name of the tag being removed. May result in an error if
+            tag_name: str, optional
+                The exact name of the tag being removed. May result in an error if
                 multiple tags (in different fields/sections) have the same name. If omitted,
                 `tag_id` must be provided.
-            tagging_id: str
-                Optional. The unique identifier for the specific application of the tag to an
+            tagging_id: str, optional
+                The unique identifier for the specific application of the tag to an
                 individual entity or connection record. If omitted, `identifier` must be provided.
-            campaign: str
-                Optional. The 36-character "interact ID" of the campaign whose data is to be
+            campaign: str, optional
+                The 36-character "interact ID" of the campaign whose data is to be
                 retrieved or edited. Not necessary if supplied when instantiating the class.
 
         Returns:
-            API response JSON which contains `{'message': 'Tag has been removed from Taggable
-            Logbook'}` if successful.
+            Response | int
+                A requests response object or status code.
+                API response JSON contains
+                `{'message': 'Tag has been removed from Taggable Logbook'}` if successful.
 
         """
 
@@ -415,19 +423,20 @@ class ActionBuilder:
                 A list of two unique identifier strings for records being connected. ID strings
                 will need to begin with the origin system, followed by a colon, e.g.
                 `action_builder:abc123-...`. Requires exactly two identifiers.
-            tag_data: list
+            tag_data: list[dict]
                 List of dicts of tags to be added to the connection record (i.e. Connection Info).
                 See [documentation on Connection Helper](https://www.actionbuilder.org/docs/v1/connection_helper.html#post)
                 for examples.
-            campaign: str
-                Optional. The 36-character "interact ID" of the campaign whose data is to be
+            campaign: str, optional
+                The 36-character "interact ID" of the campaign whose data is to be
                 retrieved or edited. Not necessary if supplied when instantiating the class.
-            reactivate: bool
-                Optional. Whether or not to set the `inactive` flag on a given Connection to False
+            reactivate: bool, optional
+                Whether or not to set the `inactive` flag on a given Connection to False
                 if the Connection exists and has `inactive` set to True. True by default.
 
         Returns:
-            Dict containing Action Builder connection data.
+            dict
+                Action Builder connection data.
 
         """
 
@@ -478,18 +487,19 @@ class ActionBuilder:
         Args:
             from_identifier: str
                 Unique identifier for one of the two entities with a connection.
-            connection_identifier: str
-                Optional. The unique identifier for an entity or connection record being updated.
+            connection_identifier: str, optional
+                The unique identifier for an entity or connection record being updated.
                 If omitted, `to_identifier` must be provided.
-            to_identifier: str
-                Optional. The second entity with a connection to `from_entity`. If omitted,
+            to_identifier: str, optional
+                The second entity with a connection to `from_entity`. If omitted,
                 `connection_identifier` must be provided.
-            campaign: str
-                Optional. The 36-character "interact ID" of the campaign whose data is to be
+            campaign: str, optional
+                The 36-character "interact ID" of the campaign whose data is to be
                 retrieved or edited. Not necessary if supplied when instantiating the class.
 
         Returns:
-            Dict containing Action Builder connection data.
+            dict
+                Action Builder connection data.
 
         """
 

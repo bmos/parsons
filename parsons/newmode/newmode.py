@@ -647,7 +647,8 @@ class NewmodeV2:
                 Query parameters to include in the request.
 
         Returns:
-            Parsons Table containing campaign data.
+            Table
+                Containing campaign data.
 
         """
         if params is None:
@@ -720,7 +721,8 @@ class NewmodeV2:
                 Query parameters to include in the request.
 
         Returns:
-            Parsons Table containing recipient data.
+            Table
+                Recipient data.
 
         """
         if params is None:
@@ -764,7 +766,8 @@ class NewmodeV2:
                 Query parameters to include in the request.
 
         Returns:
-            Parsons Table containing submit data.
+            Table
+                Submit data.
 
         """
 
@@ -797,7 +800,8 @@ class NewmodeV2:
                 Query parameters to include in the request.
 
         Returns:
-            Parsons Table containing submit data.
+            Table
+                Submit data.
 
         """
         if params is None:

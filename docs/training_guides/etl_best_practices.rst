@@ -360,7 +360,7 @@ If that's not an option, because Civis doesn't have an importer for your tool or
     attendances = mobilize.get_attendances()
     rs.copy(attendances, 'mobilize.attendances', if_exists='drop', alter_table=True)
 
-The ``rs.copy`` used here loads data into the RedShift database you're connected to. The ``mobilize.attendances`` parameter specifies which table to copy the data to. The ``copy`` method can also be used with the BigQuery connector.
+The :meth:`~parsons.databases.redshift.redshift.Redshift.copy` used here loads data into the RedShift database you're connected to. The ``mobilize.attendances`` parameter specifies which table to copy the data to. The :meth:`copy` method can also be used with the BigQuery connector.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Step 2: Transforming Data in Warehouse with SQL

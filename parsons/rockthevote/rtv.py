@@ -156,8 +156,8 @@ class RockTheVote:
             report_timeout_seconds: int
                 If blocking, how long to wait for the report before timing out
         Returns:
-            Parsons Table
-                Parsons table with the report data.
+            Table
+                Report data
 
         """
         logger.info(f"Getting report with id {report_id}...")
@@ -255,7 +255,7 @@ class RockTheVote:
             report_timeout_seconds: int
                 If blocking, how long to wait for the report before timing out
         Returns:
-            Parsons.Table
+            Table
                 The table with the report data.
 
         """
@@ -289,7 +289,7 @@ class RockTheVote:
             callback: str
                 Optional.  If used, will change the return value from JSON format to jsonp
         Returns:
-            Parsons.Table
+            Table
                 A single row table with the response json
 
         """

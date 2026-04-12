@@ -54,15 +54,14 @@ class BulkImport:
         per record processed as well as the status of each.
 
         If the job results have not been generated, either due to an error in the
-        process or the fact the job is still processing, it will return ``None``.
+        process or the fact the job is still processing, it will return `None`.
 
         Args:
             job_id: int
                 Bulk import job id.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -78,8 +77,7 @@ class BulkImport:
         Get bulk import mapping types.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 

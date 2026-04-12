@@ -35,8 +35,8 @@ class DatabaseCreateStatement:
         Args:
             col: str
                 The column to rename.
-            index: int
-                (Optional) The index of the column.
+            index: int, optional
+                The index of the column.
 
         Returns:
             str
@@ -51,8 +51,8 @@ class DatabaseCreateStatement:
         Args:
             col: str
                 The column to rename.
-            index: int
-                (Optional) The index of the column.
+            index: int, optional
+                The index of the column.
 
         Returns:
             str
@@ -185,18 +185,20 @@ class DatabaseCreateStatement:
         """Format the column to meet database contraints.
 
         Formats the columns as follows:
-            1. Coverts to lowercase (if case insensitive)
-            2. Strips leading and trailing whitespace
-            3. Replaces invalid characters
-            4. Renames if in reserved words
+
+        1. Coverts to lowercase (if case insensitive)
+        2. Strips leading and trailing whitespace
+        3. Replaces invalid characters
+        4. Renames if in reserved words
+
         Args:
             col: str
                 The column to format.
-            index: int
-                (Optional) The index of the column. Used if the column is empty.
+            index: int, optional
+                The index of the column. Used if the column is empty.
             replace_chars: dict
                 A dictionary of invalid characters and their replacements. If
-                ``None`` uses {" ": "_"}
+                `None` uses {" ": "_"}
             col_prefix: str
                 The prefix to use when the column is empty or starts with an
                 invalid character.

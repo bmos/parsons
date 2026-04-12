@@ -39,13 +39,12 @@ class Events:
                 Filter by district field.
             expand_fields: list
                 A list of fields for which to include data. If a field is omitted,
-                ``None`` will be returned for that field. Can be ``locations``, ``codes``,
+                `None` will be returned for that field. Can be ``locations``, ``codes``,
                 ``shifts``,``roles``, ``notes``, ``financialProgram``, ``ticketCategories``,
                 ``onlineForms``.
 
         Returns:
-            parsons.Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -91,13 +90,12 @@ class Events:
                 The event id.
             expand_fields: list
                 A list of fields for which to include data. If a field is omitted,
-                ``None`` will be returned for that field. Can be ``locations``,
+                `None` will be returned for that field. Can be ``locations``,
                 ``codes``, ``shifts``, ``roles``, ``notes``, ``financialProgram``,
                 ``ticketCategories``, ``voterRegistrationBatches``.
 
         Returns:
-            parsons.Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -173,11 +171,11 @@ class Events:
 
             description: str
                 An optional description for this Event, no longer than 500 characters.
-            editable: boolean
-                If ``True``, prevents modification of this event by any users other than the
+            editable: bool
+                If `True`, prevents modification of this event by any users other than the
                 user associated the API key. Setting this to true effectively makes
                 the event read-only in the VAN interface.
-            publicly_viewable: boolean
+            publicly_viewable: bool
                 Used by NGP VAN’s website platform to indicate whether this event can be
                 viewed publicly.
             location_ids: list
@@ -277,8 +275,7 @@ class Events:
         Get event types.
 
         Returns:
-            parsons.Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 

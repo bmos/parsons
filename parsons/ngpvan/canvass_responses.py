@@ -16,8 +16,7 @@ class CanvassResponses:
         Get canvass response contact types.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -30,8 +29,7 @@ class CanvassResponses:
         Get canvass response input types.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -44,8 +42,7 @@ class CanvassResponses:
         Get canvass response result codes.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 

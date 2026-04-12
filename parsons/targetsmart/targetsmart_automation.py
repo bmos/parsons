@@ -87,7 +87,7 @@ class TargetSmartAutomation:
               <mailto:support@targetsmart.com>`_ for support.
 
         Args:
-            table: Parsons Table Object
+            table: Table
                 A table object with the required columns. Each workflow type
                 requires the input file to meet the requirements provided by
                 TargetSmart. You can locate the input and output layouts for
@@ -106,7 +106,7 @@ class TargetSmartAutomation:
                 A callback url to which the status will be posted. See
                 `TargetSmart documentation <https://docs.targetsmart.com/my_tsmart/automation/developer.html>`_
                 for more details.
-            remove_files: boolean
+            remove_files: bool
                 Remove the configuration, file to be matched and matched file from
                 the TargetSmart SFTP upon completion or failure of match.
 

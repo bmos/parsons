@@ -161,7 +161,7 @@ class Redash:
                 url-encoded string as you would see it in the URL bar.
 
         Returns:
-            Table Class
+            Table
 
         """
         query_id = check("REDASH_QUERY_ID", query_id, optional=True)
@@ -207,7 +207,7 @@ class Redash:
                 supply a query_api_key to get cached results back anonymously.
 
         Returns:
-            Table Class
+            Table
 
         """
         query_id = check("REDASH_QUERY_ID", query_id)
@@ -253,7 +253,7 @@ class Redash:
                 in the url, you should just set 'datelimit' in params here.
 
         Returns:
-            Table Class
+            Table
 
         """
         initargs = {

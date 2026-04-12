@@ -7,7 +7,7 @@ Parsons Table
 Overview
 ********
 
-Most methods and functions in Parsons return a ``Table``, which is a 2D list-like object similar to a Pandas Dataframe. You can call the following methods on the Table object to output it into a variety of formats or storage types. A full list of ``Table`` methods can be found in the API section.
+Most methods and functions in Parsons return a `Table`, which is a 2D list-like object similar to a Pandas Dataframe. You can call the following methods on the Table object to output it into a variety of formats or storage types. A full list of `Table` Table`can be found in the API section.
 
 ===================
 From Parsons Table
@@ -20,52 +20,52 @@ From Parsons Table
     * - Method
       - Destination Type
       - Description
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_csv`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_csv`
       - CSV File
       - Write a table to a local csv file
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_avro`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_avro`
       - Avro File
       - Write a table to a local avro file
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_s3_csv`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_s3_csv`
       - AWS s3 Bucket
       - Write a table to a csv stored in S3
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_gcs_csv`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_gcs_csv`
       - Google Cloud Storage Bucket
       - Write a table to a csv stored in Google Cloud Storage
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_sftp_csv`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_sftp_csv`
       - SFTP Server
       - Write a table to a csv stored on an SFTP server
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_redshift`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_redshift`
       - A Redshift Database
       - Write a table to a Redshift database
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_postgres`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_postgres`
       - A Postgres Database
       - Write a table to a Postgres database
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_civis`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_civis`
       - Civis Redshift Database
       - Write a table to Civis platform database
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_petl`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_petl`
       - Petl table object
       - Convert a table a Petl table object
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_json`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_json`
       - JSON file
       - Write a table to a local JSON file
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_html`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_html`
       - HTML formatted table
       - Write a table to a local html file
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_dataframe`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_dataframe`
       - Pandas Dataframe [1]_
       - Return a Pandas dataframe
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.append_csv`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.append_csv`
       - CSV file
       - Appends table to an existing CSV
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.append_avro`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.append_avro`
       - Avro file
       - Appends table to an existing Avro file
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_zip_csv`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_zip_csv`
       - ZIP file
       - Writes a table to a CSV in a zip archive
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.to_dicts`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.to_dicts`
       - Dicts
       - Write a table as a list of dicts
 
@@ -85,31 +85,31 @@ Create Parsons Table object using the following methods.
     * - Method
       - Source Type
       - Description
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.from_csv`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.from_csv`
       - File like object, local path, url, ftp.
       - Loads a csv object into a Table
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.from_avro`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.from_avro`
       - Avro File
       - Load a table from a local avro file
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.from_json`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.from_json`
       - File like object, local path, url, ftp.
       - Loads a json object into a Table
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.from_columns`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.from_columns`
       - List object
       - Loads lists organized as columns in Table
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.from_redshift`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.from_redshift`
       - Redshift table
       - Loads a Redshift query into a Table
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.from_postgres`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.from_postgres`
       - Postgres table
       - Loads a Postgres query into a Table
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.from_dataframe`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.from_dataframe`
       - Pandas Dataframe [2]_
       - Load a Parsons table from a Pandas Dataframe
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.from_s3_csv`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.from_s3_csv`
       - S3 CSV
       - Load a Parsons table from a csv file on S3
-    * - :py:meth:`~parsons.etl.tofrom.ToFrom.from_csv_string`
+    * - :meth:`~parsons.etl.tofrom.ToFrom.from_csv_string`
       - File like object, local path, url, ftp.
       - Load a CSV string into a Table
 
@@ -164,33 +164,33 @@ of commonly used methods. The full list can be found in the API section.
 
     * - Method
       - Description
-    * - :py:meth:`~parsons.etl.etl.ETL.head`
+    * - :meth:`~parsons.etl.etl.ETL.head`
       - Get the first n rows of a table
-    * - :py:meth:`~parsons.etl.etl.ETL.tail`
+    * - :meth:`~parsons.etl.etl.ETL.tail`
       - Get the last n rows of a table
-    * - :py:meth:`~parsons.etl.etl.ETL.add_column`
+    * - :meth:`~parsons.etl.etl.ETL.add_column`
       - Add a column
-    * - :py:meth:`~parsons.etl.etl.ETL.remove_column`
+    * - :meth:`~parsons.etl.etl.ETL.remove_column`
       - Remove a column
-    * - :py:meth:`~parsons.etl.etl.ETL.rename_column`
+    * - :meth:`~parsons.etl.etl.ETL.rename_column`
       - Rename a column
-    * - :py:meth:`~parsons.etl.etl.ETL.rename_columns`
+    * - :meth:`~parsons.etl.etl.ETL.rename_columns`
       - Rename multiple columns
-    * - :py:meth:`~parsons.etl.etl.ETL.move_column`
+    * - :meth:`~parsons.etl.etl.ETL.move_column`
       - Move a column within a table
-    * - :py:meth:`~parsons.etl.etl.ETL.cut`
+    * - :meth:`~parsons.etl.etl.ETL.cut`
       - Return a table with a subset of columns
-    * - :py:meth:`~parsons.etl.etl.ETL.fill_column`
+    * - :meth:`~parsons.etl.etl.ETL.fill_column`
       - Provide a fixed value to fill a column
-    * - :py:meth:`~parsons.etl.etl.ETL.fillna_column`
+    * - :meth:`~parsons.etl.etl.ETL.fillna_column`
       - Provide a fixed value to fill all null values in a column
-    * - :py:meth:`~parsons.etl.etl.ETL.get_column_types`
+    * - :meth:`~parsons.etl.etl.ETL.get_column_types`
       - Get the python type of values for a given column
-    * - :py:meth:`~parsons.etl.etl.ETL.convert_column`
+    * - :meth:`~parsons.etl.etl.ETL.convert_column`
       - Transform the values of a column via arbitrary functions
-    * - :py:meth:`~parsons.etl.etl.ETL.coalesce_columns`
+    * - :meth:`~parsons.etl.etl.ETL.coalesce_columns`
       - Coalesce values from one or more source columns
-    * - :py:meth:`~parsons.etl.etl.ETL.map_columns`
+    * - :meth:`~parsons.etl.etl.ETL.map_columns`
       - Standardizes column names based on multiple possible values
 
 **Row Transformations**
@@ -201,15 +201,15 @@ of commonly used methods. The full list can be found in the API section.
 
     * - Method
       - Description
-    * - :py:meth:`~parsons.etl.etl.ETL.select_rows`
+    * - :meth:`~parsons.etl.etl.ETL.select_rows`
       - Return a table of a subset of rows based on filters
-    * - :py:meth:`~parsons.etl.etl.ETL.stack`
+    * - :meth:`~parsons.etl.etl.ETL.stack`
       - Stack a number of tables on top of one another
-    * - :py:meth:`~parsons.etl.etl.ETL.chunk`
+    * - :meth:`~parsons.etl.etl.ETL.chunk`
       - Divide tables into smaller tables based on row count
-    * - :py:meth:`~parsons.etl.etl.ETL.remove_null_rows`
+    * - :meth:`~parsons.etl.etl.ETL.remove_null_rows`
       - Removes rows with null values in specified columns
-    * - :py:meth:`~parsons.etl.etl.ETL.deduplicate`
+    * - :meth:`~parsons.etl.etl.ETL.deduplicate`
       - Removes duplicate rows based on optional key(s), and optionally sorts
 
 
@@ -221,13 +221,13 @@ of commonly used methods. The full list can be found in the API section.
 
     * - Method
       - Description
-    * - :py:meth:`~parsons.etl.etl.ETL.unpack_dict`
+    * - :meth:`~parsons.etl.etl.ETL.unpack_dict`
       - Unpack dictionary values from one column to top level columns
-    * - :py:meth:`~parsons.etl.etl.ETL.unpack_list`
+    * - :meth:`~parsons.etl.etl.ETL.unpack_list`
       - Unpack list values from one column and add to top level columns
-    * - :py:meth:`~parsons.etl.etl.ETL.long_table`
+    * - :meth:`~parsons.etl.etl.ETL.long_table`
       - Take a column with nested data and create a new long table
-    * - :py:meth:`~parsons.etl.etl.ETL.unpack_nested_columns_as_rows`
+    * - :meth:`~parsons.etl.etl.ETL.unpack_nested_columns_as_rows`
       - Unpack list or dict values from one column into separate rows
 
 ======================
@@ -276,11 +276,11 @@ If you need to iterate over the data, make sure to use the python iterator synta
 PETL
 ====
 
-The Parsons ``Table`` relies heavily on the `petl <https://petl.readthedocs.io/en/stable/index.html>`_
-Python package. You can always access the underlying petl table, ``parsons.Table.table``, which will
+The Parsons :meth:`~parsons.etl.table.Table` relies heavily on the `petl <https://petl.readthedocs.io/en/stable/index.html>`_
+Python package. You can always access the underlying petl table, :meth:`~parsons.etl.etl.ETL`, which will
 allow you to perform any petl-supported ETL operations. Additionally, you can use the helper method,
-:py:meth:`~parsons.etl.etl.ETL.use_petl`, to conveniently perform the same operations on a parsons
-``Table``. For example:
+:meth:`~parsons.etl.etl.ETL.use_petl`, to conveniently perform the same operations on a parsons
+:meth:`~parsons.etl.table.Table`. For example:
 
 .. code-block:: python
 
@@ -301,7 +301,7 @@ or
 Lazy Loading
 ============
 
-The Parsons ``Table`` makes use of "lazy" loading and "lazy" transformations. What this means is that it tries not to load and process your data until absolutely necessary.
+The Parsons `Table` makes use of "lazy" loading and "lazy" transformations. What this means is that it tries not to load and process your data until absolutely necessary.
 
 An example:
 
@@ -331,9 +331,9 @@ For these cases Parsons provides two utility functions to materialize a Table an
 
     * - Method
       - Description
-    * - :py:meth:`~parsons.etl.table.Table.materialize`
+    * - :meth:`~parsons.etl.table.Table.materialize`
       - Load all data from the Table into memory and apply any transformations
-    * - :py:meth:`~parsons.etl.table.Table.materialize_to_file`
+    * - :meth:`~parsons.etl.table.Table.materialize_to_file`
       - Load all data from the Table and apply any transformations, then save to a local temp file.
 
 ********

@@ -97,8 +97,7 @@ class Airtable:
                 Number of rows to sample before determining columns
 
         Returns:
-            parsons.Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -139,7 +138,7 @@ class Airtable:
         Args:
             row: dict
                 Fields to insert. Must be dictionary with Column names as Key.
-            typecast: boolean
+            typecast: bool
                 Automatic data conversion from string values.
 
         Returns:
@@ -159,9 +158,9 @@ class Airtable:
         order of the columns is irrelevant.
 
         Args:
-            table: A Parsons Table or list of dicts
+            table: Table | list[dict]
                 Insert a Parsons table or list
-            typecast: boolean
+            typecast: bool
                 Automatic data conversion from string values.
 
         Returns:
@@ -188,9 +187,9 @@ class Airtable:
                 The Airtable record `id`
             fields: dict
                 Fields to insert. Must be dictionary with Column names as Key.
-            typecast: boolean
+            typecast: bool
                 Automatic data conversion from string values.
-            replace: boolean
+            replace: bool
                 Only provided fields are updated. If `True`, record is replaced in its
                 entirety by provided fields; if a field is not included its value
                 will bet set to null.
@@ -212,12 +211,12 @@ class Airtable:
         will attempt to map based on column name, so the order of the columns is irrelevant.
 
         Args:
-            table: A Parsons Table or list of dicts
+            table: Table | list[dict]
                 Insert a Parsons table or list. Record must contain the record `id` column
                 and columns containing the fields to update
-            typecast: boolean
+            typecast: bool
                 Automatic data conversion from string values.
-            replace: boolean
+            replace: bool
                 Only provided fields are updated. If `True`, record is replaced in its
                 entirety by provided fields; if a field is not included its value
                 will bet set to null.
@@ -252,9 +251,9 @@ class Airtable:
             key_fields: list[str]
                 Field names that Airtable should use to match records in the input
                 with existing records.
-            typecast: boolean
+            typecast: bool
                 Automatic data conversion from string values.
-            replace: boolean
+            replace: bool
                 Only provided fields are updated. If `True`, record is replaced in its
                 entirety by provided fields; if a field is not included its value
                 will bet set to null.

@@ -124,8 +124,8 @@ class SendMail(ABC):
                 The text of the email message.
             files: list
                 The path(s) to the file(s) to be attached.
-            message_html: str
-                Optional; The html formatted text of the email message.
+            message_html: str, optional
+                The html formatted text of the email message.
 
         Returns:
             An object passable to send_message to send

@@ -65,6 +65,23 @@ def reuse_builds_old_versions():
             shutil.rmtree(item)
 
 
+def test_build():
+    """Build sphinx documentation from latest code failing if there are syntax issues."""
+    check_dependencies()
+
+    run_command(
+        [
+            "sphinx-build",
+            "--jobs=auto",
+            "--fresh-env",
+            "--nitpicky",
+            "--fail-on-warning",
+            str(SOURCEDIR),
+            str(HTMLDIR),
+        ]
+    )
+
+
 def build_docs():
     """Build multi-version sphinx documentation."""
     check_dependencies()
@@ -112,6 +129,7 @@ def clean():
 if __name__ == "__main__":
     targets = {
         "build_docs": build_docs,
+        "test_build": test_build,
         "clean": clean,
         "linkcheck": lambda: run_command(
             [SPHINXBUILD, "-b", "linkcheck", SOURCEDIR, BUILDDIR / "linkcheck"]

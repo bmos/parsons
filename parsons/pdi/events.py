@@ -28,7 +28,7 @@ class Events:
                 The max number of events to return
 
         Returns:
-            parsons.Table
+            Table
                 All requested events data.
 
         """
@@ -50,7 +50,7 @@ class Events:
                 If True returns columns for contact (and all contact info) and event)
 
         Returns:
-            parsons.Table
+            Table
                 All requested event invitation data.
 
         """
@@ -325,9 +325,9 @@ class Events:
             status: str
                 Options are: "Yes", "No", "Maybe", "Scheduled", "Invited", "Cancelled",
                 "No-Show", "Completed", and ""
-            attended: boolean
+            attended: bool
                 Indicates whether contact attended event
-            confirmed: boolean
+            confirmed: bool
                 Indicates whether invitation confirmed they will attend the event. Defaults to
                 False
             specific_occurrence_start: str
@@ -381,9 +381,9 @@ class Events:
             status: str
                 Options are: "Yes", "No", "Maybe", "Scheduled", "Invited", "Cancelled",
                 "No-Show", "Completed", and ""
-            attended: boolean
+            attended: bool
                 Indicates whether contact attended event
-            confirmed: boolean
+            confirmed: bool
                 Indicates whether invitation confirmed they will attend the event
             specific_occurrence_start: str
                 If invitation is for a specific occurrence of a recurring event, then the start
@@ -434,9 +434,9 @@ class Events:
             status: str
                 Options are: "Yes", "No", "Maybe", "Scheduled", "Invited", "Cancelled",
                 "No-Show", "Completed", and ""
-            completed: boolean
+            completed: bool
                 Indicates whether contact attended event
-            confirmed: boolean
+            confirmed: bool
                 Indicates whether invitation confirmed they will attend the event
             specific_occurrence_start: str
                 If invitation is for a specific occurrence of a recurring event, then the start
@@ -489,9 +489,9 @@ class Events:
             status: str
                 Options are: "Yes", "No", "Maybe", "Scheduled", "Invited", "Cancelled",
                 "No-Show", "Completed", and ""
-            completed: boolean
+            completed: bool
                 Indicates whether contact attended event
-            confirmed: boolean
+            confirmed: bool
                 Indicates whether invitation confirmed they will attend the event
             specific_occurrence_start: str
                 If invitation is for a specific occurrence of a recurring event, then the start
@@ -543,7 +543,7 @@ class Events:
                 Specify limit to return (max=2000)
 
         Returns:
-            parsons.Table
+            Table
                 Event activity assignment responses
 
         Documentation Reference:
@@ -572,7 +572,7 @@ class Events:
                 Specify limit to return (max=2000)
 
         Returns:
-            parsons.Table
+            Table
                 Event activity responses
 
         Documentation Reference:
@@ -595,7 +595,7 @@ class Events:
                 Specify limit to return (max=2000)
 
         Returns:
-            parsons.Table
+            Table
                 id, name, description, and timeZone records
 
         Documentation Reference:

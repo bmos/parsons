@@ -105,8 +105,9 @@ class GoogleCloudStorage:
         Args:
             bucket_name: str
                 The name of the bucket
+
         Returns:
-            boolean
+            bool
 
         """
 
@@ -155,12 +156,12 @@ class GoogleCloudStorage:
     def delete_bucket(self, bucket_name, delete_blobs=False):
         """
         Delete a bucket. Will fail if not empty unless ``delete_blobs`` argument
-        is set to ``True``.
+        is set to `True`.
 
         Args:
             bucket_name: str
                 The name of the bucket
-            delete_blobs: boolean
+            delete_blobs: bool
                 Delete blobs in the bucket, if it is not empty
 
         """
@@ -219,8 +220,9 @@ class GoogleCloudStorage:
                 The bucket name
             blob_name: str
                 The name of the blob
+
         Returns:
-            boolean
+            bool
 
         """
 
@@ -337,7 +339,7 @@ class GoogleCloudStorage:
         Load the data from a Parsons table into a blob.
 
         Args:
-            table: obj
+            table: Table
                 A :ref:`parsons-table`
             bucket_name: str
                 The name of the bucket to upload the data into.
@@ -399,7 +401,7 @@ class GoogleCloudStorage:
             expires_in: int
                 Minutes until the url expires
         Returns:
-            url:
+            str:
                 A link to download the object
 
         """

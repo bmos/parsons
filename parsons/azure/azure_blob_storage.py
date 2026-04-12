@@ -132,7 +132,7 @@ class AzureBlobStorage:
                 A dict with metadata to associated with the container.
             public_access: Optional[Union[PublicAccess, str]]
                 Settings for public access on the container, can be 'container' or 'blob' if not
-                ``None``
+                `None`
             kwargs:
                 Additional arguments to be supplied to the Azure Blob Storage API. See `Azure Blob
                 Storage SDK documentation <https://docs.microsoft.com/en-us/python/api/azure-storage-blob/azure.storage.blob.blobserviceclient?view=azure-python#create-container-name--metadata-none--public-access-none----kwargs->`__
@@ -251,7 +251,7 @@ class AzureBlobStorage:
             expiry: Optional[Union[datetime, str]]
                 The datetime when the URL should expire. Defaults to UTC.
             start: Optional[Union[datetime, str]]
-                The datetime when the URL should become valid. Defaults to UTC. If it is ``None``,
+                The datetime when the URL should become valid. Defaults to UTC. If it is `None`,
                 the URL becomes active when it is first created.
 
         Returns:
@@ -281,14 +281,14 @@ class AzureBlobStorage:
     def _get_content_settings_from_dict(self, kwargs_dict):
         """
         Removes any keys for ``ContentSettings`` from a dict and returns a tuple of the generated
-        settings or ``None`` and a dict with the settings keys removed.
+        settings or `None` and a dict with the settings keys removed.
 
         Args:
             kwargs_dict: dict
                 A dict which should be processed and may have keys for ``ContentSettings``
         Returns:
             tuple[Optional[ContentSettings], dict]
-                Any created settings or ``None`` and the dict with settings keys remvoed
+                Any created settings or `None` and the dict with settings keys remvoed
 
         """
 
@@ -405,7 +405,7 @@ class AzureBlobStorage:
         Load the data from a Parsons table into a blob.
 
         Args:
-            table: obj
+            table: Table
                 A :ref:`parsons-table`
             container_name: str
                 The container name to upload the data into

@@ -16,12 +16,11 @@ class ContactNotes:
         Get custom fields.
 
         Args:
-            van_id : str
+            van_id: str
                 VAN ID for the person to get notes for.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -52,8 +51,8 @@ class ContactNotes:
                 Set to true if the note should be restricted only to certain users within
                 the current context; set to false if the note may be viewed by any user
                 in the current context.
-            note_category_id: int
-                Optional; if set, the note category for this note.
+            note_category_id: int, optional
+                If set, the note category for this note.
             contact_type_id: str
                 Defaults to 82 if no value is set. This value results in a null contact type in EA.
             input_type_id: str

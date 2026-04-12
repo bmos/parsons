@@ -94,39 +94,39 @@ class QuickBooksTime:
             All Args are optional.
 
         Args:
-                ids: Int
+                ids: int
                     Comma separated list of one or more group ids you'd like to filter on.
 
-                active: String
+                active: str
                     'yes', 'no', or 'both'. Default is 'yes'.
 
-                manager_ids: Int
+                manager_ids: int
                     Comma separated list of one or more manager ids you'd like to filter on.
 
-                name: String
+                name: str
                     Comma separated list of one or more group names you'd like to filter on.
 
-                modified_before: String
+                modified_before: str
                     Only groups modified before this date/time will be returned,
                     in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm)
 
-                modified_since: String
+                modified_since: str
                     Only groups modified since this date/time will be returned,
                     in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm)
 
-                supplemental_data: String
+                supplemental_data: str
                     'yes' or 'no'. Default is 'yes'.
                     Indicates whether supplemental data should be returned.
 
-                limit: Int
+                limit: int
                     Represents how many results you'd like to retrieve per request (page).
                     Default is 200. Max is 200.
 
-                page: Int
+                page: int
                     Represents the page of results you'd like to retrieve.
 
         Returns:
-            Parsons Table
+            Table
 
         """
 
@@ -169,12 +169,12 @@ class QuickBooksTime:
         This function allows you to call the /jobcodes endpoint of the QuickBooksTime Time API.
 
         Args:
-            ids: Int
+            ids: int
                 Comma separated list of one or more jobcode ids you'd like to filter on.
                 Only jobcodes with an id set to one of these values will be returned.
                 If omitted, all jobcodes matching other specified filters are returned.
 
-            parent_ids: Int
+            parent_ids: int
                 Default is -1 (meaning all jobcodes will be returned regardless of parent_id).
                 Comma separated list of one or more jobcode parent_ids you'd like to filter on.
                 Only jobcodes with a parent_id set to one of these values will be returned.
@@ -189,43 +189,43 @@ class QuickBooksTime:
                 When parent_ids is -1, you'll have the jobcode records needed to trace each result
                 back to it's top level parent in the supplemental_data section of the response.
 
-            name: String
+            name: str
                 ``*`` will be interpreted as a wild card.
                 Starts matching from the beginning of the string.
 
-            type: String
+            type: str
                 Indicates jobcode type. One of 'regular', 'pto', 'paid_break', 'unpaid_break',
                 or 'all'. Default is 'regular'.
 
-            active: String
+            active: str
                 'yes', 'no', or 'both'. Default is 'yes'. If a jobcode is active,
                 it is available for selection during time entry.
 
-            customfields: Boolean
+            customfields: bool
                 true or false. If true, custom fields for this jobcode will be returned.
                 If false, the customfields object will be omitted.
 
-            modified_before: String
+            modified_before: str
                 Only jobcodes modified before this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            modified_since: String
+            modified_since: str
                 Only jobcodes modified since this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            supplemental_data: String
+            supplemental_data: str
                 'yes' or 'no'. Default is 'yes'.
                 Indicates whether supplemental data should be returned.
 
-            limit: Int
+            limit: int
                 Represents how many results you'd like to retrieve per request (page).
                 Default is 200. Max is 200.
 
-            page: Int
+            page: int
                 Represents the page of results you'd like to retrieve. Default is 1.
 
         Returns:
-            Parsons Table
+            Table
 
         """
 
@@ -272,70 +272,70 @@ class QuickBooksTime:
         """
         This function allows you to call the /timesheets endpoint of the QuickBooksTime Time API.
 
-        Params:
-            ids: Int
+        Args:
+            ids: int
                 required (unless modified_before, modified_since, or start_date are set)
                 Comma separated list of one or more timesheet ids you'd like to filter on.
                 Only timesheets with an id set to one of these values will be returned.
                 If omitted, all timesheets matching other specified filters are returned.
 
-            start_date: String
+            start_date: str
                 required (unless modified_before, modified_since, or ids is set)
                 YYYY-MM-DD formatted date.
                 Any timesheets with a date falling on or after this date will be returned.
 
-            end_date: String
+            end_date: str
                 YYYY-MM-DD formatted date.
                 Any timesheets with a date falling on or before this date will be returned.
 
-            jobcode_ids: Int
+            jobcode_ids: int
                 A comma-separated string of jobcode ids.
                 Only time recorded against these jobcodes or one of their children will be returned.
 
-            payroll_ids: Int
+            payroll_ids: int
                 A comma-separated string of payroll ids.
                 Only time recorded against users with these payroll ids will be returned.
 
-            user_ids: Int
+            user_ids: int
                 A comma-separated list of user ids.
                 Only timesheets linked to these users will be returned.
 
-            group_ids: Int
+            group_ids: int
                 A comma-separated list of group ids.
                 Only timesheets linked to users from these groups will be returned.
 
-            on_the_clock: String
+            on_the_clock: str
                 'yes', 'no', or 'both'. Default is 'no'.
                 If a timesheet is on_the_clock, it means the user is currently working
                 (has not clocked out yet).
 
-            jobcode_type: String
+            jobcode_type: str
                 'regular', 'pto', 'paid_break', 'unpaid_break', or 'all'. Default is 'all'.
                 Only timesheets linked to a jobcode of the given type are returned.
 
-            modified_before: String
+            modified_before: str
                 required (unless modified_since, ids, or start_date are set)
                 Only timesheets modified before this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            modified_since: String
+            modified_since: str
                 required (unless modified_before, ids, or start_date are set)
                 Only timesheets modified since this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            supplemental_data: String
+            supplemental_data: str
                 'yes' or 'no'. Default is 'yes'.
                 Indicates whether supplemental data should be returned.
 
-            limit: Int
+            limit: int
                 Represents how many results you'd like to retrieve per request (page).
                 Default is 200. Max is 200.
 
-            page: Int
+            page: int
                 Represents the page of results you'd like to retrieve. Default is 1.
 
         Returns:
-            Parsons Table
+            Table
 
         """
 
@@ -387,63 +387,62 @@ class QuickBooksTime:
         This function allows you to call the /users endpoint of the QuickBooksTime Time API.
 
         Args:
-            ids: Int
+            ids: int
                 Comma separated list of one or more user ids you'd like to filter on.
 
-            not_ids: Int
+            not_ids: int
                 Comma separated list of one or more user ids you'd like to filter on.
                 Specifically, the user ids you'd like to exclude.
 
-            employee_numbers: Int
+            employee_numbers: int
                 Comma separated list of one or more employee numbers you'd like to filter on.
 
             usernames: Str
                 Comma separated list of one or more usernames you'd like to filter on.
 
-            group_ids: Int
+            group_ids: int
                 Comma separated list of one or more group ids you'd like to filter on.
 
-            not_group_ids: Int
+            not_group_ids: int
                 Comma separated list of one or more group ids you'd like to filter on.
                 Specifically, the group ids you'd like to exclude.
 
-            payroll_ids: String
+            payroll_ids: str
                 A comma-separated string of payroll ids.
                 Only users with these payroll ids will be returned.
 
-            active: String
+            active: str
                 'yes', 'no', or 'both'. Default is 'yes'.
 
-            first_name: String
+            first_name: str
                 ``*`` will be interpreted as a wild card.
                 Starts matching from the beginning of the string.
 
-            last_name: String
+            last_name: str
                 ``*`` will be interpreted as a wild card.
                 Starts matching from the beginning of the string.
 
-            modified_before: String
+            modified_before: str
                 Only users modified before this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            modified_since: String
+            modified_since: str
                 Only users modified since this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            supplemental_data: String
+            supplemental_data: str
                 'yes' or 'no'. Default is 'yes'.
                 Indicates whether supplemental data should be returned.
 
-            limit: Int
+            limit: int
                 Represents how many results you'd like to retrieve per request (page).
                 Default is 200. Max is 200.
 
-            page: Int
+            page: int
                 Represents the page of results you'd like to retrieve. Default is 1.
 
         Returns:
-            Parsons Table
-            See Parsons Table for output options.
+            Table
 
         """
 
@@ -488,28 +487,28 @@ class QuickBooksTime:
         of the QuickBooksTime Time API.
 
         Args:
-            ids: Int
+            ids: int
                 Comma separated list of one or more schedule calendar ids you'd like to filter on.
                 Only schedule calendars with an id set to one of these values will be returned.
 
-            modified_before: String
+            modified_before: str
                 Only schedule calendars modified before this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            modified_since: String
+            modified_since: str
                 required (unless ids, modified_before, or start are set)
                 Only schedule calendars modified since this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            supplemental_data: String
+            supplemental_data: str
                 'yes' or 'no'. Default is 'yes'.
                 Indicates whether supplemental data should be returned.
 
-            limit: Int
+            limit: int
                 Represents how many results you'd like to retrieve per request (page).
                 Default is 200. Max is 200.
 
-            page: Int
+            page: int
                 Represents the page of results you'd like to retrieve. Default is 1.
 
         Returns:
@@ -563,48 +562,48 @@ class QuickBooksTime:
         of the QuickBooksTime Time API.
 
         Args:
-            ids: Int
+            ids: int
                 required (unless modified_before, modified_since, or start are set)
                 Comma separated list of one or more schedule event ids you'd like to filter on.
                 Only schedule events with an id set to one of these values will be returned.
 
-            users_ids: Int
+            users_ids: int
                 Comma-separated list of one or more user ids to retrieve schedule events for.
 
-            schedule_calendar_ids: Int
+            schedule_calendar_ids: int
                 Required.
                 Comma separated list of one or more schedule calendar ids you'd like to filter on.
                 Only schedule events with a schedule calendar id
                 set to one of these values will be returned.
 
-            jobcode_ids: Int
+            jobcode_ids: int
                 A comma-separated string of jobcode ids.
                 Only schedule events with these jobcodes will be returned.
 
-            start: String
+            start: str
                 required (unless ids, modified_before, or modified_since are set)
                 Only schedule events starting on or after this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            end: String
+            end: str
                 Only schedule events ending on or before this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            active: String
+            active: str
                 'yes', 'no' or 'both'. Default is 'both'.
                 Only schedule events whose active state match the requested filter will be returned.
 
-            active_users: Int
+            active_users: int
                 '0', '-1' or '1' . Default is '1'.
                 Only schedule events whose users are active will be returned by default.
                 0 will return events for inactive users.
                 -1 will return events for active and inactive users.
 
-            draft: String
+            draft: str
                 'yes', 'no' or 'both'. Default is 'no'.
                 Only schedule events whose draft state match the requested filter will be returned.
 
-            team_events: String
+            team_events: str
                 'base' or 'instance'. Default is 'instance'.
                 If 'instance' is specified,
                 events that are assigned to multiple users will be returned
@@ -612,30 +611,29 @@ class QuickBooksTime:
                 events that are assigned to multiple users will be returned as one combined event
                 for all assignees.
 
-            modified_before: String
+            modified_before: str
                 required (unless ids, modified_since, or start are set)
                 Only schedule events modified before this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            modified_since: String
+            modified_since: str
                 required (unless ids, modified_before, or start are set)
                 Only schedule events modified since this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
 
-            supplemental_data: String
+            supplemental_data: str
                 'yes' or 'no'. Default is 'yes'.
                 Indicates whether supplemental data should be returned.
 
-            limit: Int
+            limit: int
                 Represents how many results you'd like to retrieve per request (page).
                 Default is 200. Max is 200.
 
-            page: Int
+            page: int
                 Represents the page of results you'd like to retrieve. Default is 1.
 
         Returns:
-            Parsons Table
-            See Parsons Table for output options.
+            Table
 
         """
 
@@ -686,36 +684,35 @@ class QuickBooksTime:
         This function allows you to call the /geolocations endpoint of the QuickBooksTime Time API.
 
         Args:
-            ids: Int
+            ids: int
                 Comma separated list of one or more geolocation ids you'd like to filter on.
                 Only geolocations with an id set to one of these values will be returned.
                 Required (unless modified_before, modified_since is set)
-            modified_before: String
+            modified_before: str
                 Only geolocations modified before this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
                 Required (unless ids or modified_since is set)
-            modified_since: String
+            modified_since: str
                 Only geolocations modified since this date/time will be returned,
                 in ISO 8601 format (YYYY-MM-DDThh:mm:ss±hh:mm).
                 Required (unless ids or modified_before is set)
-            user_ids: Int
+            user_ids: int
                 Comma separated list of one or more user ids you'd like to filter on.
                 Only geolocations with a user id set to one of these values will be returned.
-            group_ids: Int
+            group_ids: int
                 Comma separated list of one or more group ids you'd like to filter on.
                 Only geolocations with a group id set to one of these values will be returned.
-            suplemental_data: String
+            suplemental_data: str
                 'yes' or 'no'. Default is 'yes'.
                 Indicates whether supplemental data should be returned.
-            limit: Int
+            limit: int
                 Represents how many results you'd like to retrieve per request (page).
                 Default is 200. Max is 200.
-            page: Int
+            page: int
                 Represents the page of results you'd like to retrieve. Default is 1.
 
         Returns:
-            Parsons Table
-            See Parsons Table for output options.
+            Table
 
         """
 

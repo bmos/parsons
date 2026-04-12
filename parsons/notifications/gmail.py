@@ -18,8 +18,8 @@ class Gmail(SendMail):
             The path to the credentials.json file.
         token_path: str
             The path to the token.json file.
-        user_id: str
-            Optional; Sender email address. Defaults to the special value
+        user_id: str, optional
+            Sender email address. Defaults to the special value
             "me" which is used to indicate the authenticated user.
 
     """

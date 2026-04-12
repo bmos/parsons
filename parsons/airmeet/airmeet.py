@@ -12,14 +12,14 @@ class Airmeet:
     Instantiate class.
 
     Args:
-            airmeet_uri: string
+            airmeet_uri: str
                 The URI of the Airmeet API endpoint. Not required. The default
                 is https://api-gateway.airmeet.com/prod/. You can set an
                 ``AIRMEET_URI`` env variable or use this parameter when
                 instantiating the class.
-            airmeet_access_key: string
+            airmeet_access_key: str
                 The Airmeet API access key.
-            airmeet_secret_key: string
+            airmeet_secret_key: str
                 The Airmeet API secret key.
 
         For instructions on how to generate an access key and secret key set,
@@ -34,11 +34,11 @@ class Airmeet:
         with the access token.
 
         Args:
-            airmeet_uri: string
+            airmeet_uri: str
                 The Airmeet API endpoint.
-            airmeet_access_key: string
+            airmeet_access_key: str
                 The Airmeet API access key.
-            airmeet_secret_key: string
+            airmeet_secret_key: str
                 The Airmeet API secret key.
 
         """
@@ -107,7 +107,7 @@ class Airmeet:
         Archived (Deleted).
 
         Returns:
-            Parsons.Table
+            Table
                 List of Airmeets
 
         """
@@ -125,16 +125,16 @@ class Airmeet:
         cursors for paging, so we can't use _get_all_pages() here.
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
-            sorting_key: string
+            sorting_key: str
                 The key to sort the participants by. Can be 'name', 'email', or
                 'registrationDate' (the default).
-            sorting_direction: string
+            sorting_direction: str
                 Can be either 'ASC' or 'DESC' (the default).
 
         Returns:
-            Parsons.Table
+            Table
                 List of participants for the Airmeet event
 
         """
@@ -177,11 +177,11 @@ class Airmeet:
         Get the list of sessions for an Airmeet.
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
 
         Returns:
-            Parsons.Table
+            Table
                 List of sessions for this Airmeet event
 
         """
@@ -194,14 +194,15 @@ class Airmeet:
         sessions, session hosts/cohosts, and various other info.
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
             lists_to_tables: bool
                 If True, will convert any dictionary values that are lists
                 to Tables.
 
         Returns:
-            Dict containing the Airmeet data
+            dict
+                Airmeet data
 
         """
         response = self.client.get_request(url=f"airmeet/{airmeet_id}/info")
@@ -216,11 +217,11 @@ class Airmeet:
         Get the list of custom registration fields for an Airmeet.
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
 
         Returns:
-            Parsons.Table
+            Table
                 List of custom registration fields for this Airmeet event
 
         """
@@ -239,11 +240,11 @@ class Airmeet:
         please try again after 5 minutes."
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
 
         Returns:
-            Parsons.Table
+            Table
                 List of attendees for this Airmeet event
 
         """
@@ -261,11 +262,11 @@ class Airmeet:
         please try again after 5 minutes."
 
         Args:
-            session_id: string
+            session_id: str
                 The id of the session.
 
         Returns:
-            Parsons.Table
+            Table
                 List of attendees for this session
 
         """
@@ -279,11 +280,11 @@ class Airmeet:
         certain Airmeet plans.`
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
 
         Returns:
-            Parsons.Table
+            Table
                 List of booths for this Airmeet
 
         """
@@ -305,13 +306,13 @@ class Airmeet:
         certain Airmeet plans.`
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
-            booth_id: string
+            booth_id: str
                 The id of the booth.
 
         Returns:
-            Parsons.Table
+            Table
                 List of attendees for this booth
 
         """
@@ -327,11 +328,11 @@ class Airmeet:
         Maximum number of results per page = 50.
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
 
         Returns:
-            Parsons.Table
+            Table
                 List of users. For each user, the value for the "polls"
                 key is a list of poll questions and answers for that user.
 
@@ -343,11 +344,11 @@ class Airmeet:
         Get a list of the questions asked in an Airmeet.
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
 
         Returns:
-            Parsons.Table
+            Table
                 List of users. For each user, the value for the "questions"
                 key is a list of that user's questions.
 
@@ -363,11 +364,11 @@ class Airmeet:
         certain Airmeet plans.`
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
 
         Returns:
-            Parsons.Table
+            Table
                 List of event tracks
 
         """
@@ -386,11 +387,11 @@ class Airmeet:
         please try again after 5 minutes."
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
 
         Returns:
-            Parsons.Table
+            Table
                 List of UTM parameters captured during registration
 
         """
@@ -408,14 +409,14 @@ class Airmeet:
         need to be updated if it is.
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
-            session_id: string
-                (optional) If provided, limits results to only the recording
+            session_id: str, optional
+                If provided, limits results to only the recording
                 of the specified session.
 
         Returns:
-            Parsons.Table
+            Table
                 List of session recordings
 
         """
@@ -438,14 +439,14 @@ class Airmeet:
         please try again after 5 minutes."
 
         Args:
-            airmeet_id: string
+            airmeet_id: str
                 The id of the Airmeet.
-            session_id: string
-                (optional) If provided, limits results to only attendees of
+            session_id: str, optional
+                If provided, limits results to only attendees of
                 the specified session.
 
         Returns:
-            Parsons.Table
+            Table
                 List of event replay attendees
 
         """

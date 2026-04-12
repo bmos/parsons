@@ -336,9 +336,9 @@ class SFTP:
                 The remote path of the file to download
             connection: obj
                 An SFTP connection object
+
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 

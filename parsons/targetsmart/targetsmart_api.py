@@ -67,9 +67,9 @@ class Person:
             state: str
                 Two character state code. Required if ``search_id_type`` of ``smartvan``,
                 ``votebuilder`` or ``voter``.
-        `Returns`
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+
+        Returns:
+            Table
 
         """
 
@@ -158,12 +158,12 @@ class Person:
             composite_score_max: int
                 An integer in range [1 - 100]. Filter out results with composite score
                 greater than this value.
-            last_name_exact: boolean
+            last_name_exact: bool
                 By default, the full last name is used for finding matches if the length of the
                 last name is not longer than 10 characters. As an example, “anders” is less likely
                 to match to “anderson” with this enabled. Disable this option if you are using
                 either ``last_name_is_prefix`` or ``last_name_prefix_length``.
-            last_name_is_prefix: boolean
+            last_name_is_prefix: bool
                 By default, the full last name is used for finding matches. Enable this parameter
                 if your search last name is truncated. This can be common for some client
                 applications that for various reasons do not have full last names. Use this
@@ -173,9 +173,9 @@ class Person:
                 By default, up to the first 10 characters of the search last name are used for
                 finding relative matches. This value must be between 3 and 10. This parameter is
                 ignored if last_name_exact is enabled.
-        `Returns`
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+
+        Returns:
+            Table
 
         """
 
@@ -226,7 +226,7 @@ class Person:
                 up to 500 phone numbers.
 
         Returns:
-            See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -378,8 +378,7 @@ class Service:
             longitude: float or str
                 Valid longitude floating point
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -444,28 +443,28 @@ class Voter:
                 Required; One or more alpha characters. Trailing wildcard allowed
             state: str
                 Required; Two character state code (e.g. ``NY``)
-            street_number: str
-                Optional; One or more alpha characters. Trailing wildcard allowed
-            street_name: str
-                Optional; One or more alpha characters. Trailing wildcard allowed
-            city: str
-                Optional; The person's home city
-            zip_code: str
-                Optional; Numeric characters. Trailing wildcard allowed
-            age: int
-                Optional; One or more integers. Trailing wildcard allowed
-            dob: str
-                Optional; Numeric characters in YYYYMMDD format. Trailing wildcard allowed
-            phone: str
-                Optional; Integer followed by 0 or more * or integers
-            email: str
-                Optional; Alphanumeric character followed by 0 or more * or legal characters
+            street_number: str, optional
+                One or more alpha characters. Trailing wildcard allowed
+            street_name: str, optional
+                One or more alpha characters. Trailing wildcard allowed
+            city: str, optional
+                The person's home city
+            zip_code: str, optional
+                Numeric characters. Trailing wildcard allowed
+            age: int, optional
+                One or more integers. Trailing wildcard allowed
+            dob: str, optional
+                Numeric characters in YYYYMMDD format. Trailing wildcard allowed
+            phone: str, optional
+                Integer followed by 0 or more * or integers
+            email: str, optional
+                Alphanumeric character followed by 0 or more * or legal characters
                 (alphanumeric, @, -, .)
-            unparsed_full_address: str
-                Optional; One or more alphanumeric characters. No wildcards.
-        `Returns`
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            unparsed_full_address: str, optional
+                One or more alphanumeric characters. No wildcards.
+
+        Returns:
+            Table
 
         """
 

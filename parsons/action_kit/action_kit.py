@@ -120,7 +120,8 @@ class ActionKit:
         :meth:`ActionKit.create_user` method.
 
         Returns:
-            List of user fields
+            list[str]
+                User fields.
 
         """
 
@@ -141,7 +142,7 @@ class ActionKit:
                 manual/api/rest/actionprocessing.html>`__.
 
         Returns:
-            User json object
+            User json object.
 
         """
 
@@ -162,7 +163,7 @@ class ActionKit:
             phone (str): The phone number
 
         Returns:
-            Phone json object
+            Phone json object.
 
         """
         return self._base_post(
@@ -199,7 +200,8 @@ class ActionKit:
                 manual/api/rest/actionprocessing.html>`__.
 
         Returns:
-            ``HTTP response from the patch request``
+            Response
+                HTTP response from patch request.
 
         """
 
@@ -220,7 +222,8 @@ class ActionKit:
                 at the /rest/v1/phone/schema/ path on any ActionKit instance.
 
         Returns:
-            ``HTTP response from the patch request``
+            Response
+                HTTP response from patch request.
 
         """
 
@@ -263,7 +266,7 @@ class ActionKit:
                     ak.get_events(name__contains="FirstName")
 
         Returns:
-            Parsons.Table
+            Table
                 The events data.
 
         """
@@ -294,9 +297,9 @@ class ActionKit:
         Args:
             event_id: int
                 The id for the event.
-            name: string
+            name: str
                 The name of the event field.
-            value: string
+            value: str
                 The value of the event field.
 
         Returns:
@@ -318,9 +321,9 @@ class ActionKit:
         Args:
             eventfield_id: int
                 The id of the event field to update.
-            name: string
+            name: str
                 The name of the event field.
-            value: string
+            value: str
                 The value of the event field.
 
         """
@@ -346,7 +349,7 @@ class ActionKit:
                 Blackholed email of the record to get.
 
         Returns:
-            Parsons.Table
+            Table
                 The blackholed email data.
 
         """
@@ -360,7 +363,7 @@ class ActionKit:
         mailings_tools.html#blackhole>`__.
 
         Args:
-            user_id: str
+            email: str
                 Email to blackhole
 
         Returns:
@@ -430,13 +433,14 @@ class ActionKit:
             exception_message="Campaign not found",
         )
 
-    def get_campaign_fields(self):
+    def get_campaign_fields(self) -> list[str]:
         """
-        Get list of valid campaign fields that can be passed with the
-        :meth:`ActionKit.create_campaign` and :meth:`ActionKit.update_campaign` methods.
+        Get list of valid campaign fields that can be passed with
+        the :meth:`~parsons.action_kit.action_kit.ActionKit.create_campaign` method.
 
         Returns:
-            List of campaign fields
+            list[str]
+                Campaign fields
 
         """
 
@@ -485,11 +489,11 @@ class ActionKit:
                 The id of the event campaign.
             limit: int
                 The maximum number of objects to return.
-            order_by: string
+            order_by: str
                 Event attribute to order the results by. Defaults to id, which will normally
                 be equivalent to ordering by created_at. See `ActionKit's docs on ordering
                 <https://roboticdogs.actionkit.com/docs//manual/api/rest/overview.html#ordering>`__.
-            ascdesc: string
+            ascdesc: str
                 If "asc" (the default), returns events ordered by the attribute specified by
                 the order_by parameter. If "desc", returns events in reverse order.
             filters: dictionary
@@ -517,7 +521,7 @@ class ActionKit:
                 <https://roboticdogs.actionkit.com/docs/manual/api/rest/examples/eventsearch.html>`__.
 
         Returns:
-            Parsons.Table
+            Table
                 The list of events.
 
         """
@@ -562,7 +566,8 @@ class ActionKit:
         :meth:`ActionKit.create_event_create_page`.
 
         Returns:
-            List of event create page fields
+            list[str]
+                Event create page fields.
 
         """
 
@@ -624,7 +629,8 @@ class ActionKit:
         :meth:`ActionKit.create_event_create_form` method.
 
         Returns:
-            List of event create form fields
+            list[str]
+                Event create form fields.
 
         """
 
@@ -683,7 +689,8 @@ class ActionKit:
         :meth:`ActionKit.create_event_signup_page` method.
 
         Returns:
-            List of event signup page fields
+            list[str]
+                Event signup page fields.
 
         """
 
@@ -745,7 +752,8 @@ class ActionKit:
         :meth:`ActionKit.create_event_signup_form` method.
 
         Returns:
-            List of event signup form fields
+            list[str]
+                Event signup form fields.
 
         """
 
@@ -855,7 +863,8 @@ class ActionKit:
                 manual/api/rest/actionprocessing.html>`__.
 
         Returns:
-            ``HTTP response from the patch request``
+            Response
+                HTTP response from patch request.
 
         """
 
@@ -903,7 +912,7 @@ class ActionKit:
         """Get multiple objects of a given type.
 
         Args:
-            object_type: string
+            object_type: str
                 The type of object to search for.
             limit: int
                 The number of objects to return. If omitted, all objects are returned.
@@ -921,7 +930,7 @@ class ActionKit:
                     ak.paginated_get(name__contains="FirstName")
 
         Returns:
-            Parsons.Table
+            Table
                 The objects data.
 
         """
@@ -955,18 +964,18 @@ class ActionKit:
         """Get multiple objects of a given type, stopping based on the value of a field.
 
         Args:
-            object_type: string
+            object_type: str
                 The type of object to search for.
             limit: int
                 The maximum number of objects to return. Even if the threshold
                 value is not reached, if the limit is set, then at most this many
                 objects will be returned.
-            threshold_field: string
+            threshold_field: str
                 The field used to determine when to stop.
                 Must be one of the options for ordering by.
-            threshold_value: string
+            threshold_value: str
                 The value of the field to stop at.
-            ascdesc: string
+            ascdesc: str
                 If "asc" (the default), return all objects below the threshold value.
                 If "desc", return all objects above the threshold value.
             `**kwargs`:
@@ -979,7 +988,7 @@ class ActionKit:
                     ak.paginated_get(name__contains="FirstName")
 
         Returns:
-            Parsons.Table
+            Table
                 The objects data.
 
         """
@@ -1062,7 +1071,8 @@ class ActionKit:
                 at the /rest/v1/orderuserdetail/schema/ path on any ActionKit instance.
 
         Returns:
-            ``HTTP response from the patch request``
+            Response
+                HTTP response from patch request.
 
         """
 
@@ -1146,7 +1156,7 @@ class ActionKit:
                     ak.get_orders(import_id="my-import-123")
 
         Returns:
-            Parsons.Table
+            Table
                 The orders data.
 
         """
@@ -1165,7 +1175,8 @@ class ActionKit:
                 manual/api/rest/actionprocessing.html>`__.
 
         Returns:
-            ``HTTP response``
+            Response
+                HTTP response from patch request.
 
         """
 
@@ -1201,7 +1212,8 @@ class ActionKit:
         :meth:`ActionKit.create_page_followup` method.
 
         Returns:
-            List of page followup fields
+            list[str]
+                Page followup fields
 
         """
 
@@ -1334,7 +1346,7 @@ class ActionKit:
                     ak.get_transactions(order="order-1")
 
         Returns:
-            Parsons.Table
+            Table
                 The transactions data.
 
         """
@@ -1386,7 +1398,8 @@ class ActionKit:
                 at the /rest/v1/importaction/schema/ path on any ActionKit instance.
 
         Returns:
-            ``HTTP response from the patch request``
+            Response
+                HTTP response from patch request.
 
         """
 
@@ -1485,7 +1498,7 @@ class ActionKit:
         Args:
             import_page: str
                 The page to post the action. The page short name.
-            table: parsons.Table
+            table: Table
                 A Table of user data to bulk upload
                 A user_id or email column is required.
             autocreate_user_fields: bool
@@ -1570,7 +1583,7 @@ class ActionKit:
                 /rest/v1/uploaderror?upload=123
 
         Returns:
-            [dict]
+            dict[str, str | int]
                 message: str -- error message
                 upload: str -- upload progress API path e.g. "/rest/v1/upload/123456/"
                 id: int -- upload error record id (different than upload id)

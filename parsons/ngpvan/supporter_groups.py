@@ -16,8 +16,7 @@ class SupporterGroups:
         Get supporter groups.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -49,11 +48,12 @@ class SupporterGroups:
         Args:
             name: str
                 The name of the supporter group. 100 character limit
-            description: str
-                Optional; A description of the supporter group. 200 character limit.
-        `Returns`
-            Parsons Table with the newly createed supporter group id, name
-            and description
+            description: str, optional
+                A description of the supporter group. 200 character limit.
+
+        Returns:
+            Table
+                The newly createed supporter group id, name and description
 
         """
 

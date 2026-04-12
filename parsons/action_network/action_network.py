@@ -283,9 +283,6 @@ class ActionNetwork:
     # Custom Fields
     def get_custom_fields(self):
         """
-        Args:
-            None
-
         Returns:
             A JSON with the custom_fields associated with your API key.
 
@@ -669,7 +666,8 @@ class ActionNetwork:
                     }
 
         Returns:
-            Dict of Action Network Event data.
+            dict
+                Action Network Event data.
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/events>`__
@@ -1004,7 +1002,8 @@ class ActionNetwork:
                 Whether to unpack the statistics dictionary into the table. Default to False.
 
         Returns:
-            A Parsons Table with all the messages related entries
+            Table
+                All the messages-related entries
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/messages>`__
@@ -1138,9 +1137,6 @@ class ActionNetwork:
     # Metadata
     def get_metadata(self):
         """
-        Args:
-           None
-
         Returns:
             A JSON with the metadata entry
 

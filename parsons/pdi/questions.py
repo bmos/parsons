@@ -16,7 +16,7 @@ class Questions:
                 Specify limit to return.
 
         Returns:
-            parsons.Table
+            Table
 
         """
         return self._request(self.url_questions, limit=limit)
@@ -30,7 +30,7 @@ class Questions:
                 The Question id
 
         Returns:
-            parsons.Table
+            Table
 
         """
         return self._request(f"{self.url_questions}/{id}")

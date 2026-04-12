@@ -69,7 +69,7 @@ class ToFrom:
                 <https://docs.python.org/2/library/csv.html#csv.writer/>`_
             errors: str
                 Raise an Error if encountered
-            index_header: boolean
+            index_header: bool
                 Prepend index to column names; Defaults to False.
             caption: str
                 A caption to include with the html table.
@@ -263,7 +263,7 @@ class ToFrom:
                 <https://docs.python.org/2/library/csv.html#csv.writer/>`_
             errors: str
                 Raise an Error if encountered
-            write_header: boolean
+            write_header: bool
                 Include header in output
             csv_name: str
                 If ``zip`` compression (either specified or inferred), the name of csv file
@@ -358,14 +358,14 @@ class ToFrom:
                 returned, and that file will be removed automatically when the script is done
                 running.
             csv_name: str
-                The name of the csv file to be stored in the archive. If ``None`` will use
+                The name of the csv file to be stored in the archive. If `None` will use
                 the archive name.
             encoding: str
                 The CSV encoding type for `csv.writer()
                 <https://docs.python.org/2/library/csv.html#csv.writer/>`_
             errors: str
                 Raise an Error if encountered
-            write_header: boolean
+            write_header: bool
                 Include header in output
             if_exists: str
                 If archive already exists, one of 'replace' or 'append'
@@ -489,7 +489,7 @@ class ToFrom:
                 <https://docs.python.org/2/library/csv.html#csv.writer/>`_
             errors: str
                 Raise an Error if encountered
-            write_header: boolean
+            write_header: bool
                 Include header in output
             rsa_private_key_file str
                 Absolute path to a private RSA key used
@@ -551,22 +551,22 @@ class ToFrom:
                 <https://docs.python.org/2/library/csv.html#csv.writer/>`_
             errors: str
                 Raise an Error if encountered
-            write_header: boolean
+            write_header: bool
                 Include header in output
-            public_url: boolean
+            public_url: bool
                 Create a public link to the file
-            public_url_expire: 3600
-                The time, in seconds, until the url expires if ``public_url`` set to ``True``.
+            public_url_expires: 3600
+                The time, in seconds, until the url expires if ``public_url`` set to `True`.
             acl: str
                 The S3 permissions on the file
-            use_env_token: boolean
+            use_env_token: bool
                 Controls use of the ``AWS_SESSION_TOKEN`` environment variable for S3. Defaults
-                to ``True``. Set to ``False`` in order to ignore the ``AWS_SESSION_TOKEN`` env
+                to `True`. Set to `False` in order to ignore the ``AWS_SESSION_TOKEN`` env
                 variable even if the ``aws_session_token`` argument was not passed in.
             `**csvargs`: kwargs
                 ``csv_writer`` optional arguments
         Returns:
-            Public url if specified. If not ``None``.
+            Public url if specified. If not `None`.
 
         """
 
@@ -637,16 +637,16 @@ class ToFrom:
                 <https://docs.python.org/2/library/csv.html#csv.writer/>`_
             errors: str
                 Raise an Error if encountered
-            write_header: boolean
+            write_header: bool
                 Include header in output
-            public_url: boolean
+            public_url: bool
                 Create a public link to the file
             public_url_expire: 60
-                The time, in minutes, until the url expires if ``public_url`` set to ``True``.
+                The time, in minutes, until the url expires if ``public_url`` set to `True`.
             `**csvargs`: kwargs
                 ``csv_writer`` optional arguments
         Returns:
-            Public url if specified. If not ``None``.
+            Public url if specified. If not `None`.
 
         """
 
@@ -704,7 +704,7 @@ class ToFrom:
             port: int
                 Required if env variable ``REDSHIFT_PORT`` not populated. Port 5439 is typical.
             `**copy_args`: kwargs
-                See :func:`~parsons.databases.Redshift.copy`` for options.
+                See :meth:`~parsons.databases.redshift.redshift.Redshift.copy`` for options.
 
         """
 
@@ -740,7 +740,7 @@ class ToFrom:
             port: int
                 Required if env variable ``PGPORT`` not populated.
             `**copy_args`: kwargs
-                See :func:`~parsons.databases.Postgres.copy`` for options.
+        See :meth:`~parsons.databases.postgres.Postgres.copy`` for options.
 
         """
 
@@ -801,7 +801,7 @@ class ToFrom:
         arguments can passed to `civis.io.dataframe_to_civis()
         <https://civis-python.readthedocs.io/en/v1.9.0/generated/civis.io.dataframe_to_civis.html#civis.io.dataframe_to_civis>`_
 
-        `Args`
+        Args:
             table: str
                 The schema and table you want to upload to. E.g.,
                 'scratch.table'. Schemas or tablenames with periods must be
@@ -827,8 +827,9 @@ class ToFrom:
                 The column to use as the sortkey for the table.
             sortkey2: str
                 The second column in a compound sortkey for the table.
-            wait: boolean
+            wait: bool
                 Wait for write job to complete before exiting method.
+
         """
 
         from parsons.civis.civisclient import CivisClient
@@ -856,15 +857,14 @@ class ToFrom:
             local_path: str
                 The path to the Avro file.
             limit: int, optional
-                The maximum number of rows to extract. Default is ``None`` (all rows).
+                The maximum number of rows to extract. Default is `None` (all rows).
             skips: int, optional
                 The number of rows to skip from the start. Default is 0.
             `**avro_args`: kwargs
                 Additional arguments passed to `fastavro.reader`.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -876,14 +876,14 @@ class ToFrom:
         Create a ``parsons table`` object from a CSV file
 
         Args:
-            local_path: obj
+            local_path: str
                 A csv formatted local path, url or ftp. If this is a
                 file path that ends in ".gz", the file will be decompressed first.
             `**csvargs`: kwargs
                 ``csv_reader`` optional arguments
+
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -906,8 +906,7 @@ class ToFrom:
             `**csvargs`: kwargs
                 ``csv_reader`` optional arguments
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -925,9 +924,9 @@ class ToFrom:
                 A list of lists organized as columns
             header: list
                 List of column names. If not specified, will use dummy column names
+
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -950,8 +949,7 @@ class ToFrom:
                 JSON file.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -987,8 +985,7 @@ class ToFrom:
                 Required if env variable ``REDSHIFT_PORT`` not populated. Port 5439 is typical.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -1040,7 +1037,8 @@ class ToFrom:
             key: str
                 The S3 key
             from_manifest: bool
-                If True, treats `key` as a manifest file and loads all urls into a `parsons.Table`.
+                If True, treats `key` as a manifest file and loads all
+                urls into a :class:`~parsons.etl.table.Table`.
                 Defaults to False.
             aws_access_key_id: str
                 Required if not included as environmental variable.
@@ -1048,8 +1046,9 @@ class ToFrom:
                 Required if not included as environmental variable.
             `**csvargs`: kwargs
                 ``csv_reader`` optional arguments
+
         Returns:
-            `parsons.Table` object
+            Table
 
         """
 
@@ -1096,8 +1095,7 @@ class ToFrom:
                 then will use the default inferred environment.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
         # TODO: Should users be able to pass in kwargs here? For parameters?
@@ -1116,7 +1114,7 @@ class ToFrom:
         Args:
             dataframe: dataframe
                 A valid Pandas dataframe objectt
-            include_index: boolean
+            include_index: bool
                 Include index column
 
         """

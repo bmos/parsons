@@ -95,8 +95,9 @@ class ActBlue:
                 End of date range to withdraw contribution data (exclusive). Ex: '2020-02-01'
 
         Returns:
-            Response of POST request; a successful response includes 'id', a unique identifier for
-            the CSV being generated.
+            Response
+                A successful response includes 'id', a unique identifier for
+                the CSV being generated.
 
         """
 
@@ -118,8 +119,9 @@ class ActBlue:
                 Unique identifier of the CSV you requested.
 
         Returns:
-            While CSV is being generated, 'None' is returned. When CSV is ready, the method returns
-            the download_url.
+            str | None
+                While CSV is being generated, `None` is returned. When CSV is ready, the method returns
+                the download_url.
 
         """
         response = self.client.get_request(url=f"csvs/{csv_id}")
@@ -138,9 +140,10 @@ class ActBlue:
                 Unique identifier of the CSV you requested.
 
         Returns:
-            Download URL from which you can download the generated CSV, valid for 10 minutes after
-            retrieval. Null until CSV has finished generating. Keep this URL secure because until
-            it expires, it could be used by anyone to download the CSV.
+            str | None
+                Download URL from which you can download the generated CSV, valid for 10 minutes after
+                retrieval. `None` until CSV has finished generating. Keep this URL secure because until
+                it expires, it could be used by anyone to download the CSV.
 
         """
 
@@ -193,8 +196,9 @@ class ActBlue:
                 Any additional arguments will be passed to Table.from_csv as keyword arguments.
 
         Returns:
-            parsons.Table
+            Table
                 Contents of the generated contribution CSV.
+
                 List of columns:
 
                 - Receipt ID

@@ -21,8 +21,7 @@ class Scores:
         Get all scores.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -59,8 +58,7 @@ class Scores:
                 format.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -139,36 +137,36 @@ class Scores:
         should be configured in a single call. [1]_
 
         Args:
-            tbl: object
-                A parsons.Table object. The table must contain the scores and first column in the
+            tbl: Table
+                Must contain the scores and the first column in the
                 table must contain the primary key (e.g. vanid).
             config: list
                 The score configuration. A list of dictionaries in which you specify the following
 
                 .. list-table::
-                    :widths: 20 80
-                    :header-rows: 0
+                   :widths: 20 80
+                   :header-rows: 0
 
-                    * - ``score_column``
-                      - The name of the column where the score is housed.
-                    * - ``score_id``
-                      - The score slot id.
+                   * - score_column
+                     - The name of the column where the score is housed.
+                   * - score_id
+                     - The score slot id.
 
-        Example:
+                Example:
 
-                .. code-block:: python
+                    .. code-block:: python
 
-                    [
-                        {'score1_id' : int, score1_column': str},
-                        {'score2_id' : int, score2_column': str}
-                    ]
+                        [
+                            {'score1_id' : int, score1_column': str},
+                            {'score2_id' : int, score2_column': str},
+                        ]
 
             url_type: str
                 The cloud file storage to use to post the file (``S3`` or ``GCS``).
                 See :ref:`Cloud Storage <cloud-storage>` for more details.
             email: str
                 An email address to send job load status updates.
-            auto_approve: boolean
+            auto_approve: bool
                 If the scores are within the expected tolerance of deviation from the
                 average values provided, then score will be automatically approved.
             approve_tolderance: float
@@ -258,7 +256,7 @@ class FileLoadingJobs:
     ):
         """
         .. warning::
-           .. deprecated:: 0.7 Use :func:`parsons.VAN.upload_scores` instead.
+           .. deprecated:: 0.7 Use :meth:`parsons.VAN.upload_scores` instead.
 
         Loads a file. Only used for loading scores at this time. Scores must be
         compressed using `zip`.
@@ -353,7 +351,7 @@ class FileLoadingJobs:
     ):
         """
         .. warning::
-           .. deprecated:: 0.7 Use :func:`parsons.VAN.upload_scores` instead.
+           .. deprecated:: 0.7 Use :meth:`parsons.VAN.upload_scores` instead.
 
         An iteration of the :meth:`file_load` method that allows you to load multiple scores
         at the same time.

@@ -16,6 +16,7 @@ To execute the script, run:
 """
 
 import click
+import pandas as pd
 from fpdf import FPDF
 
 from parsons import VAN, GoogleSheets, Table
@@ -23,7 +24,7 @@ from parsons import VAN, GoogleSheets, Table
 # ~~~~~~~~~~~~~~ Get Printed and Saved List Info From VAN ~~~~~~~~~~~~~~~~#
 
 
-def get_info_from_van(van_folder):
+def get_info_from_van(van_folder: str) -> pd.DataFrame:
     """
     Creates dataframe of relavent turf information in given folder
 
@@ -32,7 +33,7 @@ def get_info_from_van(van_folder):
             The name of the folder in NGP VAN where printed lists are stored
 
     Returns:
-        dataframe
+        pd.DataFrame
 
     """
     # Instantiate class
@@ -72,16 +73,16 @@ def get_info_from_van(van_folder):
 # ~~~~~~~~~~~~~~ Send master checklist to Google Sheets ~~~~~~~~~~~~~~~~#
 
 
-def to_gsheet(saved_printed_merged, gsheet_uri):
+def to_gsheet(saved_printed_merged: pd.DataFrame, gsheet_uri: str):
     """
     Loads a dataframe into a gsheet
+
     Args:
-        saved_printed_merged: df
+        saved_printed_merged: pd.DataFrame
             Info extracted from VAN from get_info_from_van function
         gsheet_uri: str
             URI for gsheet where dataframe info will be loaded
-    Returns:
-        None
+
     """
     # Instantiate GoogleSheet class
     sheets = GoogleSheets()
@@ -93,14 +94,14 @@ def to_gsheet(saved_printed_merged, gsheet_uri):
 # ~~~~~~~~~~~~~~ Generate pdf printouts ~~~~~~~~~~~~~~~~#
 
 
-def to_pdf(saved_printed_merged):
+def to_pdf(saved_printed_merged: pd.DataFrame) -> None:
     """
     Turns inputted dataframe into printable pdfs
+
     Args:
-        saved_printed_merged: df
+        saved_printed_merged: pd.DataFrame
             Info extracted from VAN from get_info_from_van function
-    Returns:
-        None
+
     """
     pdf = FPDF()
     pdf.set_font("Arial", size=14)
@@ -126,16 +127,16 @@ def to_pdf(saved_printed_merged):
 @click.command()
 @click.option("--van_folder")
 @click.option("--gsheet_uri")
-def main(van_folder, gsheet_uri):
+def main(van_folder: str, gsheet_uri: str) -> None:
     """
     Loads turf data from NGP VAN to ghseet and creates PDF printouts
+
     Args:
         van_folder: str
             The name of the folder in NGP VAN where printed lists are stored
         gsheet_uri: str
             URI for gsheet where dataframe info will be loaded
-    Returns:
-        None
+
     """
 
     # gets turf-specific data from NGP VAN

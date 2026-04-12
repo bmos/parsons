@@ -168,7 +168,7 @@ class APIConnector:
                 The expected success codes to be returned. If not provided, accepts 200, 201, 204.
 
         Returns:
-                A requests response object or status code
+            A requests response object or status code
 
         """
 
@@ -260,7 +260,7 @@ class APIConnector:
         and display the error message.
 
         Args:
-            resp: object
+            resp: obj
                 A response object
 
         """
@@ -318,8 +318,9 @@ class APIConnector:
         Args:
             resp:
                 A response dictionary
-        `Returns:
-            boolean
+
+        Returns:
+            bool
 
         """
 

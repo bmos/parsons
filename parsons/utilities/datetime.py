@@ -40,8 +40,8 @@ def convert_unix_to_readable(ts):
 def parse_date(value: int | str | datetime.datetime, tzinfo=datetime.timezone.utc):
     """Parse an arbitrary date value into a Python datetime.
 
-    If no value is provided (i.e., the value is None or empty), then the return value will be
-    None.
+    If no value is provided (i.e., the value is None or empty),
+    then the return value will be None.
 
     Args:
         value: int or str or datetime

@@ -19,7 +19,7 @@ class ETL:
                 The number of rows to return. Defaults to 5.
 
         Returns:
-            `Parsons Table`
+            Table
 
         """
 
@@ -37,7 +37,7 @@ class ETL:
                 Defaults to 5.
 
         Returns:
-            parsons.Table
+            Table
 
         """
 
@@ -62,7 +62,7 @@ class ETL:
                 Defaults to "fail".
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -87,7 +87,7 @@ class ETL:
                 Column names
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -106,7 +106,7 @@ class ETL:
             new_column_name: str
                 The new column name
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -132,7 +132,7 @@ class ETL:
                 'old_name2': 'new_name2'}
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -160,7 +160,7 @@ class ETL:
                 A fixed or calculated value
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -185,7 +185,7 @@ class ETL:
                 A fixed or calculated value
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -219,7 +219,7 @@ class ETL:
                 The new index for the column
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -241,7 +241,7 @@ class ETL:
                 The update function, method, or variable to process the update
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -277,7 +277,7 @@ class ETL:
         Parsons table to string (e.g. for comparison)
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -316,7 +316,7 @@ class ETL:
                 column is also one of the source columns, it will not be removed.
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -375,12 +375,12 @@ class ETL:
         Args:
             column_map: dict
                 A dictionary of columns and possible values that map to it
-            exact_match: boolean
-                If ``True`` will only map if an exact match. If ``False`` will
+            exact_match: bool
+                If `True` will only map if an exact match. If `False` will
                 ignore case, spaces and underscores.
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -429,7 +429,7 @@ class ETL:
                 A dictionary of columns and possible values that map to it
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -493,7 +493,7 @@ class ETL:
                 The update function, method, or variable to process the update.
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -519,9 +519,9 @@ class ETL:
             column: str
                 The column name to unpack
             keys: list
-                The dict keys in the column to unpack. If ``None`` will unpack
+                The dict keys in the column to unpack. If `None` will unpack
                 all.
-            include_original: boolean
+            include_original: bool
                 Retain original column after unpacking
             sample_size: int
                 Number of rows to sample before determining columns
@@ -589,16 +589,19 @@ class ETL:
         Args:
             column: str
                 The column name to unpack
-            include_original: boolean
+            include_original: bool
                 Retain original column after unpacking
             sample_size: int
                 Number of rows to sample before determining columns
             missing: str
                 If a value is missing, the value to fill it with
-            replace: boolean
+            replace: bool
                 Return new table or replace existing
             max_columns: int
                 The maximum number of columns to unpack
+
+        Returns:
+            Table | None
 
         """
 
@@ -647,14 +650,14 @@ class ETL:
                 The column name to unpack
             key: str
                 The column to use as a key when unpacking. Defaults to `id`
-            expand_original: boolean or int
+            expand_original: bool or int
                 If `True`: Add resulting unpacked rows (with all other columns) to original
                 If `int`: Add to original unless the max added per key is above the given number
                 If `False` (default): Return unpacked rows (with `key` column only) as standalone
                 Removes packed list and dict rows from original either way.
 
         Returns:
-            parsons.Table
+            Table
                 If `expand_original`, original table with packed rows replaced by unpacked rows.
                 Otherwise, standalone table with key column and unpacked values only
 
@@ -790,7 +793,7 @@ class ETL:
                 The new name for the foreign key to better identify it. For
                 example, you might want to rename ``id`` to ``person_id``.
                 Ex. {'KEY_NAME': 'NEW_KEY_NAME'}
-            retain_original: boolean
+            retain_original: bool
                 Retain the original column from the source table.
             prepend:
                 Prepend the column name of the unpacked values. Useful for
@@ -800,7 +803,7 @@ class ETL:
                 set to column name.
 
         Returns:
-            parsons.Table
+            Table
                 The new long table
 
         """
@@ -838,7 +841,7 @@ class ETL:
                 Columns in the parsons table
 
         Returns:
-            parsons.Table
+            Table
                 Selected columnns
 
         """
@@ -891,7 +894,7 @@ class ETL:
 
     def remove_null_rows(self, columns, null_value=None):
         """
-        Remove rows if the values in a column are ``None``. If multiple columns
+        Remove rows if the values in a column are `None`. If multiple columns
         are passed as list, it will remove all rows with null values in any
         of the passed columns.
 
@@ -928,7 +931,7 @@ class ETL:
         different tables.
 
         Args:
-            tables: parsons.Table or list
+            tables: Table | list[Table]
                 A single table, or a list of tables
             missing: bool
                 The value to use when padding missing values
@@ -950,7 +953,7 @@ class ETL:
         ``missing`` keyword argument.
 
         Args:
-            tables: parsons.Table or list
+            tables: Table | list[Table]
                 A single table, or a list of tables
             missing: bool
                 The value to use when padding missing values
@@ -973,7 +976,7 @@ class ETL:
                 The number of rows of each new Parsons table
 
         Returns:
-            list[parsons.Table]
+            list[Table]
 
         """
 
@@ -1021,15 +1024,15 @@ class ETL:
                 Eg. With this flag set, "FIRST NAME" would match "first_name".
                 If the Table has two columns that normalize to the same string (eg. "FIRST NAME"
                 and "first_name"), the latter will be considered an extra column.
-            if_extra_columns: string
+            if_extra_columns: str
                 If the Table has columns that don't match any desired columns, either 'remove'
                 them, 'ignore' them, or 'fail' (raising an error).
-            if_missing_columns: string
+            if_missing_columns: str
                 If the Table is missing some of the desired columns, either 'add' them (with a
                 value of None), 'ignore' them, or 'fail' (raising an error).
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -1183,7 +1186,7 @@ class ETL:
                 Extra options to pass to petl.rowreduce
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -1204,14 +1207,15 @@ class ETL:
         Sort the rows a table.
 
         Args:
-            sort_columns: list or str
-                Sort by a single column or a list of column. If ``None`` then
+            columns: list | str
+                Sort by a single column or a list of column. If `None` then
                 will sort columns from left to right.
-            reverse: boolean
+            reverse: bool
                 Sort rows in reverse order.
 
         Returns:
-            `Parsons Table` and also updates self
+            Table
+                Also updates self
 
         """
 
@@ -1228,7 +1232,7 @@ class ETL:
                 List of new header column names
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """
@@ -1241,7 +1245,7 @@ class ETL:
 
         This convenience method exposes the petl functions to the current
         Table. This is useful in cases where one might need a ``petl`` function
-        that has not yet been implemented for ``parsons.Table``.
+        that has not yet been implemented for :class:`~parsons.etl.table.Table`.
 
         .. code-block:: python
 
@@ -1272,18 +1276,18 @@ class ETL:
             petl_method: str
                 The ``petl`` function to call
             update_table: bool
-                If ``True``, updates the ``parsons.Table``. Defaults to
-                ``False``.
+                If `True`, updates the :class:`~parsons.etl.table.Table`. Defaults to
+                `False`.
             to_petl: bool
-                If ``True``, returns a petl table, otherwise a ``parsons.Table``.
-                Defaults to ``False``.
+                If `True`, returns a petl table, otherwise a :class:`~parsons.etl.table.Table`.
+                Defaults to `False`.
             `*args`: Any
                 The arguements to pass to the petl function.
             `**kwargs`: Any
                 The keyword arguements to pass to the petl function.
 
         Returns:
-            `parsons.Table` or `petl` table
+            Table | ETL
 
         """
         update_table = kwargs.pop("update_table", False)
@@ -1378,7 +1382,7 @@ class ETL:
                 If false, the row will be sorted.
 
         Returns:
-            parsons.Table
+            Table
                 Also updates self
 
         """

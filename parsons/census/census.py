@@ -15,7 +15,7 @@ class Census:
         Instantiate Census class.
 
         Args:
-            api_key: string, optional
+            api_key: str, optional
                 key for Census API access
                 can also be pulled from environment variable CENSUS_API_KEY
 
@@ -29,20 +29,24 @@ class Census:
         <https://www.census.gov/data/developers/guidance/api-user-guide.html>`_
 
         Args:
-            year: 4-digit string or integer
+            year: str | int
+                4-digit string or integer
                 e.g. ``'2019' or 2019``
 
-            dataset_acronym: string with dataset name
+            dataset_acronym: str
+                dataset name
                 e.g. ``/acs/acs1``
 
-            variables: comma-separated string with variable names
+            variables: str
+                comma-separated string with variable names
                 e.g. ``NAME,B01001_001E``
 
-            location: string with desired locations
+            location: str
+                desired locations
                 e.g. ``'us:*'``
 
         Returns:
-            parsons.Table
+            Table
 
         """
         # set up the URL

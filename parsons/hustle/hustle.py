@@ -136,8 +136,7 @@ class Hustle:
                 The group id.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -183,7 +182,7 @@ class Hustle:
                 The full name of the agent.
             phone_number: str
                 The valid phone number of the agent.
-            send_invite: boolean
+            send_invite: bool
                 Send an invitation to the agent.
             email:
                 The email address of the agent.
@@ -227,7 +226,7 @@ class Hustle:
                 The full name of the agent.
             phone_number: str
                 The valid phone number of the agent.
-            send_invite: boolean
+            send_invite: bool
                 Send an invitation to the agent.
 
         Returns:
@@ -249,8 +248,7 @@ class Hustle:
         Get organizations.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -281,9 +279,9 @@ class Hustle:
 
         Args:
             organization_id: str
+
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -353,8 +351,7 @@ class Hustle:
                 The group id.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -413,7 +410,7 @@ class Hustle:
                 A list of tag ids.
 
         Returns:
-                ``None``
+                `None`
 
         """
 
@@ -460,7 +457,7 @@ class Hustle:
             table: Parsons table
                 Leads
             group_id:
-                The group id to assign the leads. If ``None``, must be passed as a column
+                The group id to assign the leads. If `None`, must be passed as a column
                 value.
 
         Returns:
@@ -530,7 +527,7 @@ class Hustle:
                 The last name of the lead
             email: str
                 The email address of the lead
-            global_opt_out: boolean
+            global_opt_out: bool
                 Opt out flag for the lead
             notes: str
                 The notes for the lead
@@ -538,6 +535,7 @@ class Hustle:
                 Follow up for the lead
             tag_ids: list
                 Tags to apply to lead
+
         Returns:
             dict
 
@@ -570,8 +568,7 @@ class Hustle:
                 The organization id.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -604,8 +601,7 @@ class Hustle:
                 The organization id.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 

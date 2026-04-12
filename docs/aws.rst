@@ -16,7 +16,7 @@ See the documentation for each service for more details.
 Lambda
 ******
 
-.. _aws_lambda:
+.. py:module:: parsons.aws.lambda_distribute
 
 ========
 Overview
@@ -38,7 +38,7 @@ Using this method requires some setup. You have three tasks:
 
 #. Define the function to process rows, the first argument, must take your table's data (though only a subset of rows will be passed) (e.g. ``def task_for_distribution(table, **kwargs):``)
 #. Where you would have run ``task_for_distribution(my_table, **kwargs)`` instead call ``distribute_task(my_table, task_for_distribution, func_kwargs=kwargs)`` (either setting env var S3_TEMP_BUCKET or passing a ``bucket=`` parameter)
-#. Setup your Lambda handler to include :py:meth:`parsons.aws.event_command` (or run and deploy your lambda with `Zappa <https://github.com/Miserlou/Zappa>`_)
+#. Setup your Lambda handler to include :func:`parsons.aws.aws_async.event_command` (or run and deploy your lambda with `Zappa <https://github.com/Miserlou/Zappa>`_)
 
 To test locally, include the argument ``storage="local"``, which will test the ``distribute_task`` function, but run the task sequentially and in local memory.
 
@@ -80,7 +80,7 @@ API
 S3
 ***
 
-.. _aws_s3:
+.. py:module:: parsons.aws.s3
 
 ========
 Overview
@@ -135,7 +135,7 @@ stored in an AWS CLI file ``~/.aws/credentials``, or passed as keyword arguments
 API
 ===
 
-.. autoclass:: parsons.aws.s3.S3
+.. autoclass:: parsons.aws.S3
    :inherited-members:
    :members:
 
@@ -164,7 +164,7 @@ them to be accepted. The ``S3`` class can be passed a session token as an enviro
 Redshift
 ********
 
-.. _redshift:
+.. py:module:: parsons.redshift
 
 ========
 Overview
@@ -174,16 +174,18 @@ The ``Redshift`` class allows you to interact with an `Amazon Redshift <https://
 The connector utilizes the `psycopg2 <https://pypi.org/project/psycopg2/>`_ Python package under the hood. The core methods
 focus on input, output and querying of the database.
 
-In addition to the core API integration provided by the ``Redshift`` class, Parsons also includes utility functions for
+In addition to the core API integration provided by the :class:`~parsons.redshift.Redshift` class, Parsons also includes utility functions for
 managing schemas and tables. See :ref:`redshift_table_and_view_api` and :ref:`redshift_schema_api` for more information.
 
 .. note::
 
    S3 Credentials
-      Redshift only allows data to be copied to the database via S3. As such, the the :meth:`copy` and :meth:`copy_s3`
-      methods require S3 credentials and write access on an S3 Bucket, which will be used for storing data en route to
-      Redshift. See the `API documentation <https://docs.aws.amazon.com/redshift/latest/dg/copy-parameters-authorization.html>`_
+      Redshift only allows data to be copied to the database via S3. As such, the the :meth:`~parsons.databases.redshift.redshift.Redshift.copy`
+      and :meth:`~parsons.databases.redshift.redshift.Redshift.copy_s3` methods require S3 credentials and write access on an S3 Bucket,
+      which will be used for storing data en route to Redshift. See the
+      `API documentation <https://docs.aws.amazon.com/redshift/latest/dg/copy-parameters-authorization.html>`_
       for more information about AWS Redshift authorization.
+
    Whitelisting
       Remember to ensure that the IP address from which you are connecting has been whitelisted.
 
@@ -214,8 +216,8 @@ or keyword arguments.
   # Copy a Parsons Table to the Database
   table = rs.copy(tbl, 'tmc_scratch.test_table', if_exists='drop')
 
-All of the standard COPY options can be passed as kwargs. See the :meth:`copy` method for all
-options.
+All of the standard COPY options can be passed as kwargs.
+See the :meth:`~parsons.databases.redshift.redshift.Redshift.copy` method for all options.
 
 ========
 Core API
@@ -225,7 +227,7 @@ Core API
    :inherited-members:
    :members:
 
-.. _redshift_table_and_view_api:
+.. py:module:: parsons.databases.redshift.rs_table_utilities
 
 ==================
 Table and View API
@@ -238,7 +240,7 @@ used SQL queries run against the Redshift database.
    :inherited-members:
    :members:
 
-.. _redshift_schema_api:
+.. py:module:: parsons.databases.redshift.rs_schema
 
 ==========
 Schema API

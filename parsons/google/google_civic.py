@@ -39,8 +39,7 @@ class GoogleCivic:
         Get a collection of information about elections and voter information.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -70,8 +69,7 @@ class GoogleCivic:
                 A valid US address in a single string.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -93,8 +91,7 @@ class GoogleCivic:
                 The name of the column where the address is stored.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -176,8 +173,7 @@ class GoogleCivic:
                 - "specialPurposeOfficer"
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 

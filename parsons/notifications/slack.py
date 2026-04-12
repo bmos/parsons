@@ -49,8 +49,7 @@ class Slack:
                 `mpim` (aka group messages), or `im` (aka 1-1 messages).
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
         if types is None:
@@ -87,8 +86,7 @@ class Slack:
                 available fields. `Notes:` nested fields are unpacked.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -140,17 +138,17 @@ class Slack:
                 Text of the message to send.
             parent_message_id: str
                 The `ts` value of the parent message. If used, this will thread the message.
-            `**kwargs`: kwargs
+            `**kwargs`:
                 - as_user: str
                   This is a deprecated argument. Use optional username, icon_url, and icon_emoji
                   args to customize the attributes of the user posting the message.
                   See https://api.slack.com/methods/chat.postMessage#legacy_authorship for
                   more information about legacy authorship
-                - Additional arguments for chat.postMessage API call. See `documentation
-                  <https://api.slack.com/methods/chat.postMessage>`__ for more info.
+                - Additional arguments for chat.postMessage API call.
+                  See `documentation <https://api.slack.com/methods/chat.postMessage>`__ for more info.
 
         Returns:
-            `dict`:
+            dict
                 A response json
 
         """

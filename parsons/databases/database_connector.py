@@ -130,8 +130,8 @@ class DatabaseConnector(ABC):
                 The table name and schema (e.g. ``myschema.mytable``).
 
         Returns:
-            boolean
-                ``True`` if the table exists and ``False`` if it does not.
+            bool
+                `True` if the table exists and `False` if it does not.
 
         """
         pass
@@ -156,7 +156,7 @@ class DatabaseConnector(ABC):
 
     @abstractmethod
     def query(self, sql: str, parameters: list | dict | None = None) -> Table | None:
-        """Execute a query against the database. Will return ``None`` if the query returns empty.
+        """Execute a query against the database. Will return `None` if the query returns empty.
 
         To include python variables in your query, it is recommended to pass them as parameters,
         following the `psycopg style
@@ -188,8 +188,7 @@ class DatabaseConnector(ABC):
                 A list of python variables to be converted into SQL values in your query
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
         pass

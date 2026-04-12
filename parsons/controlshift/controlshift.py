@@ -50,7 +50,7 @@ class Controlshift:
         visible to the public.
 
         Returns:
-            Table Class
+            Table
 
         """
         next_page = 1

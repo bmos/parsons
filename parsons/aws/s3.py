@@ -57,9 +57,9 @@ class S3:
         aws_session_token: str
             The AWS session token. Optional. Can also be stored in the ``AWS_SESSION_TOKEN``
             env variable. Used for accessing S3 with temporary credentials.
-        use_env_token: boolean
+        use_env_token: bool
             Controls use of the ``AWS_SESSION_TOKEN`` environment variable. Defaults
-            to ``True``. Set to ``False`` in order to ignore the ``AWS_SESSION_TOKEN`` environment
+            to `True`. Set to `False` in order to ignore the ``AWS_SESSION_TOKEN`` environment
             variable even if the ``aws_session_token`` argument was not passed in.
 
     Returns:
@@ -106,8 +106,8 @@ class S3:
             bucket: str
                 The bucket name
         Returns:
-            boolean
-                ``True`` if the bucket exists and ``False`` if not.
+            bool
+                `True` if the bucket exists and `False` if not.
 
         """
 
@@ -234,8 +234,8 @@ class S3:
             key: str
                 The object key
         Returns:
-            boolean
-                ``True`` if key exists and ``False`` if not.
+            bool
+                `True` if key exists and `False` if not.
 
         """
 

@@ -96,7 +96,7 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
 
     def query(self, sql, parameters=None):
         """
-        Execute a query against the database. Will return ``None`` if the query returns zero rows.
+        Execute a query against the database. Will return `None` if the query returns zero rows.
 
         To include python variables in your query, it is recommended to pass them as parameters,
         following the `mysql style <https://security.openstack.org/guidelines/dg_parameterize-database-queries.html>`_.
@@ -127,8 +127,7 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
                 A list of python variables to be converted into SQL values in your query
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -138,7 +137,7 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
     def query_with_connection(self, sql, connection, parameters=None, commit=True):
         """
         Execute a query against the database, with an existing connection. Useful for batching
-        queries together. Will return ``None`` if the query returns zero rows.
+        queries together. Will return `None` if the query returns zero rows.
 
         Args:
             sql: str
@@ -147,14 +146,13 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
                 A connection object obtained from ``mysql.connection()``
             parameters: list
                 A list of python variables to be converted into SQL values in your query
-            commit: boolean
-                Whether to commit the transaction immediately. If ``False`` the transaction will
+            commit: bool
+                Whether to commit the transaction immediately. If `False` the transaction will
                 be committed when the connection goes out of scope and is closed (or you can
                 commit manually with ``connection.commit()``).
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
         with self.cursor(connection) as cursor:
@@ -216,7 +214,7 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
             loaded. It results in a minor performance hit compared to `LOAD DATA`.
 
         Args:
-            tbl: parsons.Table
+            tbl: Table
                 A Parsons table object
             table_name: str
                 The destination schema and table (e.g. ``my_schema.my_table``)
@@ -229,7 +227,7 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
                 If the database table needs to be created, strict_length determines whether
                 the created table's column sizes will be sized to exactly fit the current data,
                 or if their size will be rounded up to account for future values being larger
-                then the current dataset. defaults to ``True``
+                then the current dataset. defaults to `True`
 
         """
 
@@ -321,8 +319,8 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
                 The table name
 
         Returns:
-            boolean
-                ``True`` if the table exists and ``False`` if it does not.
+            bool
+                `True` if the table exists and `False` if it does not.
 
         """
 

@@ -1051,7 +1051,7 @@ class TestTableTransformations:
         assert not_empty
 
     def test_use_petl(self):
-        # confirm that this method doesn't exist for parsons.Table
+        # confirm that this method doesn't exist for :class:`~parsons.etl.table.Table`
         with pytest.raises(
             AttributeError, match="type object 'Table' has no attribute 'skipcomments'"
         ):

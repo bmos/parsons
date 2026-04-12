@@ -66,7 +66,7 @@ class Postgres(PostgresCore, Alchemy, DatabaseConnector):
         Copy a :ref:`parsons-table` to Postgres.
 
         Args:
-            tbl: parsons.Table
+            tbl: Table
                 A Parsons table object
             table_name: str
                 The destination schema and table (e.g. ``my_schema.my_table``)
@@ -77,7 +77,7 @@ class Postgres(PostgresCore, Alchemy, DatabaseConnector):
                 If the database table needs to be created, strict_length determines whether
                 the created table's column sizes will be sized to exactly fit the current data,
                 or if their size will be rounded up to account for future values being larger
-                then the current dataset. Defaults to ``False``.
+                then the current dataset. Defaults to `False`.
 
         """
 

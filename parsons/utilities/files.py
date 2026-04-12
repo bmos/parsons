@@ -247,11 +247,13 @@ def extract_file_name(file_path=None, include_suffix=True):
     """
     Extract the file name with the file path string.
 
-    file_path: str
-        The file path
-    include_suffix: boolean
-        If True, includes full file name with suffix. If False returns the
-        file name without the suffix (e.g. "myfile.zip" vs. "myfile").
+    Args:
+        file_path: str
+            The file path
+        include_suffix: bool
+            If True, includes full file name with suffix. If False returns the
+            file name without the suffix (e.g. "myfile.zip" vs. "myfile").
+
     """
 
     if not file_path:
@@ -272,8 +274,8 @@ def has_data(file_path):
             The file path.
 
     Returns:
-        boolean
-            ``True`` if data in the file and ``False`` if not.
+        bool
+            `True` if data in the file and `False` if not.
 
     """
 
@@ -287,7 +289,8 @@ def generate_tempfile(suffix=None, create=False):
     Args:
         suffix: str
             The suffix to give the file path in order to advertise the file/mime type of the file.
-    `Returns`
+
+    Returns:
         str
             The path of the newly created temp file.
 

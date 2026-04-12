@@ -158,7 +158,7 @@ def distribute_task(
     Distribute processing rows in a table across multiple AWS Lambda invocations.
 
     Args:
-        table: Parsons Table
+        table: Table
            Table of data you wish to distribute processing across Lambda invocations
            of `func_to_run` argument.
         func_to_run: function

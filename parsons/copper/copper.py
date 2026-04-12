@@ -25,9 +25,6 @@ class Copper:
             The Copper provided application key. Not required if ``COPPER_API_KEY``
             env. variable set.
 
-    Returns:
-        Copper Class
-
     """
 
     def __init__(self, user_email=None, api_key=None):
@@ -35,7 +32,7 @@ class Copper:
         self.user_email = check_env.check("COPPER_USER_EMAIL", user_email)
         self.uri = COPPER_URI
 
-    def base_request(self, endpoint, req_type, page=1, page_size=200, filters=None):
+    def base_request(self, endpoint, req_type, page=1, page_size=200, filters: dict | None = None):
         # Internal Request Method
 
         url = self.uri + endpoint
@@ -61,7 +58,7 @@ class Copper:
 
             return request(req_type, url, data=json.dumps(payload), headers=headers)
 
-    def paginate_request(self, endpoint, req_type, page_size=200, filters=None):
+    def paginate_request(self, endpoint, req_type, page_size=200, filters: dict | None = None):
         # Internal pagination method
 
         page = 1
@@ -107,22 +104,25 @@ class Copper:
 
         return blob
 
-    def get_people(self, filters=None, tidy=False):
+    def get_people(
+        self, filters: dict | None = None, tidy: bool | int = False
+    ) -> list[dict[str, str | Table]]:
         """
         Get people
 
         Args:
-            `filters: dict`
-                Optional; pass additional parameters to filter the records returned.
+            filters: dict, optional
+                Pass additional parameters to filter the records returned.
                 See `Copper documentation <https://developer.copper.com/?version=latest#9c15869b-c894-4fa2-9346-d65a6602c129>`__ for choices
-            `tidy: boolean or int`
-                Optional; unpack list and dict columns as additional rows instead of columns
+            tidy: bool | int, optional
+                Unpack list and dict columns as additional rows instead of columns
                 If `True`: creates new table out of unpacked rows
                 If 'int': adds rows to original table if max rows per key <= given number
                 (so `tidy=0` guarantees new table)
 
         Returns:
-            List of dicts of Parsons Tables:
+            list[dict[str, str | Table]]
+
                 * people
                 * people_emails
                 * people_phone_numbers
@@ -134,22 +134,25 @@ class Copper:
 
         return self.get_standard_object("people", filters=filters, tidy=tidy)
 
-    def get_companies(self, filters=None, tidy=False):
+    def get_companies(
+        self, filters: dict | None = None, tidy: bool | int = False
+    ) -> list[dict[str, str | Table]]:
         """
         Get companies
 
         Args:
-            `filters: dict`
-                Optional; pass additional parameters to filter the records returned.
+            filters: dict, optional
+                Pass additional parameters to filter the records returned.
                 See `Copper documentation <https://developer.copper.com/?version=latest#0b4f267f-3180-4041-861c-13f3cf17bcf9>`__ for choices
-            `tidy: boolean or int`
-                Optional; unpack list and dict columns as additional rows instead of columns
+            tidy: bool | int, optional
+                Unpack list and dict columns as additional rows instead of columns
                 If `True`: creates new table out of unpacked rows
                 If 'int': adds rows to original table if max rows per key <= given number
                 (so `tidy=0` guarantees new table)
 
         Returns:
-            List of dicts of Parsons Tables:
+            list[dict[str, str | Table]]
+
                 * companies
                 * companies_phone_numbers
                 * companies_custom_fields
@@ -160,42 +163,50 @@ class Copper:
 
         return self.get_standard_object("companies", filters=filters, tidy=tidy)
 
-    def get_activities(self, filters=None, tidy=False):
+    def get_activities(
+        self, filters: dict | None = None, tidy: bool | int = False
+    ) -> list[dict[str, str | Table]]:
         """
         Get activities
 
         Args:
-            `filters: dict`
-                Optional; pass additional parameters to filter the records returned.
+            filters: dict, optional
+                Pass additional parameters to filter the records returned.
                 See `Copper documentation <https://developer.copper.com/?version=latest#d2e6ddd8-6699-4ff3-87e3-1febb0410dc9>`__ for choices
-                Optional; unpack list and dict columns as additional rows instead of columns
+            tidy: bool | int, optional
+                Unpack list and dict columns as additional rows instead of columns
                 If `True`: creates new table out of unpacked rows
                 If 'int': adds rows to original table if max rows per key <= given number
                 (so `tidy=0` guarantees new table)
 
         Returns:
-            List of dicts of Parsons Tables:
+            list[dict[str, str | Table]]
+
                 * activities
 
         """
 
         return self.get_standard_object("activities", filters=filters, tidy=tidy)
 
-    def get_opportunities(self, filters=None, tidy=False):
+    def get_opportunities(
+        self, filters: dict | None = None, tidy: bool | int = False
+    ) -> list[dict[str, str | Table]]:
         """
         Get opportunities (i.e. donations)
 
         Args:
-            `filters: dict`
-                Optional; pass additional parameters to filter the records returned.
+            filters: dict, optional
+                Pass additional parameters to filter the records returned.
                 See `Copper documentation <https://developer.copper.com/?version=latest#5bb8adc1-137f-46bf-aa86-7df037840e57>`__ for choices
-                Optional; unpack list and dict columns as additional rows instead of columns
+            tidy: bool | int, optional
+                Unpack list and dict columns as additional rows instead of columns
                 If `True`: creates new table out of unpacked rows
                 If 'int': adds rows to original table if max rows per key <= given number
                 (so `tidy=0` guarantees new table)
 
         Returns:
-            List of dicts of Parsons Tables:
+            list[dict[str, str | Table]]
+
                 * opportunities
                 * opportunities_custom_fields
 
@@ -203,7 +214,9 @@ class Copper:
 
         return self.get_standard_object("opportunities", filters=filters, tidy=tidy)
 
-    def get_standard_object(self, object_name, filters=None, tidy=False):
+    def get_standard_object(
+        self, object_name, filters: dict | None = None, tidy: bool | int = False
+    ) -> list[dict[str, str | Table]]:
         # Retrieve and process a standard endpoint object (e.g. people, companies, etc.)
 
         logger.info(f"Retrieving {object_name} records.")
@@ -211,17 +224,13 @@ class Copper:
 
         return self.process_json(blob, object_name, tidy=tidy)
 
-    def get_custom_fields(self):
+    def get_custom_fields(self) -> list[dict[str, str | Table]]:
         """
         Get custom fields
 
-        Args:
-            `filters: dict`
-            Optional; pass additional parameters to filter the records returned.
-            See `Copper documentation <https://developer.copper.com/?version=latest#bf389290-0c19-46a7-85bf-f5e6884fa4e1>`__ for choices
-
         Returns:
-            List of dicts of Parsons Tables:
+            list[dict[str, str | Table]]
+
                 * custom_fields
                 * custom_fields_available
                 * custom_fields_options
@@ -232,17 +241,13 @@ class Copper:
         blob = self.paginate_request("/custom_field_definitions/", req_type="GET")
         return self.process_custom_fields(blob)
 
-    def get_activity_types(self):
+    def get_activity_types(self) -> list[dict[str, str | Table]]:
         """
         Get activity types
 
-        Args:
-            `filters: dict`
-            Optional; pass additional parameters to filter the records returned.
-            See `Copper documentation <https://developer.copper.com/?version=latest#6bd339f1-f0de-48b4-8c34-5a5e245e036f>`__ for choices
-
         Returns:
-            List of dicts of Parsons Tables:
+            list[dict[str, str | Table]]
+
                 * activitiy_types
 
         """
@@ -257,25 +262,20 @@ class Copper:
 
         return [{"name": "activity_types", "tbl": at_sys}]
 
-    def get_contact_types(self):
+    def get_contact_types(self) -> Table:
         """
         Get contact types
 
-        Args:
-            `filters: dict`
-            Optional; pass additional parameters to filter the records returned.
-            See `Copper documentation <https://developer.copper.com/?version=latest#8b6e6ed8-c594-4eed-a2af-586aa2100f09>`__ for choices
-
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
         response = self.paginate_request("/contact_types/", req_type="GET")
         return Table(response)
 
-    def process_json(self, json_blob, obj_type, tidy=False):
+    @staticmethod
+    def process_json(json_blob, obj_type, tidy: bool | int = False) -> list[dict[str, str | Table]]:
         # Internal method for converting most types of json responses into a list of Parsons tables
 
         # Output goes here
@@ -341,7 +341,8 @@ class Copper:
 
         return table_list
 
-    def process_custom_fields(self, json_blob):
+    @staticmethod
+    def process_custom_fields(json_blob) -> list[dict[str, str | Table]]:
         # Internal method to convert custom fields responses into a list of Parsons tables
 
         # Original table & columns

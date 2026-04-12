@@ -11,8 +11,6 @@ class Introspection:
         """
         Get API key profiles.
 
-        Args:
-            None
         Returns:
             JSON response
 

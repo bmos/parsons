@@ -67,8 +67,7 @@ class Twilio:
                 Filter to an account status of ``active``, ``closed`` or ``suspended``.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -104,12 +103,11 @@ class Twilio:
             group_by: str
                 The time interval to group usage by. Can be one of ``daily``, ``monthly`` or
                 ``yearly``.
-            exclude_null: boolean
+            exclude_null: bool
                 Exclude rows that have no usage.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -168,8 +166,7 @@ class Twilio:
                 Filter to messages only sent after the specified date (ex. ``2019-01-01``).
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 

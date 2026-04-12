@@ -22,7 +22,7 @@ class GoogleSheets:
             A dictionary of Google Drive API credentials, parsed from JSON provided
             by the Google Developer Console. Required if env variable
             ``GOOGLE_DRIVE_CREDENTIALS`` is not populated.
-        subject: string
+        subject: str
             In order to use account impersonation, pass in the email address of the account to be
             impersonated as a string.
 
@@ -114,8 +114,7 @@ class GoogleSheets:
                 0.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -142,18 +141,18 @@ class GoogleSheets:
                 The ID of the spreadsheet (Tip: Get this from the spreadsheet URL)
             sharee: str
                 User or group e-mail address, domain name to share the spreadsheet
-                with. To share publicly, set sharee value to ``None``.
+                with. To share publicly, set sharee value to `None`.
             share_type: str
                 The sharee type. Allowed values are: ``user``, ``group``, ``domain``,
                 ``anyone``.
             role: str
                 The primary role for this user. Allowed values are: ``owner``,
                 ``writer``, ``reader``.
-            notify: boolean
+            notify: bool
                 Whether to send an email to the target user/domain.
-            email_message: str
+            notify_message: str
                 The email to be sent if notify kwarg set to True.
-            with_link: boolean
+            with_link: bool
                 Whether a link is required for this permission.
 
         """
@@ -178,8 +177,7 @@ class GoogleSheets:
                 The ID of the spreadsheet (Tip: Get this from the spreadsheet URL)
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
 
         """
 
@@ -196,10 +194,10 @@ class GoogleSheets:
         Args:
             title: str
                 The human-readable title of the new spreadsheet
-            editor_email: str (optional)
+            editor_email: str, optional
                 Email address which should be given permissions on this spreadsheet.
                 Tip: You may want to share this file with the service account.
-            folder_id: str (optional)
+            folder_id: str, optional
                 ID of the Google folder where the spreadsheet should be created.
                 Tip: Get this from the folder URL.
                 Anyone shared on the folder will have access to the spreadsheet.
@@ -268,12 +266,11 @@ class GoogleSheets:
         Args:
             spreadsheet_id: str
                 The ID of the spreadsheet (Tip: Get this from the spreadsheet URL)
-            table: obj
+            table: Table
                 Parsons table
             worksheet: str or int
-                The index or the title of the worksheet. The index begins with
-                0.
-            user_entered_value: bool (optional)
+                The index or the title of the worksheet. The index begins with 0.
+            user_entered_value: bool, optional
                 If True, will submit cell values as entered (required for entering formulas).
                 Otherwise, values will be entered as strings or numbers only.
 
@@ -327,7 +324,7 @@ class GoogleSheets:
         Args:
             spreadsheet_id: str
                 The ID of the spreadsheet (Tip: Get this from the spreadsheet URL).
-            table: obj
+            table: Table
                 Parsons table
             worksheet: str or int
                 The index or the title of the worksheet. The index begins with 0.
@@ -383,12 +380,12 @@ class GoogleSheets:
         Args:
             spreadsheet_id: str
                 The ID of the spreadsheet (Tip: Get this from the spreadsheet URL)
-            table: obj
+            table: Table
                 Parsons table
             worksheet: str or int
                 The index or the title of the worksheet. The index begins with
                 0.
-            user_entered_value: bool (optional)
+            user_entered_value: bool, optional
                 If True, will submit cell values as entered (required for entering formulas).
                 Otherwise, values will be entered as strings or numbers only.
 
