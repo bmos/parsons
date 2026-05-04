@@ -10,6 +10,7 @@ release = ""
 extensions = [
     "myst_parser",
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosectionlabel",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx_multiversion",
@@ -25,6 +26,7 @@ primary_domain = "py"
 googleanalytics_id = "G-L2YB7WHTRG"
 autodoc_member_order = "bysource"
 autodoc_typehints = "both"
+autosectionlabel_prefix_document = True
 
 # -- HTML Output (Furo Theme) ------------------------------------------------
 html_theme = "furo"
