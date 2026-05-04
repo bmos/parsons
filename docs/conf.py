@@ -24,6 +24,7 @@ templates_path = ["_templates"]
 primary_domain = "py"
 googleanalytics_id = "G-L2YB7WHTRG"
 autodoc_member_order = "bysource"
+autodoc_typehints = "both"
 
 # -- HTML Output (Furo Theme) ------------------------------------------------
 html_theme = "furo"
