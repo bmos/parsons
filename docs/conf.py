@@ -27,6 +27,23 @@ googleanalytics_id = "G-L2YB7WHTRG"
 autodoc_member_order = "bysource"
 autodoc_typehints = "both"
 autosectionlabel_prefix_document = True
+nitpick_ignore_regex = {
+    ("py:class", r"petl.util.base.[a-zA-Z]+"),  # these classes are not in petl documentation
+    (
+        r"py:class",
+        r"simple_salesforce.api.Salesforce",
+    ),  # this class is not in the petl documentation simple_salesforce
+    (
+        "py:.*",
+        r"google.cloud.bigquery.[a-zA-Z]+..+",
+    ),  # bigquery references (no linkable sphinx documentation)
+    (r"py:.*", r"braintree\..+"),  # braintree references (no linkable sphinx documentation)
+    (r"py:.*", r"mysql\..+"),  # mysql references (no linkable sphinx documentation)
+    (r"py:.*", r"censusgeocode\..+"),  # censusgeocode references (no linkable sphinx documentation)
+    (r"py:.*", r"box_sdk_gen\..+"),  # box references (no linkable sphinx documentation)
+    (r"py:.*", r"dbt\..+"),  # dbt references (no linkable sphinx documentation)
+    (r"py:.*", r"test\..+"),  # test files are currently not linkable
+}
 
 # -- HTML Output (Furo Theme) ------------------------------------------------
 html_theme = "furo"
