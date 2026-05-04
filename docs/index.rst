@@ -160,7 +160,6 @@ Indices and tables
    civis
    controlshift
    copper
-   crowdtangle
    databases/databases
    donorbox
    empower

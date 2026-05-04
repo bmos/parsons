@@ -134,9 +134,7 @@ linkcheck_ignore_inaccessible_anchors = [
     r"https://secure.actblue.com/docs/csv_api#.*",
 ]
 linkcheck_ignore_broken_connectors = [
-    r"https://.*.crowdtangle.com/.*",
     r"https://capitolcanary.com/.*",
-    r"https://github.com/CrowdTangle",
 ]
 linkcheck_ignore = (
     linkcheck_ignore_blocked_domains
