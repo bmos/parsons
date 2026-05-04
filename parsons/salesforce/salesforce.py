@@ -92,7 +92,6 @@ class Salesforce:
             Ordered Dict of all the object's meta data in Salesforce
 
         """
-
         return getattr(self.client, object).describe()
 
     def describe_fields(self, object):
@@ -105,7 +104,6 @@ class Salesforce:
             Dict of all the object's field meta data in Salesforce
 
         """
-
         return json.loads(json.dumps(getattr(self.client, object).describe()["fields"]))
 
     def query(self, soql):
@@ -119,7 +117,6 @@ class Salesforce:
             list of dicts with Salesforce data
 
         """
-
         q = self.client.query_all(soql)
         q = json.loads(json.dumps(q))
         logger.info(f"Found {q['totalSize']} results")
@@ -139,14 +136,14 @@ class Salesforce:
                 names end in `__c`.
 
         Returns:
-            list of dicts that have the following data:
-            * success: boolean
-            * created: boolean (if new record is created)
-            * id: str (id of record created, if successful)
-            * errors: list of dicts (with error details)
+            list[dict]
+                Contains the following data:
+                * success: boolean
+                * created: boolean (if new record is created)
+                * id: str (id of record created, if successful)
+                * errors: list of dicts (with error details)
 
         """
-
         r = getattr(self.client.bulk, object).insert(data_table.to_dicts())
         s = [x for x in r if x.get("success") is True]
         logger.info(
@@ -168,14 +165,14 @@ class Salesforce:
                 not match. Note that custom field names end in `__c`.
 
         Returns:
-                list of dicts that have the following data:
+            list[dict]
+                Contains the following data:
                 * success: boolean
                 * created: boolean (if new record is created)
                 * id: str (id of record altered, if successful)
                 * errors: list of dicts (with error details)
 
         """
-
         r = getattr(self.client.bulk, object).update(data_table.to_dicts())
         s = [x for x in r if x.get("success") is True]
         logger.info(
@@ -200,14 +197,14 @@ class Salesforce:
                 records are new/inserted.
 
         Returns:
-                list of dicts that have the following data:
+            list[dict]
+                Contains the following data:
                 * success: boolean
                 * created: boolean (if new record is created)
                 * id: str (id of record created or altered, if successful)
                 * errors: list of dicts (with error details)
 
         """
-
         r = getattr(self.client.bulk, object).upsert(data_table.to_dicts(), id_col)
         s = [x for x in r if x.get("success") is True]
         logger.info(
@@ -238,7 +235,6 @@ class Salesforce:
                 * errors: list of dicts (with error details)
 
         """
-
         if hard_delete:
             r = getattr(self.client.bulk, object).hard_delete(id_table.to_dicts())
         else:

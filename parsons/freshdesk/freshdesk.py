@@ -123,11 +123,10 @@ class Freshdesk:
                 Expand nested custom fields to their own columns.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
+                See :ref:`Table` for output options.
 
         """
-
         params = {
             "filter": ticket_type,
             "requester_id": requester_id,
@@ -166,10 +165,9 @@ class Freshdesk:
             expand_custom_fields (bool): Expand nested custom fields to their own columns.
 
         Returns:
-            parsons.Table: See :ref:`parsons-table` for output options.
+            Table: See :ref:`Table` for output options.
 
         """
-
         params = {
             "email": email,
             "mobile": mobile,
@@ -195,11 +193,10 @@ class Freshdesk:
                 Expand nested custom fields to their own columns.
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
+                See :ref:`Table` for output options.
 
         """
-
         tbl = Table(self._get_request("companies"))
         logger.info(f"Found {tbl.num_rows} companies.")
         return self._transform_table(tbl, expand_custom_fields)
@@ -221,11 +218,10 @@ class Freshdesk:
             state: str
                 Filter by state
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
+                See :ref:`Table` for output options.
 
         """
-
         params = {"email": email, "mobile": mobile, "phone": phone, "state": state}
         tbl = Table(self._get_request("agents", params=params))
         logger.info(f"Found {tbl.num_rows} agents.")

@@ -133,7 +133,6 @@ class Redshift(
             Psycopg2 ``connection`` object
 
         """
-
         # Create a psycopg2 connection and cursor
         conn = psycopg2.connect(
             user=self.username,
@@ -192,11 +191,10 @@ class Redshift(
                 A list of python variables to be converted into SQL values in your query
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
+                See :ref:`Table` for output options.
 
         """
-
         with self.connection() as connection:
             return self.query_with_connection(sql, connection, parameters=parameters)
 
@@ -219,11 +217,10 @@ class Redshift(
                 commit manually with ``connection.commit()``).
 
         Returns:
-            Parsons Table
-                See :ref:`parsons-table` for output options.
+            Table
+                See :ref:`Table` for output options.
 
         """
-
         # To Do: Have it return an ordered dict to return the
         #        rows in the correct order
 
@@ -398,12 +395,11 @@ class Redshift(
                 is a pre-existing table that has the same columns/types, then use the template_table
                 table name as the schema for the new table.
 
-        `Returns`
-            Parsons Table or ``None``
-                See :ref:`parsons-table` for output options.
+        Returns:
+            Table or ``None``
+                See :ref:`Table` for output options.
 
         """
-
         with self.connection() as connection:
             if self._create_table_precheck(connection, table_name, if_exists):
                 if template_table:
@@ -506,7 +502,7 @@ class Redshift(
         csv_encoding: str = "utf-8",
     ):
         """
-        Copy a :ref:`parsons-table` to Redshift.
+        Copy a :ref:`Table` to Redshift.
 
         Args:
             tbl: obj
@@ -619,12 +615,11 @@ class Redshift(
                 String encoding to use when writing the temporary CSV file that is uploaded to S3.
                 Defaults to 'utf-8'.
 
-        `Returns`
-            Parsons Table or ``None``
-                See :ref:`parsons-table` for output options.
+        Returns:
+            Table or ``None``
+                See :ref:`Table` for output options.
 
         """
-
         # Specify the columns for a copy statement.
         cols = tbl.columns if specifycols or specifycols is None and template_table else None
 
@@ -777,7 +772,6 @@ class Redshift(
             An AWS secret access key granted to the bucket where the file is located. Not
             required if keys are stored as environmental variables.
         """
-
         # The sql query is provided between single quotes, therefore single
         # quotes within the actual query must be escaped.
         # https://docs.aws.amazon.com/redshift/latest/dg/r_UNLOAD.html#unload-parameters
@@ -834,7 +828,7 @@ class Redshift(
         manifest=True,
         header=True,
         delimiter="|",
-        compression="gzip",
+        compression: Literal["gzip", "bzip2", "None"] = "gzip",
         add_quotes=True,
         escape=True,
         allow_overwrite=True,
@@ -848,17 +842,22 @@ class Redshift(
         Args:
             rs_table: str
                 Redshift table.
-
             bucket: str
                 S3 bucket
-
             key: str
                 S3 key prefix ahead of table name
-
             cascade: bool
                 whether to drop cascade
-
-            `***unload params`:
+            manifest: bool
+            header: bool
+            delimiter: str
+            compression: str
+            add_quotes: bool
+            escape: bool
+            allow_overwrite: bool
+            parallel: bool
+            max_file_size: str
+            aws_region: str
 
         """
         query_end = "cascade" if cascade else ""
@@ -896,7 +895,7 @@ class Redshift(
         """
         Given a list of S3 buckets, generate a manifest file (JSON format). A manifest file
         allows you to copy multiple files into a single table at once. Once the manifest is
-        generated, you can pass it with the :func:`~parsons.redshift.Redshift.copy_s3` method.
+        generated, you can pass it with the :meth:`.copy_s3` method.
 
         AWS keys are not required if ``AWS_ACCESS_KEY_ID`` and
         ``AWS_SECRET_ACCESS_KEY`` environmental variables set.
@@ -909,7 +908,7 @@ class Redshift(
                 AWS access key id to access S3 bucket
             aws_secret_access_key: str
                 AWS secret access key to access S3 bucket
-            mandatory: boolean
+            mandatory: bool
                 The mandatory flag indicates whether the Redshift COPY should
                 terminate if the file does not exist.
             prefix: str
@@ -923,7 +922,6 @@ class Redshift(
             ``dict`` of manifest
 
         """
-
         from parsons.aws import S3
 
         s3 = S3(
@@ -978,8 +976,10 @@ class Redshift(
         **copy_args,
     ):
         r"""
-        Preform an upsert on an existing table. An upsert is a function in which rows
-        in a table are updated and inserted at the same time.
+        Preform an upsert on an existing table.
+
+        An upsert is a function in which rows in a table are
+        updated and inserted at the same time.
 
         Args:
             table_obj: obj
@@ -988,32 +988,36 @@ class Redshift(
                 The schema and table name to upsert
             primary_key: str or list
                 The primary key column(s) of the target table
-            vacuum: boolean
-                Re-sorts rows and reclaims space in the specified table. You must be a table owner
-                or super user to effectively vacuum a table, however the method will not fail
-                if you lack these priviledges.
-            distinct_check: boolean
-                Check if the primary key column is distinct. Raise error if not.
-            cleanup_temp_table: boolean
-                A temp table is dropped by default on cleanup. You can set to False for debugging.
-            alter_table: boolean
-                Set to False to avoid automatic varchar column resizing to accomodate new data
-            alter_table_cascade: boolean
-                Will drop dependent objects when attempting to alter the table. If ``alter_table``
-                is ``False``, this will be ignored.
-            from_s3: boolean
+            vacuum: bool
+                Re-sorts rows and reclaims space in the specified table.
+                You must be a table owner or super user to effectively vacuum a table,
+                however the method will not fail if you lack these priviledges.
+            distinct_check: bool
+                Check if the primary key column is distinct.
+                Raise error if not.
+            cleanup_temp_table: bool
+                A temp table is dropped by default on cleanup.
+                You can set to False for debugging.
+            alter_table: bool
+                Set to False to avoid automatic varchar
+                column resizing to accomodate new data
+            alter_table_cascade: bool
+                Will drop dependent objects when attempting to alter the table.
+                If ``alter_table`` is ``False``, this will be ignored.
+            from_s3: bool
                 Instead of specifying a table_obj (set the first argument to None),
-                set this to True and include :func:`~parsons.databases.Redshift.copy_s3` arguments
+                set this to True and include :meth:`.copy_s3` arguments
                 to upsert a pre-existing s3 file into the target_table
             distkey: str
-                The column name of the distkey. If not provided, will default to ``primary_key``.
+                The column name of the distkey.
+                If not provided, will default to ``primary_key``.
             sortkey: str or list
-                The column name(s) of the sortkey. If not provided, will default to ``primary_key``.
+                The column name(s) of the sortkey.
+                If not provided, will default to ``primary_key``.
             `**copy_args`: kwargs
-                See :func:`~parsons.databases.Redshift.copy` for options.
+                See :meth:`.copy` for options.
 
         """
-
         primary_keys = [primary_key] if isinstance(primary_key, str) else primary_key
 
         # Set distkey and sortkey to argument or primary key. These keys will be used
@@ -1182,7 +1186,6 @@ class Redshift(
                 The target table name (e.g. ``my_schema.my_table``)
 
         """
-
         # Make the Parsons table column names match valid Redshift names
         tbl.table = petl.setheader(tbl.table, self.column_name_validate(tbl.columns))
 
@@ -1222,7 +1225,6 @@ class Redshift(
         varchar_width:
             The new width of the column if of type varchar.
         """
-
         sql = f"ALTER TABLE {table_name} ALTER COLUMN {column_name} TYPE {data_type}"
 
         if varchar_width:

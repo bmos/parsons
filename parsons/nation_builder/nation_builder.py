@@ -121,8 +121,9 @@ class NationBuilder:
 
     def update_person(self, person_id: str, person: dict[str, Any]) -> dict[str, Any]:
         """
-        This method updates a person with the provided id to have the provided data. It returns a
-        full representation of the updated person.
+        Update a person with the provided id to have the provided data.
+
+        It returns a full representation of the updated person.
 
         Args:
             person_id: str
@@ -131,6 +132,7 @@ class NationBuilder:
                 Nation builder person object.
                 For example {"email": "user@example.com", "tags": ["foo", "bar"]}
                 Docs: https://nationbuilder.com/people_api
+
         Returns:
             A person object with the updated data.
 
@@ -182,7 +184,6 @@ class NationBuilder:
             the method will return a tuple of `False` and `None`.
 
         """
-
         _required_keys = [
             "civicrm_id",
             "county_file_id",

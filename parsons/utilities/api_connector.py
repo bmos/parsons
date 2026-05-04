@@ -107,7 +107,6 @@ class APIConnector:
                 A requests response object
 
         """
-
         r = self.request(url, "GET", params=params)
         self.validate_response(r)
 
@@ -139,7 +138,6 @@ class APIConnector:
             A requests response object
 
         """
-
         if success_codes is None:
             success_codes = [200, 201, 202, 204]
         r = self.request(url, "POST", params=params, data=data, json=json)
@@ -171,7 +169,6 @@ class APIConnector:
                 A requests response object or status code
 
         """
-
         if success_codes is None:
             success_codes = [200, 201, 204]
         r = self.request(url, "DELETE", params=params)
@@ -206,7 +203,6 @@ class APIConnector:
                 A requests response object
 
         """
-
         if success_codes is None:
             success_codes = [200, 201, 204]
         r = self.request(url, "PUT", params=params, data=data, json=json)
@@ -239,7 +235,6 @@ class APIConnector:
             A requests response object
 
         """
-
         if success_codes is None:
             success_codes = [200, 201, 204]
         r = self.request(url, "PATCH", params=params, data=data, json=json)
@@ -264,7 +259,6 @@ class APIConnector:
                 A response object
 
         """
-
         if resp.status_code >= 400:
             if resp.reason:
                 message = f"HTTP error occurred ({resp.status_code}): {resp.reason}"
@@ -293,7 +287,6 @@ class APIConnector:
                 A dictionary of data.
 
         """
-
         # TODO: Some response jsons are enclosed in a list. Need to deal with unpacking and/or
         # not assuming that it is going to be a dict.
 
@@ -310,28 +303,21 @@ class APIConnector:
     # of data following the initial request. The goal is build out a series of utilities
     # that mean most of the most common use cases.
 
-    def next_page_check_url(self, resp):
+    def next_page_check_url(self, resp: dict) -> bool:
         """
-        Check to determine if there is a next page. This requires that the response json
-        contains a pagination key that is empty if there is not a next page.
+        Check to determine if there is a next page.
 
-        Args:
-            resp:
-                A response dictionary
-        `Returns:
-            boolean
+        This requires that the response json contains a pagination key
+        that is empty if there is not a next page.
 
         """
-
         if self.pagination_key and self.pagination_key in resp:
-            if resp[self.pagination_key]:
-                return True
-        else:
-            return False
+            return bool(resp[self.pagination_key])
+
+        return False
 
     def json_check(self, resp):
         """Check to see if a response has a json included in it."""
-
         try:
             resp.json()
             return True

@@ -60,7 +60,7 @@ class Formstack:
 
             large_request: Boolean, optional
                 If the response is likely to include a large number of pages. Defaults to `False`.
-                In rare cases the API will return more pages than `parsons.Table` is able to handle.
+                In rare cases the API will return more pages than :ref:`Table` is able to handle.
                 Pass `True` to enable a workaround for these endpoints.
 
         Returns:

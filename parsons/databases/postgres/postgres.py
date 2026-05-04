@@ -63,10 +63,10 @@ class Postgres(PostgresCore, Alchemy, DatabaseConnector):
         strict_length: bool = False,
     ):
         """
-        Copy a :ref:`parsons-table` to Postgres.
+        Copy a :ref:`Table` to Postgres.
 
         Args:
-            tbl: parsons.Table
+            tbl: Table
                 A Parsons table object
             table_name: str
                 The destination schema and table (e.g. ``my_schema.my_table``)
@@ -80,7 +80,6 @@ class Postgres(PostgresCore, Alchemy, DatabaseConnector):
                 then the current dataset. Defaults to ``False``.
 
         """
-
         with self.connection() as connection:
             # Auto-generate table
             if self._create_table_precheck(connection, table_name, if_exists):

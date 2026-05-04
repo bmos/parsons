@@ -51,7 +51,7 @@ class Donorbox:
                 Optional. Results per page when using pagination. Default is 50, maximum is 100.
 
         Returns:
-            Parsons Table
+            Table
 
         """
         result = self.client.request("campaigns", "GET", params=kwargs)
@@ -100,7 +100,7 @@ class Donorbox:
                 is 100.
 
         Returns:
-            Parsons Table
+            Table
 
         """
         # switch variable names
@@ -140,7 +140,7 @@ class Donorbox:
                 Optional. Results per page when using pagination. Default is 50, maximum is 100.
 
         Returns:
-            Parsons Table
+            Table
 
         """
         if "donor_id" in kwargs:
@@ -186,7 +186,7 @@ class Donorbox:
                 Optional. Results per page when using pagination. Default is 50, maximum is 100.
 
         Returns:
-            Parsons Table
+            Table
 
         """
         self._check_date_helper(kwargs)
@@ -196,8 +196,9 @@ class Donorbox:
     def _check_date_helper(self, params):
         """Searches through params for a date parameter and if found, calls format helper.
 
-        params: dictionary
-            Required. Dictionary of parameters to be passed to endpoint.
+        Args:
+            params: dict
+                Required. Dictionary of parameters to be passed to endpoint.
 
         Returns: None
 
