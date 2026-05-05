@@ -1,15 +1,37 @@
 import logging
 import urllib.parse
+from collections.abc import Callable, Iterable, Mapping
 from typing import Any, Literal, overload
 
 import requests
-from requests.auth import HTTPBasicAuth
+from requests.auth import AuthBase
 from requests.exceptions import HTTPError
+from requests.models import PreparedRequest
 from simplejson.errors import JSONDecodeError
 
 from parsons import Table
 
 logger = logging.getLogger(__name__)
+
+_Auth = tuple[str, str] | AuthBase | Callable[[PreparedRequest], PreparedRequest]
+_Headers = Mapping[str, str | bytes | None]
+_Data = (
+    Iterable[bytes]
+    | str
+    | bytes
+    | list[tuple[Any, Any]]
+    | tuple[tuple[Any, Any], ...]
+    | Mapping[Any, Any]
+)
+_ParamsMappingKeyType = str | bytes | int | float
+_ParamsMappingValueType = str | bytes | int | float | Iterable[str | bytes | int | float] | None
+_Params = (
+    Mapping[_ParamsMappingKeyType, _ParamsMappingValueType]
+    | tuple[_ParamsMappingKeyType, _ParamsMappingValueType]
+    | Iterable[tuple[_ParamsMappingKeyType, _ParamsMappingValueType]]
+    | str
+    | bytes
+)
 
 
 class APIConnector:
@@ -26,8 +48,8 @@ class APIConnector:
     def __init__(
         self,
         uri: str,
-        headers: dict[str, Any] | None = None,
-        auth: HTTPBasicAuth | None = None,
+        headers: _Headers | None = None,
+        auth: _Auth | None = None,
         pagination_key: str | None = None,
         data_key: str | None = None,
     ) -> None:
@@ -66,9 +88,9 @@ class APIConnector:
         url: str,
         req_type: Literal["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         *,
-        json: dict[str, Any] | None = None,
-        data: str | bytes | dict | list[tuple] | None = None,
-        params: dict[str, str | int] | None = None,
+        json: Any | None = None,
+        data: _Data | None = None,
+        params: _Params | None = None,
         raise_on_error: bool = True,
         **kwargs,
     ) -> requests.Response:
@@ -145,7 +167,7 @@ class APIConnector:
         self,
         url: str,
         *,
-        params: dict[str, str | int] | None = None,
+        params: _Params | None = None,
         return_format: Literal["json", "content"] = "json",
         raise_on_error: bool = True,
         **kwargs,
@@ -186,9 +208,9 @@ class APIConnector:
         self,
         url: str,
         *,
-        params: dict[str, Any] | None = None,
-        data: str | bytes | dict | list[tuple] | None = None,
-        json: dict[str, Any] | None = None,
+        params: _Params | None = None,
+        data: _Data | None = None,
+        json: Any | None = None,
         success_codes: list[int] | None = None,
         raise_on_error: bool = True,
         **kwargs,
@@ -244,7 +266,7 @@ class APIConnector:
         self,
         url: str,
         *,
-        params: dict[str, Any] | None = None,
+        params: _Params | None = None,
         success_codes: list[int] | None = None,
         raise_on_error: bool = True,
         **kwargs,
@@ -290,9 +312,9 @@ class APIConnector:
         self,
         url: str,
         *,
-        data: str | bytes | dict | list[tuple] | None = None,
-        json: dict[str, Any] | None = None,
-        params: dict[str, Any] | None = None,
+        data: _Data | None = None,
+        json: Any | None = None,
+        params: _Params | None = None,
         success_codes: list[int] | None = None,
         raise_on_error: bool = True,
         **kwargs,
@@ -342,9 +364,9 @@ class APIConnector:
         self,
         url: str,
         *,
-        params: dict[str, Any] | None = None,
-        data: str | bytes | dict | list[tuple] | None = None,
-        json: dict[str, Any] | None = None,
+        params: _Params | None = None,
+        data: _Data | None = None,
+        json: Any | None = None,
         success_codes: list[int] | None = None,
         raise_on_error: bool = True,
         **kwargs,
