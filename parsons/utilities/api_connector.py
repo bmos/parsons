@@ -26,7 +26,7 @@ class APIConnector:
     def __init__(
         self,
         uri: str,
-        headers: dict | None = None,
+        headers: dict[str, Any] | None = None,
         auth: HTTPBasicAuth | None = None,
         pagination_key: str | None = None,
         data_key: str | None = None,
@@ -422,12 +422,12 @@ class APIConnector:
             raise HTTPError(message) from e
 
     @overload
-    def data_parse(self, resp: dict) -> dict: ...
+    def data_parse(self, resp: dict[str, Any]) -> dict[str, Any]: ...
 
     @overload
     def data_parse(self, resp: list) -> list: ...
 
-    def data_parse(self, resp: dict | list) -> dict | list:
+    def data_parse(self, resp: dict[str, Any] | list) -> dict[str, Any] | list:
         """
         Determines if the response json has nested data.
 
@@ -452,7 +452,7 @@ class APIConnector:
     # of data following the initial request. The goal is build out a series of utilities
     # that mean most of the most common use cases.
 
-    def next_page_check_url(self, resp: dict) -> bool:
+    def next_page_check_url(self, resp: dict[str, Any]) -> bool:
         """
         Check to determine if there is a next page.
 
