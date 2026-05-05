@@ -49,7 +49,12 @@ jobs:
       contents: write
 
     concurrency:
-      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      group: >-
+        ${{ github.workflow }}
+        -${{ github.event.pull_request.number || github.ref }}
+        -${{ matrix.os }}
+        -${{ matrix.python-version }}
+        -${{ matrix.resolution }}
       cancel-in-progress: true
 
     steps:
