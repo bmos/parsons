@@ -4,6 +4,7 @@ FROM --platform=linux/amd64 python:3.11@sha256:5062f6c22a2c3b8b3717c642af3852310
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 ENV UV_COMPILE_BYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 ###################
 ## Parsons setup ##
