@@ -62,6 +62,7 @@ jobs:
             for (const { text, label } of mapping) {
               await core.group(`Processing label: ${label}`, async () => {
                 const isChecked = new RegExp(`- \\[x\\] ${text}`, 'i').test(body);
+                const isUnchecked = new RegExp(`- \\[ \\] ${text}`, 'i').test(body);
 
                 if (isChecked) {
                   console.log(`Adding label: ${label}`);
@@ -71,7 +72,7 @@ jobs:
                     issue_number: context.issue.number,
                     labels: [label]
                   });
-                } else {
+                } else if (isUnchecked) {
                   console.log(`Removing label: ${label} (if present)`);
                   try {
                     await github.rest.issues.removeLabel({
@@ -84,6 +85,8 @@ jobs:
                   } catch (e) {
                     if (e.status !== 404) throw e;
                   }
+                } else {
+                  console.log(`Checkbox for "${text}" not found in PR description. Skipping.`);
                 }
               });
             }
