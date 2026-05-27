@@ -49,8 +49,17 @@ jobs:
     permissions:
       contents: write
 
+    concurrency:
+      group: >-
+        ${{ github.workflow }}
+        -${{ github.event.pull_request.number || github.ref }}
+        -${{ matrix.os }}
+        -${{ matrix.python-version }}
+        -${{ matrix.resolution }}
+      cancel-in-progress: true
+
     steps:
-      - uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
@@ -108,7 +117,7 @@ jobs:
       extras: ${{ steps.get-extras.outputs.extras }}
 
     steps:
-      - uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
@@ -163,7 +172,7 @@ jobs:
         resolution: ['highest']
 
     steps:
-      - uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
@@ -206,7 +215,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
@@ -245,7 +254,7 @@ jobs:
       security-events: write
 
     steps:
-      - uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
@@ -278,7 +287,7 @@ jobs:
           -o results.sarif
           .
 
-      - uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225
+      - uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa
         if: ( success() || failure() ) && contains('["success", "failure"]', steps.run-ruff-sarif.outcome)
         with:
           sarif_file: results.sarif
@@ -297,7 +306,7 @@ jobs:
       security-events: write
 
     steps:
-      - uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
@@ -326,7 +335,7 @@ jobs:
           --format 'sarif'
           --output 'results.sarif'
 
-      - uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225
+      - uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa
         if: ( success() || failure() ) && contains('["success", "failure"]', steps.run-bandit-sarif.outcome)
         with:
           sarif_file: results.sarif
@@ -350,7 +359,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
@@ -379,7 +388,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
@@ -416,7 +425,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: step-security/harden-runner@8d3c67de8e2fe68ef647c8db1e6a09f647780f40
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
