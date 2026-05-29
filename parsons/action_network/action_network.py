@@ -679,7 +679,6 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/events>`__
 
         """
-
         data = {"title": title}
 
         if start_date:
