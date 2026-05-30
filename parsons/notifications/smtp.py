@@ -1,7 +1,9 @@
 import contextlib
 import smtplib
+from collections.abc import Mapping
 from email.message import Message
 from email.utils import getaddresses
+from typing import Literal
 
 from parsons.notifications.sendmail import EmptyListError, SendMail
 from parsons.utilities import check_env
@@ -43,7 +45,7 @@ class SMTP(SendMail):
         tls: bool | None = None,
         ssl: bool | None = None,
         close_manually: bool = False,
-    ):
+    ) -> None:
         self.tls = check_env.check("SMTP_TLS", tls, optional=True) not in ("0", "False", False)
         self.ssl = check_env.check("SMTP_SSL", ssl, optional=True) in ("1", "True", True)
         if (tls is False) or (self.ssl is True):
@@ -59,7 +61,7 @@ class SMTP(SendMail):
 
         self.conn = None
 
-    def get_connection(self):
+    def get_connection(self) -> smtplib.SMTP | smtplib.SMTP_SSL:
         """
         Get the active SMTP connection.
 
@@ -81,7 +83,7 @@ class SMTP(SendMail):
 
         return self.conn
 
-    def quit(self):
+    def quit(self) -> None:
         """
         Close the connection manually.
 
@@ -100,7 +102,7 @@ class SMTP(SendMail):
         finally:
             self.conn = None
 
-    def _send_message(self, message: Message) -> dict:
+    def _send_message(self, message: Message) -> Mapping[str, tuple[int, bytes]] | None:
         """
         Send an email message.
 
@@ -109,7 +111,8 @@ class SMTP(SendMail):
                 A Message object to be sent.
 
         Returns:
-            dict of refused recipient addresses (otherwise None)
+            Mapping[str, tuple[int, bytes]] | None
+                Refused recipient addresses (otherwise None)
 
         Raises:
             EmptyListError
@@ -144,7 +147,7 @@ class SMTP(SendMail):
             if not self.close_manually:
                 self.quit()
 
-    def _infer_port(self):
+    def _infer_port(self) -> Literal[465, 587, 25]:
         """
         Set active port by assuming port number based on security protocol used.
 
