@@ -267,7 +267,7 @@ def test_send_email_files_as_single_string(smtp: SMTP, mock_conn: MagicMock, tmp
 
 
 def test_send_email_empty_recipient_list(smtp: SMTP):
-    with pytest.raises(EmptyListError, match="Must contain at least 1 email."):
+    with pytest.raises(EmptyListError, match="Must provide at least 1 email."):
         smtp.send_email("sender@ex.com", [], "Sub", "Body")
 
 
