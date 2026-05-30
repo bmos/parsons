@@ -9,6 +9,7 @@ from unittest.mock import MagicMock
 
 import httplib2
 import pytest
+from email_validator import EmailSyntaxError
 from googleapiclient.errors import HttpError
 
 from parsons import Gmail
@@ -178,21 +179,15 @@ def test_create_message_attachments_all(
         ("<sender@email.com>", True),
         ("Sender sender@email.com", False),
         ("Sender <sender2email.com>", False),
-        (
-            "Sender <sender@email,com>",
-            not getattr(email.utils, "supports_strict_parsing", False),
-        ),
-        (
-            "Sender <sender+alias@email,com>",
-            not getattr(email.utils, "supports_strict_parsing", False),
-        ),
+        ("Sender <sender@email,com>", False),
+        ("Sender <sender+alias@email,com>", False),
     ],
 )
 def test__validate_email_string(gmail_client: Gmail, email_str: str, expected_valid: bool):
     if expected_valid:
         assert gmail_client._validate_email_string(email_str)
     else:
-        with pytest.raises(ValueError, match="Invalid email address"):
+        with pytest.raises(EmailSyntaxError):
             gmail_client._validate_email_string(email_str)
 
 
