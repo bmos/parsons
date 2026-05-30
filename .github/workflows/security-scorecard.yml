@@ -11,9 +11,9 @@ on:
   # To guarantee Maintained check is occasionally updated. See
   # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
   pull_request:
-    branches: [ 'main', 'major-release' ]
+    branches: ["main", "major-release"]
   schedule:
-    - cron: '45 16 * * 2'
+    - cron: "45 16 * * 2"
 
 permissions: read-all
 
@@ -33,7 +33,7 @@ jobs:
       # actions: read
 
     steps:
-      - uses: step-security/harden-runner@fe104658747b27e96e4f7e80cd0a94068e53901d
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -61,6 +61,6 @@ jobs:
           results_format: sarif
           publish_results: true
 
-      - uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13
+      - uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa
         with:
           sarif_file: results.sarif

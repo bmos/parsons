@@ -2,9 +2,20 @@ name: PR label checking
 
 on:
   pull_request_target:
-    types: [opened, edited, reopened, ready_for_review, labeled, unlabeled, synchronize]
+    types:
+      - opened
+      - edited
+      - reopened
+      - ready_for_review
+      - labeled
+      - unlabeled
+      - synchronize
 
 permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   label-from-files:
@@ -15,7 +26,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
@@ -40,7 +51,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
@@ -49,7 +60,7 @@ jobs:
             github.com:443
 
       - name: Update labels based on checkboxes
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
         with:
           script: |
             const body = context.payload.pull_request.body || "";
@@ -62,6 +73,7 @@ jobs:
             for (const { text, label } of mapping) {
               await core.group(`Processing label: ${label}`, async () => {
                 const isChecked = new RegExp(`- \\[x\\] ${text}`, 'i').test(body);
+                const isUnchecked = new RegExp(`- \\[ \\] ${text}`, 'i').test(body);
 
                 if (isChecked) {
                   console.log(`Adding label: ${label}`);
@@ -71,7 +83,7 @@ jobs:
                     issue_number: context.issue.number,
                     labels: [label]
                   });
-                } else {
+                } else if (isUnchecked) {
                   console.log(`Removing label: ${label} (if present)`);
                   try {
                     await github.rest.issues.removeLabel({
@@ -84,6 +96,8 @@ jobs:
                   } catch (e) {
                     if (e.status !== 404) throw e;
                   }
+                } else {
+                  console.log(`Checkbox for "${text}" not found in PR description. Skipping.`);
                 }
               });
             }
@@ -96,7 +110,7 @@ jobs:
     needs: label-from-checkboxes
 
     steps:
-      - uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
         with:
           disable-sudo: true
           egress-policy: block
@@ -105,10 +119,16 @@ jobs:
             github.com:443
 
       - name: Check for required labels
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
         with:
           script: |
-            const labels = context.payload.pull_request.labels.map(l => l.name);
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            const labels = pullRequest.labels.map(l => l.name);
             core.debug(`Detected labels: ${JSON.stringify(labels)}`);
 
             const hasBreaking = labels.includes('breaking-change');
