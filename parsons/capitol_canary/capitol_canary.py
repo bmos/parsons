@@ -98,7 +98,6 @@ class CapitolCanary:
                 * advocates
 
         """
-
         # Convert the passed in updated_since into a Unix timestamp (which is what the API wants)
         updated_since = date_to_timestamp(updated_since)
 
@@ -169,11 +168,10 @@ class CapitolCanary:
                 sync errors.
 
         Returns:
-            parsons.Table
-                See :ref:`parsons-table` for output options.
+            Table
+                See :ref:`Table` for output options.
 
         """
-
         args = {
             "state": state,
             "zip": zip,
@@ -263,7 +261,6 @@ class CapitolCanary:
                 ID of the created advocate
 
         """
-
         # Validate the passed in arguments
 
         if not campaigns:
@@ -365,7 +362,6 @@ class CapitolCanary:
                 Additional fields on the advocate to update
 
         """
-
         # Validate the passed in arguments
         if (sms_optin or sms_optout) and not (phone and campaigns):
             raise ValueError(
