@@ -40,7 +40,8 @@ class Sisense:
         self, dashboard_id: str | int, chart_id: str | int = None, **kwargs
     ):
         """
-        This method publishes a dashboard or chart using the provided arguments.
+        Publish a dashboard or chart using the provided arguments.
+
         For available options, see the `API documentation <https://dtdocs.sisense.com/article/embed-api-options>`__.
 
         Args:

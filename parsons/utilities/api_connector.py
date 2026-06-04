@@ -195,6 +195,7 @@ class APIConnector:
 
         """
         r = self.request(url, "GET", params=params, raise_on_error=raise_on_error, **kwargs)
+        self.validate_response(r)
 
         if return_format == "json":
             return r.json()
