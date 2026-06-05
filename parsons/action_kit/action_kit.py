@@ -1395,12 +1395,13 @@ class ActionKit:
         """
         # self.conn defaults to JSON, but this has to be form/multi-part....
         upload_client = self._conn({"accepts": "application/json"})
-        # TODO: use context manager or close file when done
+
         if isinstance(csv_file, str):
-            csv_file = Path(csv_file).open(mode="rb")  # noqa SIM115 open-file-with-context-handler
+            csv_file = Path(csv_file)
+        csv_buffer = csv_file.open(mode="rb") if isinstance(csv_file, Path) else csv_file
 
         url = self._base_endpoint("upload")
-        files = {"upload": csv_file}
+        files = {"upload": csv_buffer}
         data = {
             "page": import_page,
             "autocreate_user_fields": int(autocreate_user_fields),
@@ -1414,6 +1415,9 @@ class ActionKit:
                 "id": progress_url.split("/")[-2] if progress_url else None,
                 "progress_url": progress_url,
             }
+
+        if isinstance(csv_file, Path):
+            csv_buffer.close()
 
         return rv
 
