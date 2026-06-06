@@ -176,14 +176,13 @@ class S3:
                 resp = self.client.list_objects_v2(**args)
 
             except ClientError as e:
-                error_message = """Unable to list bucket objects!
-                This may be due to a lack of permission on the requested
-                bucket. Double-check that you have sufficient READ permissions
-                on the bucket you've requested. If you only have permissions for
-                keys within a specific prefix, make sure you include a trailing '/' in
-                in prefix."""
-
-                logger.error(error_message)
+                logger.error(
+                    "Unable to list bucket objects! "
+                    "This may be due to a lack of permission on the requested bucket. "
+                    "Double-check that you have sufficient READ permissions on the bucket you've requested. "
+                    "If you only have permissions for keys within a specific prefix, "
+                    "make sure you include a trailing '/' in prefix."
+                )
 
                 raise e
 
@@ -432,8 +431,8 @@ class S3:
             if remove_original:
                 try:
                     self.remove_file(origin_bucket, origin_key)
-                except Exception as e:
-                    logger.error("Failed to delete original key: " + str(e))
+                except Exception:
+                    logger.exception("Failed to delete original key")
 
             if public_read:
                 object_acl = self.s3.ObjectAcl(destination_bucket, destination_key)

@@ -898,10 +898,13 @@ class GoogleBigQuery(DatabaseConnector):
                 return load_job
             except exceptions.BadRequest as e:
                 for idx, error_ in enumerate(load_job.errors):
-                    if idx == 0:
-                        logger.error("* Load job failed. Enumerating errors collection below:")
-                    logger.error(f"** Error collection - index {idx}:")
-                    logger.error(error_)
+                    err_msg = (
+                        "* Load job failed. Enumerating errors collection below:\n"
+                        if idx == 0
+                        else ""
+                    )
+                    err_msg += f"** Error collection - index {idx}:\n"
+                    logger.error(f"{err_msg}\n{error_}")
 
                 raise e
 
@@ -1630,12 +1633,14 @@ class GoogleBigQuery(DatabaseConnector):
         try:
             load_job.result(timeout=max_timeout)
             return load_job
+
         except exceptions.BadRequest as e:
             for idx, error_ in enumerate(load_job.errors):
-                if idx == 0:
-                    logger.error("* Load job failed. Enumerating errors collection below:")
-                logger.error(f"** Error collection - index {idx}:")
-                logger.error(error_)
+                err_msg = (
+                    "* Load job failed. Enumerating errors collection below:\n" if idx == 0 else ""
+                )
+                err_msg += f"** Error collection - index {idx}:\n"
+                logger.error(f"{err_msg}\n{error_}")
 
             raise e
 
@@ -1764,9 +1769,8 @@ class GoogleBigQuery(DatabaseConnector):
                 dataset = bigquery.Dataset(dataset_id)
                 self.client.create_dataset(dataset, timeout=30)
             else:  # if it doesn't exist and it's not ok to create it, fail
-                logger.error("BigQuery copy failed")
-                logger.error(
-                    f"Dataset {destination_dataset} does not exist and if_dataset_not_exists set to {if_dataset_not_exists}"
+                logger.exception(
+                    f"BigQuery copy failed. Dataset {destination_dataset} does not exist and `if_dataset_not_exists` set to {if_dataset_not_exists}"
                 )
 
         job_config = bigquery.CopyJobConfig()
