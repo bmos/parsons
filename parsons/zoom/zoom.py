@@ -78,7 +78,7 @@ class ZoomV1:
             Parsons Table of API responses
 
         """
-        # TODO: Consider increasing default page size.
+        # TODO(jburchard): Consider increasing default page size.
         logger.warning("This version of the Zoom connector uses a deprecated pagination method.")
         logger.info("Consider switching to V2!")
         logger.info(

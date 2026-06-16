@@ -455,7 +455,7 @@ class ActionKit:
 
     def update_campaign(self) -> None:
         """Update a campaign (NOT IMPLEMENTED)"""
-        # TODO: Add functionality
+        # TODO(jburchard): Add functionality
         err_msg = "ActionKit.update_campaign() is not implemented"
         raise NotImplementedError(err_msg)
 
@@ -1396,7 +1396,7 @@ class ActionKit:
         """
         # self.conn defaults to JSON, but this has to be form/multi-part....
         upload_client = self._conn({"accepts": "application/json"})
-        # TODO: use context manager or close file when done
+        # TODO(bmos): use context manager or close file when done
         if isinstance(csv_file, str):
             csv_file = Path(csv_file).open(mode="rb")  # noqa SIM115 open-file-with-context-handler
 
