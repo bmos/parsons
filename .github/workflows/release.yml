@@ -17,10 +17,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-      cancel-in-progress: true
-
     env:
       CACHE_GLOBS: |
         **/pyproject.toml
@@ -84,7 +80,7 @@ jobs:
           name: parsons-dist
           path: dist
 
-      - name: extract requirements.txt for use in pip cache
+      - name: extract requirements for use in pip cache
         shell: bash
         run: |
           file=$(find ./dist -name 'parsons-*.tar.gz' | head -1)
@@ -119,6 +115,10 @@ jobs:
 
     permissions:
       id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.job }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
 
     steps:
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411
