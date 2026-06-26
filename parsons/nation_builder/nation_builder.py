@@ -93,7 +93,7 @@ class NationBuilder:
 
         while True:
             try:
-                logger.debug(f"sending request {url}")
+                logger.debug("sending request %s", url)
                 response = self.client.get_request(url=url)
 
                 res = response.get("results", None)
@@ -101,7 +101,7 @@ class NationBuilder:
                 if res is None:
                     break
 
-                logger.debug(f"response got {len(res)} records")
+                logger.debug("response got %s records", len(res))
 
                 data.extend(res)
 
