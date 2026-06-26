@@ -94,7 +94,7 @@ class GoogleCloudStorage:
 
         """
         buckets = [b.name for b in self.client.list_buckets()]
-        logger.info(f"Found {len(buckets)}.")
+        logger.info("Found %s.", len(buckets))
         return buckets
 
     def bucket_exists(self, bucket_name):
@@ -146,7 +146,7 @@ class GoogleCloudStorage:
         # TODO: Allow user to set all of the bucket parameters
 
         self.client.create_bucket(bucket_name)
-        logger.info(f"Created {bucket_name} bucket.")
+        logger.info("Created %s bucket.", bucket_name)
 
     def delete_bucket(self, bucket_name, delete_blobs=False):
         """
@@ -162,7 +162,7 @@ class GoogleCloudStorage:
         """
         bucket = self.get_bucket(bucket_name)
         bucket.delete(force=delete_blobs)
-        logger.info(f"{bucket_name} bucket deleted.")
+        logger.info("%s bucket deleted.", bucket_name)
 
     def list_blobs(
         self,
@@ -200,7 +200,7 @@ class GoogleCloudStorage:
 
         lst = list(blobs) if include_file_details else [b.name for b in blobs]
 
-        logger.info(f"Found {len(lst)} in {bucket_name} bucket.")
+        logger.info("Found %s in %s bucket.", len(lst), bucket_name)
 
         return lst
 
@@ -261,7 +261,7 @@ class GoogleCloudStorage:
         with Path(local_path).open(mode="rb") as f:
             blob.upload_from_file(f, **kwargs)
 
-        logger.info(f"{blob_name} put in {bucket_name} bucket.")
+        logger.info("%s put in %s bucket.", blob_name, bucket_name)
 
     def download_blob(self, bucket_name, blob_name, local_path=None):
         """
@@ -309,9 +309,9 @@ class GoogleCloudStorage:
         blob = self.get_blob(bucket_name, blob_name)
         if blob:
             blob.delete()
-            logger.info(f"{blob_name} blob in {bucket_name} bucket deleted.")
+            logger.info("%s blob in %s bucket deleted.", blob_name, bucket_name)
         else:
-            logger.warning(f"Blob: {blob} doesn't exist.")
+            logger.warning("Blob: %s doesn't exist.", blob)
 
     def upload_table(
         self,
@@ -535,7 +535,7 @@ class GoogleCloudStorage:
                             {create_result.name} failed with error: {error_output}"""
                         )
                     else:
-                        logger.info(f"TransferJob: {create_result.name} succeeded.")
+                        logger.info("TransferJob: %s succeeded.", create_result.name)
                         return
 
             else:

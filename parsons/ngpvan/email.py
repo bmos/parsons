@@ -141,7 +141,8 @@ class Email:
                     # Pending emails don't have emailMessageContentDistributions, just have defaults
                     if not i["emailMessageContentDistributions"]:
                         logger.info(
-                            f"No emailMessageContentDistributions for email {i['name']}, defaulting values to 0"
+                            "No emailMessageContentDistributions for email %s, defaulting values to 0",
+                            i["name"],
                         )
                     else:
                         try:
@@ -161,7 +162,8 @@ class Email:
                     inner = dict.fromkeys(inner_fields, 0)
                     if not i["emailMessageContentDistributions"]:
                         logger.info(
-                            f"No emailMessageContentDistributions for email {i['name']}, defaulting values to 0"
+                            "No emailMessageContentDistributions for email %s, defaulting values to 0",
+                            i["name"],
                         )
                     else:
                         try:

@@ -243,7 +243,7 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
             if self._create_table_precheck(connection, table_name, if_exists):
                 sql = self.create_statement(tbl, table_name, strict_length=strict_length)
                 self.query_with_connection(sql, connection, commit=False)
-                logger.info(f"Table {table_name} created.")
+                logger.info("Table %s created.", table_name)
 
             # Chunk tables in batches of 1K rows, though this can be tuned and
             # optimized further.
@@ -299,13 +299,13 @@ class MySQL(DatabaseConnector, MySQLCreateTable, Alchemy):
             if if_exists == "truncate":
                 sql = f"TRUNCATE TABLE {table_name}"
                 self.query_with_connection(sql, connection, commit=False)
-                logger.info(f"{table_name} truncated.")
+                logger.info("%s truncated.", table_name)
                 return False
 
             if if_exists == "drop":
                 sql = f"DROP TABLE {table_name}"
                 self.query_with_connection(sql, connection, commit=False)
-                logger.info(f"{table_name} dropped.")
+                logger.info("%s dropped.", table_name)
                 return True
 
         else:

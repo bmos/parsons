@@ -30,7 +30,7 @@ class SqliteTable(BaseTable):
     def truncate(self) -> None:
         """Truncate the table."""
         self.db.query(f"delete from {self.table}")
-        logger.info(f"{self.table} truncated.")
+        logger.info("%s truncated.", self.table)
 
 
 class Sqlite(DatabaseConnector):
@@ -225,7 +225,7 @@ class Sqlite(DatabaseConnector):
                 sql = self.create_statement(tbl, table_name)
 
                 self.query_with_connection(sql, connection, commit=False, return_values=False)
-                logger.info(f"{table_name} created.")
+                logger.info("%s created.", table_name)
 
         # Use the sqlite3 command line for csv import if possible, as it is much more efficient
         if shutil.which("sqlite3") and not force_python_sdk:
@@ -234,7 +234,7 @@ class Sqlite(DatabaseConnector):
         else:
             self.import_table_iteratively(tbl, table_name, if_exists)
 
-        logger.info(f"{len(tbl)} rows copied to {table_name}.")
+        logger.info("%s rows copied to %s.", len(tbl), table_name)
 
     def import_table_iteratively(
         self, tbl: Table, table_name: str, if_exists: str, chunksize=10000
@@ -312,11 +312,11 @@ class Sqlite(DatabaseConnector):
 
             if if_exists == "truncate":
                 truncate_sql = f"DELETE FROM {table_name};"
-                logger.info(f"Truncating {table_name}.")
+                logger.info("Truncating %s.", table_name)
                 self.query_with_connection(truncate_sql, connection, commit=False)
 
             if if_exists == "drop":
-                logger.info(f"Dropping {table_name}.")
+                logger.info("Dropping %s.", table_name)
                 drop_sql = f"DROP TABLE {table_name};"
                 self.query_with_connection(drop_sql, connection, commit=False)
                 return True

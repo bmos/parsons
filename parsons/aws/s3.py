@@ -438,7 +438,7 @@ class S3:
                 object_acl = self.s3.ObjectAcl(destination_bucket, destination_key)
                 object_acl.put(ACL="public-read")
 
-        logger.info(f"Finished syncing {len(key_list)} keys")
+        logger.info("Finished syncing %s keys", len(key_list))
 
     def get_buckets_with_subname(self, bucket_subname):
         """

@@ -326,7 +326,7 @@ class SendMail(ABC):
                 sender, to, subject, message_text, files, message_html
             )
 
-        self.log.info(f"Sending a(n) {msg_type} email...")
+        self.log.info("Sending a(n) %s email...", msg_type)
 
         self._send_message(msg)
 

@@ -430,10 +430,10 @@ class Redshift(
                     )
 
                 self.query_with_connection(sql, connection, commit=False)
-                logger.info(f"{table_name} created.")
+                logger.info("%s created.", table_name)
 
             # Copy the table
-            logger.info(f"Data type is {data_type}")
+            logger.info("Data type is %s", data_type)
             copy_sql = self.copy_statement(
                 table_name,
                 bucket,
@@ -461,7 +461,7 @@ class Redshift(
             )
 
             self.query_with_connection(copy_sql, connection, commit=False)
-            logger.info(f"Data copied to {table_name}.")
+            logger.info("Data copied to %s.", table_name)
 
     def copy(
         self,
@@ -637,7 +637,7 @@ class Redshift(
                         strict_length=strict_length,
                     )
                 self.query_with_connection(sql, connection, commit=False)
-                logger.info(f"{table_name} created.")
+                logger.info("%s created.", table_name)
 
             # If alter_table is True, then alter table if the table column widths
             # are wider than the existing table.
@@ -683,7 +683,7 @@ class Redshift(
                 logger.debug("Copy SQL command: %s", sql_censored)
                 self.query_with_connection(sql, connection, commit=False)
 
-                logger.info(f"Data copied to {table_name}.")
+                logger.info("Data copied to %s.", table_name)
 
             # Clean up the S3 bucket.
             finally:
@@ -807,7 +807,7 @@ class Redshift(
             statement += "HEADER \n" if header else ""
             statement += f"{compression.upper()} \n" if compression else ""
 
-        logger.info(f"Unloading data to s3://{bucket}/{key_prefix}")
+        logger.info("Unloading data to s3://%s/%s", bucket, key_prefix)
         # Censor sensitive data
         statement_censored = sql_helpers.redact_credentials(statement)
         logger.debug(statement_censored)
@@ -951,7 +951,7 @@ class Redshift(
             # Upload the file to S3
             s3.put_file(manifest_bucket, manifest_key, manifest_path)
 
-            logger.info(f"Manifest saved to s3://{manifest_bucket}/{manifest_key}")
+            logger.info("Manifest saved to s3://%s/%s", manifest_bucket, manifest_key)
 
         return manifest
 
@@ -1060,7 +1060,7 @@ class Redshift(
         with self.connection() as connection:
             try:
                 # Copy to a staging table
-                logger.info(f"Building staging table: {staging_tbl}")
+                logger.info("Building staging table: %s", staging_tbl)
                 if "compupdate" not in copy_args:
                     # Especially with a lot of columns, compupdate=True can
                     # cause a lot of processing/analysis by Redshift before upload.
@@ -1115,7 +1115,7 @@ class Redshift(
                        """
 
                 self.query_with_connection(sql, connection, commit=False)
-                logger.info(f"Target rows inserted to {target_table}")
+                logger.info("Target rows inserted to %s", target_table)
 
             finally:
                 if cleanup_temp_table:
@@ -1123,14 +1123,14 @@ class Redshift(
                     self.query_with_connection(
                         f"DROP TABLE IF EXISTS {staging_tbl};", connection, commit=False
                     )
-                    logger.info(f"{staging_tbl} staging table dropped.")
+                    logger.info("%s staging table dropped.", staging_tbl)
 
         # Vacuum table. You must commit when running this type of transaction.
         if vacuum:
             with self.connection() as connection:
                 connection.set_session(autocommit=True)
                 self.query_with_connection(f"VACUUM {target_table};", connection)
-                logger.info(f"{target_table} vacuumed.")
+                logger.info("%s vacuumed.", target_table)
 
     def drop_dependencies_for_cols(self, schema, table, cols):
         fmt_cols = ", ".join(f"'{c}'" for c in cols)
@@ -1164,7 +1164,7 @@ class Redshift(
             if dropped_views:
                 sql_drop = "\n".join(f"drop view {view} CASCADE;" for view in dropped_views)
                 tbl = self.query_with_connection(sql_drop, connection)
-                logger.info(f"Dropped the following views: {dropped_views}")
+                logger.info("Dropped the following views: %s", dropped_views)
 
         return tbl
 
@@ -1197,7 +1197,7 @@ class Redshift(
         # their width.
         for c in set(rc.keys()).intersection(set(pc.keys())):
             if rc[c] < pc[c] and rc[c] != 65535:
-                logger.info(f"{c} not wide enough. Expanding column width.")
+                logger.info("%s not wide enough. Expanding column width.", c)
                 # If requested size is larger than Redshift will allow,
                 # automatically set to Redshift's max varchar width
                 new_size = 65535
@@ -1228,7 +1228,7 @@ class Redshift(
         with self.connection() as connection:
             connection.set_session(autocommit=True)
             self.query_with_connection(sql, connection)
-            logger.info(f"Altered {table_name} {column_name}.")
+            logger.info("Altered %s %s.", table_name, column_name)
 
     def table(self, table_name):
         # Return a Redshift table object

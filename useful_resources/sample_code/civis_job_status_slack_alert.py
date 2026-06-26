@@ -102,7 +102,7 @@ def get_last_success(object_id, object_type):
                 break
 
     else:
-        logger.info(f"{object_type} is not a valid object type.")
+        logger.info("%s is not a valid object type.", object_type)
 
     return last_success
 
@@ -112,7 +112,7 @@ def main():
 
     scripts_table = get_workflows_and_jobs(CIVIS_PROJECT).sort(columns=["state", "name"])
 
-    logger.info(f"Found {scripts_table.num_rows} jobs and workflows in {project_name} project.")
+    logger.info("Found %s jobs and workflows in %s project.", scripts_table.num_rows, project_name)
 
     # This is a list of strings we will build with each job's status
     output_lines = []
@@ -128,7 +128,7 @@ def main():
     # Combine the list of statuses into one string
     line_items = "\n".join(output_lines)
     message = f"*{project_name} Status*\n{line_items}"
-    logger.info(f"Posting message to Slack channel {SLACK_CHANNEL}")
+    logger.info("Posting message to Slack channel %s", SLACK_CHANNEL)
     # Post message
     slack.message_channel(SLACK_CHANNEL, message)
     logger.info("Slack message posted")

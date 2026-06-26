@@ -196,11 +196,11 @@ class PostgresCore(PostgresCreateStatement):
 
             if if_exists == "truncate":
                 truncate_sql = f"TRUNCATE TABLE {table_name};"
-                logger.info(f"Truncating {table_name}.")
+                logger.info("Truncating %s.", table_name)
                 self.query_with_connection(truncate_sql, connection, commit=False)
 
             if if_exists == "drop":
-                logger.info(f"Dropping {table_name}.")
+                logger.info("Dropping %s.", table_name)
                 drop_sql = f"DROP TABLE {table_name};"
                 self.query_with_connection(drop_sql, connection, commit=False)
                 return True
