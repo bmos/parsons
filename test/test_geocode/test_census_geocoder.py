@@ -15,7 +15,6 @@ def cg():
     return CensusGeocoder()
 
 
-@pytest.mark.live
 def test_geocode_onelineaddress(cg):
     cg.cg = mock.MagicMock()
     address = "1600 Pennsylvania Avenue, Washington, DC"
@@ -33,7 +32,6 @@ def test_geocode_onelineaddress(cg):
     assert geo == locations_resp
 
 
-@pytest.mark.live
 def test_geocode_address(cg):
     cg.cg = mock.MagicMock()
     passed_address = {
@@ -53,7 +51,6 @@ def test_geocode_address(cg):
     assert geo == locations_resp
 
 
-@pytest.mark.live
 def test_geocode_address_batch(cg):
     batch = [
         ["id", "street", "city", "state", "zip"],
@@ -71,7 +68,7 @@ def test_geocode_address_batch(cg):
     assert_matching_tables(geo, Table(petl.fromdicts(batch_resp)))
 
 
-@pytest.mark.live
+@pytest.mark.vcr
 def test_coordinates(cg):
     # Assert coordinates data returns expected response.
     cg.cg.address = mock.MagicMock(return_value=coord_resp)
