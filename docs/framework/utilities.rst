@@ -136,8 +136,8 @@ Rate-Limited API Connector
 ==========================
 
 .. automodule:: parsons.utilities.ratelimited_api_connector
-:inherited-members:
-:members:
+   :inherited-members:
+   :members:
 
 SQL Helpers
 ===========
