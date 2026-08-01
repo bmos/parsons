@@ -7,7 +7,14 @@ from parsons.utilities.api_connector import APIConnector
 
 
 class RateLimitedAPIConnector(APIConnector):
-    """A wrapper around APIConnector that adds rate limiting using pyrate-limiter."""
+    """
+    A wrapper around APIConnector that adds rate limiting using pyrate-limiter.
+
+    Args:
+        ratelimit:
+            The rate limit to apply to API calls, as a pyrate-limiter :class:`pyrate_limiter.abstracts.Rate` object.
+
+    """
 
     def __init__(self, *args, ratelimit: Rate, **kwargs) -> None:
         self.limiter = Limiter(ratelimit)
