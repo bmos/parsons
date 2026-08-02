@@ -1,8 +1,6 @@
 import pytest
 import requests
-from requests.exceptions import HTTPError
 
-from parsons import Table
 from parsons.utilities.api_connector import APIConnector
 
 
