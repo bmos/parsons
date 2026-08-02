@@ -29,10 +29,10 @@ class RateLimitedAPIConnector(APIConnector):
     ) -> requests.Response:
         """
         Make a rate limited request.
-        
+
         If the rate limit has been exceeded, the request will be held for the next available opportunity.
         All args will be passed through to :class:`APIConnector`.
-        
+
         """
         self.limiter.try_acquire("api_call")
         return super().request(*args, **kwargs)
