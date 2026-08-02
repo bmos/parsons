@@ -1,5 +1,5 @@
 import pytest
-import requests
+from requests_mock import Mocker
 
 from parsons.utilities.api_connector import APIConnector
 
@@ -11,7 +11,7 @@ def connector() -> APIConnector:
     )
 
 
-def test_init_adds_headers(connector: APIConnector, requests_mock) -> None:
+def test_init_adds_headers(connector: APIConnector, requests_mock: Mocker) -> None:
     requests_mock.get(
         "https://api.example.com/v1/data", json={"status": "authorized"}, status_code=200
     )
@@ -38,7 +38,7 @@ def test_request_with_additional_headers(connector: APIConnector, requests_mock)
     assert req.headers["X-Custom-Header"] == "value"
 
 
-def test_request_merges_base_and_additional_headers(connector: APIConnector, requests_mock) -> None:
+def test_request_merges_base_and_additional_headers(connector: APIConnector, requests_mock: Mocker) -> None:
     requests_mock.get("https://api.example.com/v1/data", json={}, status_code=200)
 
     connector.request(
