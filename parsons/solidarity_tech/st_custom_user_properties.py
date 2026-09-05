@@ -171,7 +171,7 @@ class SolidarityTechCustomUserProperties(SolidarityTechBase):
             `<https://www.solidarity.tech/reference/delete_custom-user-properties-custom-user-property-id-options-id>`__
 
         """
-        res = self._del_request(
+        res = self._delete_request(
             "custom_user_properties",
             f"{custom_user_property_id}/options/{resource_id}",
             additional_headers={"accept": "application/json"},

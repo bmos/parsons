@@ -355,7 +355,7 @@ class SolidarityTechEventSessions(SolidarityTechBase):
             `<https://www.solidarity.tech/reference/delete_event-sessions-id>`__
 
         """
-        res = self._del_request(
+        res = self._delete_request(
             "event_sessions",
             resource_id,
         )
@@ -444,7 +444,7 @@ class SolidarityTechEventSessions(SolidarityTechBase):
             `<https://www.solidarity.tech/reference/delete_event-sessions-id-hosts-user-id>`__
 
         """
-        res = self._del_request(
+        res = self._delete_request(
             "event_sessions",
             f"{resource_id}/hosts/{user_id}",
         )

@@ -553,7 +553,7 @@ class SolidarityTechUsers(SolidarityTechBase):
             `<https://www.solidarity.tech/reference/delete_users-id>`__
 
         """
-        res = self._del_request(
+        res = self._delete_request(
             "users", resource_id, additional_headers={"accept": "application/json"}
         )
 

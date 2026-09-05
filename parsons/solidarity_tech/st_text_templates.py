@@ -237,7 +237,7 @@ class SolidarityTechTextTemplates(SolidarityTechBase):
             `<https://www.solidarity.tech/reference/delete_text-templates-id>`__
 
         """
-        res = self._del_request("text_templates", resource_id)
+        res = self._delete_request("text_templates", resource_id)
 
         expected_responses = {404: (False, "text template not found")}
         return self._handle_status_codes(res=res, codes=expected_responses)

@@ -107,7 +107,7 @@ class SolidarityTechUserNotes(SolidarityTechBase):
         params: _JsonType = {"user_id": user_id}
         self._add_if_field_not_empty(params, "agent_id", agent_id)
 
-        res = self._del_request("user_notes", resource_id, params=params)
+        res = self._delete_request("user_notes", resource_id, params=params)
 
         expected_responses = {
             200: (True, "user note deleted"),

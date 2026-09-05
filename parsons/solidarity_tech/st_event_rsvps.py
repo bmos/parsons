@@ -268,7 +268,7 @@ class SolidarityTechEventRSVPs(SolidarityTechBase):
             `<https://www.solidarity.tech/reference/delete_event-rsvps-id>`__
 
         """
-        res = self._del_request(
+        res = self._delete_request(
             "event_rsvps",
             resource_id,
         )

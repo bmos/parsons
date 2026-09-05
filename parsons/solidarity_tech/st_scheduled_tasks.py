@@ -261,7 +261,7 @@ class SolidarityTechScheduledTasks(SolidarityTechBase):
             `<https://www.solidarity.tech/reference/delete_scheduled-tasks-id>`__
 
         """
-        res = self._del_request("scheduled_tasks", resource_id)
+        res = self._delete_request("scheduled_tasks", resource_id)
 
         expected_responses = {404: (False, "scheduled task not found")}
         return self._handle_status_codes(res=res, codes=expected_responses)

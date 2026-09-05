@@ -163,8 +163,8 @@ class SolidarityTechBase:
             url=complete_endpoint, req_type="PUT", json=payload, raise_on_error=False, **kwargs
         )
 
-    def _del_request(self, endpoint: str, resource_id: int | str, **kwargs) -> requests.Response:
-        """Handle DEL requests."""
+    def _delete_request(self, endpoint: str, resource_id: int | str, **kwargs) -> requests.Response:
+        """Handle DELETE requests."""
         complete_endpoint = f"{endpoint}/{resource_id}"
         logger.debug("Processing DEL request at endpoint: %s", complete_endpoint)
         return self.api.request(

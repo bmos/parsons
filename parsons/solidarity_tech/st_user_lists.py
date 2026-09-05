@@ -250,7 +250,7 @@ class SolidarityTechUserLists(SolidarityTechBase):
             `<https://www.solidarity.tech/reference/delete_user-lists-id>`__
 
         """
-        res = self._del_request(
+        res = self._delete_request(
             "user_lists",
             resource_id,
         )

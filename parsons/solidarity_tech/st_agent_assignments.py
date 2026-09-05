@@ -235,7 +235,7 @@ class SolidarityTechAgentAssignments(SolidarityTechBase):
             `<https://www.solidarity.tech/reference/delete_agent-assignments-id>`__
 
         """
-        res = self._del_request("agent_assignments", resource_id)
+        res = self._delete_request("agent_assignments", resource_id)
 
         expected_responses = {404: (False, "agent assignment not found")}
         return self._handle_status_codes(res=res, codes=expected_responses)

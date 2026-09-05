@@ -129,7 +129,7 @@ class SolidarityTechUserRelationships(SolidarityTechBase):
         """
         params: _JsonType = {"user_id": user_id}
 
-        res = self._del_request(
+        res = self._delete_request(
             "user_relationships",
             resource_id,
             params=params,

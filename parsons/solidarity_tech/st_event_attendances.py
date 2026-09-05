@@ -144,7 +144,7 @@ class SolidarityTechEventAttendances(SolidarityTechBase):
             `<https://www.solidarity.tech/reference/delete_event-attendances-id>`__
 
         """
-        res = self._del_request(
+        res = self._delete_request(
             "event_attendances",
             resource_id,
         )

@@ -155,7 +155,7 @@ class SolidarityTechTaskAgents(SolidarityTechBase):
             `<https://www.solidarity.tech/reference/delete_task-agents-id>`__
 
         """
-        res = self._del_request("task_agents", resource_id)
+        res = self._delete_request("task_agents", resource_id)
 
         expected_responses = {404: (False, "task agent not found")}
         return self._handle_status_codes(res=res, codes=expected_responses)
