@@ -9,7 +9,7 @@ from parsons.solidarity_tech.base import SolidarityTechBase
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from parsons.solidarity_tech.enums import InviteType, ScopeType
+    from parsons.solidarity_tech.datatypes import InviteType, ScopeType
 
 logger = logging.getLogger(__name__)
 

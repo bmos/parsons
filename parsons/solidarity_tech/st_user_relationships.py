@@ -1,20 +1,16 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 from parsons import Table
 from parsons.solidarity_tech.base import SolidarityTechBase
 
 if TYPE_CHECKING:
+    from parsons.solidarity_tech.datatypes import UserRelationshipData
     from parsons.utilities.api_connector import _JsonType
 
 logger = logging.getLogger(__name__)
-
-
-class UserRelationshipData(TypedDict):
-    id: str
-    text: str
 
 
 class SolidarityTechUserRelationships(SolidarityTechBase):

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 from parsons import Table
 from parsons.solidarity_tech.base import SolidarityTechBase
@@ -9,40 +9,10 @@ from parsons.solidarity_tech.base import SolidarityTechBase
 if TYPE_CHECKING:
     from datetime import datetime
 
+    from parsons.solidarity_tech.datatypes import ActivityData, ActivityMetadata
     from parsons.utilities.api_connector import _JsonType
 
 logger = logging.getLogger(__name__)
-
-
-class ActionData(TypedDict):
-    id: int
-    user_id: int
-    agent_user_id: int | None
-    field_type: str | None
-    old_value: str | None
-    new_value: str | None
-    data_import_id: int | None
-    created_at: str
-    updated_at: str
-
-
-class ActivityData(TypedDict):
-    id: int
-    user_id: int
-    name: str
-    actionable_id: int
-    actionable_type: str
-    action: ActionData
-    created_at: str
-    updated_at: str
-
-
-class ActivityMetadata(TypedDict):
-    total_count: int | None
-    limit: int
-    offset: int
-    cursor: int | None
-    next_cursor: int | None
 
 
 class SolidarityTechActivities(SolidarityTechBase):

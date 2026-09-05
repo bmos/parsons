@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from parsons.solidarity_tech.base import SolidarityTechBase
 
 if TYPE_CHECKING:
-    from parsons.solidarity_tech.enums import InteractionType
+    from parsons.solidarity_tech.datatypes import InteractionType
     from parsons.utilities.api_connector import _JsonType
 
 logger = logging.getLogger(__name__)

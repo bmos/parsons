@@ -71,7 +71,11 @@ API
    :inherited-members:
    :members:
 
-.. automodule:: parsons.solidarity_tech.enums
+.. automodule:: parsons.solidarity_tech.datatypes
+   :inherited-members:
+   :members:
+
+.. automodule:: parsons.solidarity_tech.auth
    :inherited-members:
    :members:
 

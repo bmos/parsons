@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 from parsons import Table
 from parsons.solidarity_tech.base import Metadata, SolidarityTechBase
@@ -9,16 +9,10 @@ from parsons.solidarity_tech.base import Metadata, SolidarityTechBase
 if TYPE_CHECKING:
     from datetime import datetime
 
+    from parsons.solidarity_tech.datatypes import ChapterData
+
+
 logger = logging.getLogger(__name__)
-
-
-class ChapterData(TypedDict):
-    id: int
-    name: str
-    logo_url: str
-    organization_id: int
-    chapter_phone_number: str
-    calendar_feed_url: str
 
 
 class SolidarityTechChapters(SolidarityTechBase):

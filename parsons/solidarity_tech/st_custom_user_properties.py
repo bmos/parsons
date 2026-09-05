@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any
 
 from parsons import Table
 from parsons.solidarity_tech.base import Metadata, SolidarityTechBase
@@ -9,25 +9,14 @@ from parsons.solidarity_tech.base import Metadata, SolidarityTechBase
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from parsons.solidarity_tech.enums import FieldType, ScopeType
+    from parsons.solidarity_tech.datatypes import (
+        FieldType,
+        ScopeType,
+        UserPropertyData,
+    )
     from parsons.utilities.api_connector import _JsonType
 
 logger = logging.getLogger(__name__)
-
-
-class UserPropertyDataValue(TypedDict):
-    label: dict[str, Any]
-    value: str
-
-
-class UserPropertyData(TypedDict):
-    id: int
-    name: str
-    key: str
-    field_type: FieldType
-    options: list[UserPropertyDataValue] | None
-    scope_id: int | None
-    scope_type: ScopeType | None
 
 
 class SolidarityTechCustomUserProperties(SolidarityTechBase):

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING
 
 from parsons import Table
 from parsons.solidarity_tech.base import Metadata, SolidarityTechBase
@@ -9,58 +9,9 @@ from parsons.solidarity_tech.base import Metadata, SolidarityTechBase
 if TYPE_CHECKING:
     from datetime import datetime
 
+    from parsons.solidarity_tech.datatypes import DonationChargeData
+
 logger = logging.getLogger(__name__)
-
-
-class DonationChargeDataChapter(TypedDict):
-    id: int
-    name: str
-
-
-class DonationChargeDataUser(TypedDict):
-    id: int
-    email: str
-    first_name: str
-    last_name: str
-    phone_number: str
-    created_at: str
-    address1: str | None
-    address2: str | None
-    city: str | None
-    state: str | None
-    zip_code: str | None
-    country_name: str | None
-
-
-class DonationChargeDataActionPage(TypedDict):
-    id: int
-    title: str
-    url_slug: str
-
-
-class DonationChargeData(TypedDict):
-    id: int
-    amount: int
-    created_at: str
-    updated_at: str
-    success: bool
-    refunded: bool
-    receipt_number: str
-    hash_id: str
-    processing_fee_cents: int | None
-    external_donation_id: str | None
-    external_donation_date: str | None
-    is_external: bool
-    amount_in_dollars: str
-    currency: str
-    currency_symbol: str
-    receipt_url: str
-    brand: str
-    last4: str
-    json: dict[str, Any]
-    user: DonationChargeDataUser
-    action_page: DonationChargeDataActionPage
-    chapter: DonationChargeDataChapter
 
 
 class SolidarityTechDonationCharges(SolidarityTechBase):

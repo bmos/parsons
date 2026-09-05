@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, TypedDict
+from typing import TYPE_CHECKING, Any
 
 from parsons.solidarity_tech.base import SolidarityTechBase
 
 logger = logging.getLogger(__name__)
 
-
-class FieldSurveyURL(TypedDict):
-    url: str
-    expires_at: str
+if TYPE_CHECKING:
+    from parsons.solidarity_tech.datatypes import FieldSurveyURL
 
 
 class SolidarityTechFieldSurveyURLs(SolidarityTechBase):

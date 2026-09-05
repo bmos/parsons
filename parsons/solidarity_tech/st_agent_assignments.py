@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any
 
 from parsons import Table
 from parsons.solidarity_tech.base import Metadata, SolidarityTechBase
@@ -9,17 +9,10 @@ from parsons.solidarity_tech.base import Metadata, SolidarityTechBase
 if TYPE_CHECKING:
     from datetime import datetime
 
+    from parsons.solidarity_tech.datatypes import AgentAssignmentData
     from parsons.utilities.api_connector import _JsonType
 
 logger = logging.getLogger(__name__)
-
-
-class AgentAssignmentData(TypedDict):
-    id: int
-    agent_user_id: int
-    user_id: int
-    created_at: str
-    is_active: bool
 
 
 class SolidarityTechAgentAssignments(SolidarityTechBase):
@@ -160,7 +153,9 @@ class SolidarityTechAgentAssignments(SolidarityTechBase):
         }
         self._handle_status_codes(res=res, codes=expected_responses)
 
-        return AgentAssignmentData(res.json()["data"])
+        data: AgentAssignmentData = res.json()["data"]
+
+        return data
 
     def update_agent_assignment(
         self,

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 from parsons import Table
 from parsons.solidarity_tech.base import Metadata, SolidarityTechBase
@@ -9,36 +9,10 @@ from parsons.solidarity_tech.base import Metadata, SolidarityTechBase
 if TYPE_CHECKING:
     from datetime import datetime
 
+    from parsons.solidarity_tech.datatypes import CallData
     from parsons.utilities.api_connector import _JsonType
 
 logger = logging.getLogger(__name__)
-
-
-class TranscriptData(TypedDict):
-    summary: str | None
-    rating: int | None
-    sentiment: str | None
-    engagement_analysis: str | None
-    engagement_analysis_justification: str | None
-
-
-class CallData(TypedDict):
-    id: int
-    user_id: int
-    chapter_id: int | None
-    direction: str
-    from_number: str | None
-    to_number: str | None
-    phonebank_id: int | None
-    agent_user_id: int | None
-    notes: str | None
-    duration: int
-    picked_up: bool
-    left_voicemail: bool
-    twilio_call_sid: str
-    created_at: str
-    ended_at: str | None
-    transcription: TranscriptData | None
 
 
 class SolidarityTechCalls(SolidarityTechBase):

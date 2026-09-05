@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import logging
-import numbers
-from typing import TYPE_CHECKING, Any, Literal, TypedDict
+from typing import TYPE_CHECKING, Any
 
 from parsons import Table
 from parsons.solidarity_tech.base import SolidarityTechBase
@@ -10,24 +9,9 @@ from parsons.solidarity_tech.base import SolidarityTechBase
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from parsons.solidarity_tech.enums import ScopeType
+    from parsons.solidarity_tech.datatypes import QueryParams, ScopeType
 
 logger = logging.getLogger(__name__)
-
-CompareValueType = str | numbers.Rational | bool
-
-
-class QueryRule(TypedDict):
-    id: str
-    type: str
-    operator: str
-    value: CompareValueType | list[CompareValueType]
-
-
-class QueryParams(TypedDict):
-    condition: Literal["AND", "OR"]
-    valid: bool
-    rules: list[QueryRule]
 
 
 class SolidarityTechUserLists(SolidarityTechBase):

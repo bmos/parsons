@@ -1,27 +1,15 @@
 from __future__ import annotations
 
 import logging
-from typing import TypedDict
+from typing import TYPE_CHECKING
 
 from parsons import Table
 from parsons.solidarity_tech.base import Metadata, SolidarityTechBase
 
 logger = logging.getLogger(__name__)
 
-
-EmailSenderData = TypedDict(
-    "EmailSenderData",
-    {
-        "id": int,
-        "name": str,
-        "email": str,
-        "from": str,
-        "default_for_scope": bool,
-        "scope_type": str,
-        "scope_id": int,
-        "created_at": str,
-    },
-)
+if TYPE_CHECKING:
+    from parsons.solidarity_tech.datatypes import EmailSenderData
 
 
 class SolidarityTechEmailSenders(SolidarityTechBase):

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any
 from zoneinfo import ZoneInfo
 
 from parsons import Table
@@ -11,54 +11,15 @@ if TYPE_CHECKING:
     import numbers
     from datetime import datetime
 
+    from parsons.solidarity_tech.datatypes import (
+        UserData,
+        UserDeleteMetadata,
+        UserMergeMetadata,
+    )
     from parsons.utilities.api_connector import _JsonType
 
+
 logger = logging.getLogger(__name__)
-
-
-class AddressData(TypedDict):
-    address1: str | None
-    address2: str | None
-    city: str | None
-    state: str | None
-    zip_code: str | None
-    country: str | None
-
-
-class UserData(TypedDict):
-    id: int
-    hash_id: str
-    phone_number: str | None
-    email: str | None
-    first_name: str | None
-    last_name: str | None
-    alternate_name: str | None
-    preferred_language: str
-    second_language: str | None
-    chapter_id: int
-    chapter_ids: list[int]
-    branch_id: int | None
-    created_at: str
-    custom_user_properties: dict[str, str | list[str]]
-    address: AddressData
-    sms_permission: bool
-    call_permission: bool
-    email_permission: bool
-    other_emails: list[str]
-    other_phone_numbers: list[str]
-
-
-class UserMergeMetadata(TypedDict):
-    message: str
-    primary_user_id: int
-    merged_user_ids: list[int]
-    merged_count: int
-    not_found_user_ids: list[int] | None
-
-
-class UserDeleteMetadata(TypedDict):
-    message: str
-    id: int | None
 
 
 class SolidarityTechUsers(SolidarityTechBase):

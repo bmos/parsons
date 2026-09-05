@@ -9,7 +9,7 @@ from parsons.solidarity_tech.base import SolidarityTechBase
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from parsons.solidarity_tech.enums import AttendanceStatus
+    from parsons.solidarity_tech.datatypes import AttendanceStatus
     from parsons.utilities.api_connector import _JsonType
 
 logger = logging.getLogger(__name__)
