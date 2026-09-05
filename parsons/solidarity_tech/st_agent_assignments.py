@@ -161,10 +161,10 @@ class SolidarityTechAgentAssignments(SolidarityTechBase):
         self,
         resource_id: int,
         user_id: int,
-        agent_user_id: int,
+        agent_user_id: int | None = None,
         *,
         is_active: bool | None = None,
-    ) -> bool:
+    ) -> AgentAssignmentData:
         """
         Update an agent assignment with specified details.
 
@@ -205,7 +205,11 @@ class SolidarityTechAgentAssignments(SolidarityTechBase):
             404: (False, "agent assignment not found"),
             422: (False, "unprocessable entity"),
         }
-        return self._handle_status_codes(res=res, codes=expected_responses)
+        self._handle_status_codes(res=res, codes=expected_responses)
+
+        data: AgentAssignmentData = res.json()["data"]
+
+        return data
 
     def delete_agent_assignment(
         self,

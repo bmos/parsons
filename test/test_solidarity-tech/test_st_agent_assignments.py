@@ -150,3 +150,52 @@ class TestCreateAgentAssignment:
         assert requests_mock.last_request.json()["user_id"] == user_id
         assert requests_mock.last_request.json()["agent_user_id"] == agent_user_id
         assert requests_mock.last_request.json()["is_active"] == is_active
+
+
+class TestUpdateAgentAssignment:
+    @pytest.mark.vcr
+    def test_update_agent_assignment_live_success(self, st: SolidarityTech) -> None:
+        """Verify that :meth:`~parsons.solidarity_tech.SolidarityTech.update_agent_assignment` returns the data for the updated agent assignment."""
+        resource_id = 610872
+        user_id = 1191722
+        agent_user_id = 2192968
+
+        agent_assignment = st.update_agent_assignment(
+            resource_id=resource_id,
+            user_id=user_id,
+            agent_user_id=agent_user_id,
+        )
+
+        assert agent_assignment["id"] == resource_id
+        assert agent_assignment["user_id"] == user_id
+        assert agent_assignment["agent_user_id"] == agent_user_id
+
+    @pytest.mark.vcr
+    def test_update_agent_assignment_live_failure(self, st: SolidarityTech) -> None:
+        """Verify that :meth:`~parsons.solidarity_tech.SolidarityTech.update_agent_assignment` fails if either user_id or agent_user_id is invalid."""
+        with pytest.raises(STFailedResponseError, match="Not Found"):
+            _ = st.update_agent_assignment(resource_id=295862, user_id=928642, agent_user_id=99)
+
+    def test_update_agent_assignment(self, st: SolidarityTech, requests_mock: Mocker) -> None:
+        """Verify that :meth:`~parsons.solidarity_tech.SolidarityTech.update_agent_assignment` makes the appropriate calls."""
+        resource_id = 295862
+        user_id = 1191722
+        agent_user_id = 2192958
+        is_active = False
+        endpoint_url = f"{st.api_url}{ENDPOINT}/{resource_id}"
+        _ = requests_mock.put(endpoint_url, status_code=200, json={"data": {}})
+
+        _ = st.update_agent_assignment(
+            resource_id=resource_id,
+            user_id=user_id,
+            agent_user_id=agent_user_id,
+            is_active=is_active,
+        )
+
+        assert requests_mock.call_count == 1
+        assert requests_mock.last_request is not None
+        assert requests_mock.last_request.method == "PUT"
+        assert requests_mock.last_request.url == endpoint_url
+        assert requests_mock.last_request.json()["user_id"] == user_id
+        assert requests_mock.last_request.json()["agent_user_id"] == agent_user_id
+        assert requests_mock.last_request.json()["is_active"] == is_active
