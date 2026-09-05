@@ -8,7 +8,11 @@ from urllib.parse import urlencode, urlsplit
 import pytest
 import requests
 
-from parsons.solidarity_tech.exceptions import STFailedResponseError, STUnexpectedResponseError
+from parsons.solidarity_tech.exceptions import (
+    STFailedAuthenticationError,
+    STFailedResponseError,
+    STUnexpectedResponseError,
+)
 
 if TYPE_CHECKING:
     from requests_mock import Mocker
@@ -28,13 +32,49 @@ def known_status_codes() -> dict[int, tuple[bool, str]]:
     }
 
 
+class TestDeleteRequest:
+    """Tests for :meth:`parsons.solidarity_tech.SolidarityTech._delete_request`."""
+
+    def test_delete_request(self, st: SolidarityTech, requests_mock: Mocker) -> None:
+        """Make a DELETE request with an ID."""
+        resource_id = 42
+        endpoint = "users"
+        endpoint_url = f"{st.api_url}{endpoint}/{resource_id}"
+        _ = requests_mock.delete(endpoint_url, json={"id": resource_id})
+
+        _ = st._delete_request(endpoint, resource_id)
+
+        assert requests_mock.call_count == 1
+        assert requests_mock.last_request is not None
+        assert requests_mock.last_request.method == "DELETE"
+        assert requests_mock.last_request.url == endpoint_url
+
+
+class TestPutRequest:
+    """Tests for :meth:`parsons.solidarity_tech.SolidarityTech._put_request`."""
+
+    def test_put_request(self, st: SolidarityTech, requests_mock: Mocker) -> None:
+        """Make a GET request with an ID."""
+        resource_id = 42
+        endpoint = "users"
+        endpoint_url = f"{st.api_url}{endpoint}/{resource_id}"
+        _ = requests_mock.put(endpoint_url, json={"id": resource_id})
+
+        _ = st._put_request(endpoint, resource_id)
+
+        assert requests_mock.call_count == 1
+        assert requests_mock.last_request is not None
+        assert requests_mock.last_request.method == "PUT"
+        assert requests_mock.last_request.url == endpoint_url
+
+
 class TestPostRequest:
-    """Tests for the _post_request method."""
+    """Tests for :meth:`parsons.solidarity_tech.SolidarityTech._post_request`."""
 
     @pytest.mark.parametrize(
         "endpoint", ["custom_user_properties", "event_sessions/295876/hosts", "field_survey_urls"]
     )
-    def test_get_single_resource_handles_varied_endpoints(
+    def test_post_request_handles_varied_endpoints(
         self, st: SolidarityTech, requests_mock: Mocker, endpoint: str
     ) -> None:
         """Make a POST request to varied endpoints."""
@@ -48,7 +88,7 @@ class TestPostRequest:
         assert requests_mock.last_request.method == "POST"
         assert requests_mock.last_request.url == endpoint_url
 
-    def test_get_single_resource_makes_request_with_payload(
+    def test_post_request_makes_request_with_payload(
         self, st: SolidarityTech, requests_mock: Mocker
     ) -> None:
         """Makes a POST request with payload."""
@@ -63,7 +103,7 @@ class TestPostRequest:
         assert requests_mock.last_request.url == st.api_url
         assert requests_mock.last_request.json() == payload
 
-    def test_get_single_resource_makes_request_with_params(
+    def test_post_request_makes_request_with_params(
         self, st: SolidarityTech, requests_mock: Mocker
     ) -> None:
         """Make a POST request with params."""
@@ -82,7 +122,7 @@ class TestPostRequest:
 
 
 class TestGetSingleResource:
-    """Tests for the _get_single_resource method."""
+    """Tests for :meth:`parsons.solidarity_tech.SolidarityTech._get_single_resource`."""
 
     def test_get_single_resource_makes_request_with_id(
         self, st: SolidarityTech, requests_mock: Mocker
@@ -102,7 +142,7 @@ class TestGetSingleResource:
 
 
 class TestGetResources:
-    """Tests for the _get_resources method."""
+    """Tests for :meth:`parsons.solidarity_tech.SolidarityTech._get_resources`."""
 
     @pytest.mark.parametrize("endpoint", ["activities", "agent_assignments", "users/124876"])
     def test_get_resources_makes_request(
@@ -186,9 +226,24 @@ class TestGetResources:
         with pytest.raises(KeyError, match="Request param '_limit' already exists"):
             _ = st._get_resources(st.api_url, limit=15, params={"_limit": 30})
 
+    def test_get_resources_does_not_include_params_with_none_value(
+        self,
+        st: SolidarityTech,
+        requests_mock: Mocker,
+    ) -> None:
+        """Skip queries passed in params that have the value of None."""
+        _ = requests_mock.get(st.api_url)
+
+        _ = st._get_resources(st.api_url, params={"_limit": None})
+
+        assert requests_mock.call_count == 1
+        assert requests_mock.last_request is not None
+        assert requests_mock.last_request.method == "GET"
+        assert requests_mock.last_request.url == st.api_url
+
 
 class TestAddIfFieldNotEmpty:
-    """Test the ``_add_if_field_not_empty`` method."""
+    """Test the :meth:`parsons.solidarity_tech.SolidarityTech._add_if_field_not_empty` method."""
 
     @pytest.mark.parametrize(
         ("key", "value", "expected"),
@@ -236,7 +291,7 @@ class TestAddIfFieldNotEmpty:
 
 
 class TestHandleStatusCodes:
-    """Test the ``_handle_status_codes`` method."""
+    """Test :meth:`parsons.solidarity_tech.SolidarityTech._handle_status_codes`."""
 
     @pytest.mark.parametrize(
         "status_code",
@@ -269,6 +324,24 @@ class TestHandleStatusCodes:
             )
             with pytest.raises(STFailedResponseError, match=err_msg):
                 _ = st._handle_status_codes(res, known_status_codes)
+
+    def test_handle_status_codes_unauthorized(
+        self,
+        st: SolidarityTech,
+        requests_mock: Mocker,
+        known_status_codes: dict[int, tuple[bool, str]],
+    ) -> None:
+        """Raise a :class:`STUnexpectedResponseError` if parsing an unrecognized status code."""
+        status_code = 401
+
+        _ = requests_mock.get("https://api.example.com", status_code=status_code)
+        res = requests.get("https://api.example.com")
+
+        with pytest.raises(
+            STFailedAuthenticationError,
+            match=re.escape(f"Authentication failed or not provided (Status Code {status_code})"),
+        ):
+            _ = st._handle_status_codes(res, known_status_codes)
 
     def test_handle_status_codes_unrecognized(
         self,
