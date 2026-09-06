@@ -52,6 +52,16 @@ def test_request_with_additional_headers(connector: APIConnector, requests_mock:
     assert req.headers["X-Custom-Header"] == "value"
 
 
+def test_get_request_with_invalid_return_format(
+    connector: APIConnector, requests_mock: Mocker
+) -> None:
+    """Test that get_request method raises RuntimeError if `return_format` is invalid."""
+    requests_mock.get("https://api.example.com/v1/data")
+
+    with pytest.raises(RuntimeError, match="not a valid format, change to json or content"):
+        connector.get_request("data", return_format="invalid")  # type: ignore[ty:no-matching-overload]
+
+
 def test_init_loads_headers() -> None:
     """Test that providing headers sets the base headers on the session."""
     headers = CaseInsensitiveDict({"authorization": "Bearer cz8on37ogn37vn9wg3n7gy29"})
@@ -132,3 +142,28 @@ def test_init_creates_regular_session() -> None:
     conn = APIConnector(uri=EXAMPLE_URL)
     assert isinstance(conn.session, requests.Session)
     assert not isinstance(conn.session, requests_ratelimiter.LimiterSession)
+
+
+def test_can_access_deprecated_properties() -> None:
+    """Test that the deprecated auth and headers properties still work."""
+    headers = CaseInsensitiveDict({"authorization": "Bearer cz8on37ogn37vn9wg3n7gy29"})
+    auth = HTTPBasicAuth("user", "passwd")
+    conn = APIConnector(uri=EXAMPLE_URL, headers=headers, auth=auth)
+
+    # Ensure deprecated properties pass through session data
+    assert conn.headers == conn.session.headers
+    assert conn.auth == conn.session.auth
+
+    # Ensure setting value of deprecated properties updates session data
+    conn.headers = CaseInsensitiveDict({"authorization": "Bearer i3f937792g37739b937"})
+    conn.auth = HTTPBasicAuth("lizzy", "solidarity")
+
+    assert conn.headers == conn.session.headers
+    assert conn.auth == conn.session.auth
+
+    # Ensure deleting deprecated properties deletes session data
+    del conn.headers
+    del conn.auth
+
+    assert getattr(conn, "headers", None) == getattr(conn.session, "headers", None)
+    assert getattr(conn, "auth", None) == getattr(conn.session, "auth", None)
