@@ -38,11 +38,19 @@ class NationBuilder:
 
     @classmethod
     def get_uri(cls, slug: str | None) -> str:
+        """
+        Get the NationBuilder API URI for a given slug.
+
+        Raises:
+            TypeError: If slug is not a string or None.
+            ValueError: If slug is an empty string.
+
+        """
         if slug is None:
-            raise ValueError("slug can't be None")
+            raise TypeError("slug can't be None")
 
         if not isinstance(slug, str):
-            raise ValueError("slug must be an str")
+            raise TypeError("slug must be an str")
 
         if len(slug.strip()) == 0:
             raise ValueError("slug can't be an empty str")
@@ -66,13 +74,21 @@ class NationBuilder:
 
     @classmethod
     def validate_auth(cls, access_token: str | None) -> str:
+        """
+        Check that `access_token` is a valid string.
+
+        Raises:
+            TypeError: If access token is None or not a string.
+            ValueError: If access token is an empty string.
+
+        """
         if access_token is None:
             err_msg = "access_token can't be None"
-            raise ValueError(err_msg)
+            raise TypeError(err_msg)
 
         if not isinstance(access_token, str):
             err_msg = "access_token must be an str"
-            raise ValueError(err_msg)
+            raise TypeError(err_msg)
 
         if len(access_token.strip()) == 0:
             err_msg = "access_token can't be an empty str"
