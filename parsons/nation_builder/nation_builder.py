@@ -3,7 +3,10 @@ import logging
 import time
 from typing import Any, Literal, cast
 from urllib.parse import parse_qs, urlparse
-from warnings import deprecated
+
+from typing_extensions import (
+    deprecated,  # TODO(bmos): import from warnings when Python >= 3.13
+)
 
 from parsons import Table
 from parsons.utilities import check_env
@@ -47,13 +50,16 @@ class NationBuilder:
 
         """
         if slug is None:
-            raise TypeError("slug can't be None")
+            err_msg = "slug can't be None"
+            raise TypeError(err_msg)
 
         if not isinstance(slug, str):
-            raise TypeError("slug must be an str")
+            err_msg = "slug must be an str"
+            raise TypeError(err_msg)
 
         if len(slug.strip()) == 0:
-            raise ValueError("slug can't be an empty str")
+            err_msg = "slug can't be an empty str"
+            raise ValueError(err_msg)
 
         return f"https://{slug}.nationbuilder.com/api/v1"
 
