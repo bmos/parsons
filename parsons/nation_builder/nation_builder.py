@@ -7,13 +7,14 @@ from urllib.parse import parse_qs, urlparse
 from parsons import Table
 from parsons.utilities import check_env
 from parsons.utilities.api_connector import APIConnector
+from parsons.utilities.bearer_auth import BearerAuth
 
 logger = logging.getLogger(__name__)
 
 
 class NationBuilder:
     """
-    Instantiate the NationBuilder class
+    Instantiate the NationBuilder class.
 
     Args:
         slug: str
@@ -29,11 +30,10 @@ class NationBuilder:
     def __init__(self, slug: str | None = None, access_token: str | None = None) -> None:
         slug = check_env.check("NB_SLUG", slug)
         token = check_env.check("NB_ACCESS_TOKEN", access_token)
-
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
-        headers.update(NationBuilder.get_auth_headers(token))
+        auth = BearerAuth(NationBuilder.validate_auth(token))
 
-        self.client = APIConnector(NationBuilder.get_uri(slug), headers=headers)
+        self.client = APIConnector(NationBuilder.get_uri(slug), headers=headers, auth=auth)
 
     @classmethod
     def get_uri(cls, slug: str | None) -> str:
@@ -49,17 +49,20 @@ class NationBuilder:
         return f"https://{slug}.nationbuilder.com/api/v1"
 
     @classmethod
-    def get_auth_headers(cls, access_token: str | None) -> dict[str, str]:
+    def validate_auth(cls, access_token: str | None) -> str:
         if access_token is None:
-            raise ValueError("access_token can't be None")
+            err_msg = "access_token can't be None"
+            raise ValueError(err_msg)
 
         if not isinstance(access_token, str):
-            raise ValueError("access_token must be an str")
+            err_msg = "access_token must be an str"
+            raise ValueError(err_msg)
 
         if len(access_token.strip()) == 0:
-            raise ValueError("access_token can't be an empty str")
+            err_msg = "access_token can't be an empty str"
+            raise ValueError(err_msg)
 
-        return {"authorization": f"Bearer {access_token}"}
+        return access_token
 
     @classmethod
     def parse_next_params(cls, next_value: str) -> tuple[str, str]:

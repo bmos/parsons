@@ -13,10 +13,10 @@ class TestNationBuilder(unittest.TestCase):
         nb = NB("test-slug", "test-token")
         assert nb.client.uri == "https://test-slug.nationbuilder.com/api/v1/"
         assert nb.client.headers == {
-            "authorization": "Bearer test-token",
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
+        assert nb.client.auth.api_key == "test-token"
 
     def test_get_uri_success(self):
         assert NB.get_uri("foo") == "https://foo.nationbuilder.com/api/v1"
@@ -31,11 +31,11 @@ class TestNationBuilder(unittest.TestCase):
             ):
                 NB.get_uri(v)
 
-    def test_get_auth_headers_success(self):
-        assert NB.get_auth_headers("foo") == {"authorization": "Bearer foo"}
-        assert NB.get_auth_headers("bar") == {"authorization": "Bearer bar"}
+    def test_validate_auth_success(self):
+        assert NB.validate_auth("foo") == "foo"
+        assert NB.validate_auth("bar") == "bar"
 
-    def test_get_auth_headers_errors(self):
+    def test_validate_auth_errors(self):
         values = ["", "  ", None, 1337, {}, []]
 
         for v in values:
@@ -43,7 +43,7 @@ class TestNationBuilder(unittest.TestCase):
                 ValueError,
                 match=r"(access_token must be an str|access_token can't be (None|an empty str))",
             ):
-                NB.get_auth_headers(v)
+                NB.validate_auth(v)
 
     def test_parse_next_params_success(self):
         n, t = NB.parse_next_params("/a/b/c?__nonce=foo&__token=bar")
