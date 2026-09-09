@@ -1,8 +1,9 @@
 import json
 import logging
 import time
-from typing import Any, cast
+from typing import Any, Literal, cast
 from urllib.parse import parse_qs, urlparse
+from warnings import deprecated
 
 from parsons import Table
 from parsons.utilities import check_env
@@ -47,6 +48,21 @@ class NationBuilder:
             raise ValueError("slug can't be an empty str")
 
         return f"https://{slug}.nationbuilder.com/api/v1"
+
+    @classmethod
+    @deprecated("Auth headers are now handled automatically by requests.")
+    def get_auth_headers(cls, access_token: str | None) -> dict[Literal["authorization"], str]:
+        """
+        Return authorization headers for a given access token.
+
+        Deprecated: Use `validate_auth` instead.
+
+        Raises:
+            TypeError: If access token is None or not a string.
+            ValueError: If access token is an empty string.
+
+        """
+        return {"authorization": f"Bearer {access_token}"}
 
     @classmethod
     def validate_auth(cls, access_token: str | None) -> str:
