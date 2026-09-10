@@ -7,7 +7,7 @@ from urllib.parse import parse_qs, urlparse
 import pyrate_limiter
 import requests_ratelimiter
 
-from parsons import Table
+from parsons.etl.table import Table
 from parsons.utilities import check_env
 from parsons.utilities.api_connector import APIConnector
 

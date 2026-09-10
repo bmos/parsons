@@ -13,7 +13,7 @@ from typing_extensions import (
     deprecated,  # TODO(bmos): import from warnings when Python >= 3.13
 )
 
-from parsons import Table
+from parsons.etl.table import Table
 
 from ._api_connector_types import (
     _AuthType,
