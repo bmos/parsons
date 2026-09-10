@@ -28,7 +28,7 @@ class BearerAuth(AuthBase):
 
     def __init__(self, api_key: str) -> None:
         """Initialize handler with the API key."""
-        self.api_key = api_key
+        self.api_key = api_key.strip()
 
     def __eq__(self, other: object) -> bool:
         """Check if two instances have the same API key."""

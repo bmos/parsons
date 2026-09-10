@@ -24,6 +24,13 @@ def test_auth_init() -> None:
     assert auth.api_key == api_token
 
 
+def test_auth_strips() -> None:
+    """Test that the auth object is initialized with the supplied API key, with leading and trailing whitespace removed."""
+    api_token = secrets.token_hex(64)
+    auth = BearerAuth(f" {api_token} ")
+    assert auth.api_key == api_token
+
+
 def test_auth_eq() -> None:
     """Test that instances of auth objects with the same API key can be compared for equality."""
     api_token1 = secrets.token_hex(64)
