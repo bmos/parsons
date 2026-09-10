@@ -18,7 +18,7 @@ repos:
         types: ['python']
 
       - id: sphinx-lint
-        name: sphinx-lint
+        name: sphinx lint
         entry: uv run sphinx-lint
         language: system
         pass_filenames: true
@@ -37,3 +37,9 @@ repos:
         language: system
         pass_filenames: true
         types: ['python']
+
+      - id: generate-stubs
+        name: generate stubs
+        entry: python ./types/generate_init_pyi.py
+        language: system
+        pass_filenames: false
