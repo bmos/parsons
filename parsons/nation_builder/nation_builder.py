@@ -8,7 +8,7 @@ from typing_extensions import (
     deprecated,  # TODO(bmos): import from warnings when Python >= 3.13
 )
 
-from parsons import Table
+from parsons.etl.table import Table
 from parsons.utilities import check_env
 from parsons.utilities.api_connector import APIConnector
 from parsons.utilities.bearer_auth import BearerAuth
