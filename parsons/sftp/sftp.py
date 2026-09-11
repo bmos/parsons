@@ -349,8 +349,9 @@ class SFTP:
         if self._convert_bytes_to_megabytes(transferred) % 5 != 0:
             return
         logger.info(
-            f"Transferred: {self._convert_bytes_to_megabytes(transferred)} MB \t"
-            f"out of: {self._convert_bytes_to_megabytes(to_be_transferred)} MB"
+            "Transferred: %s MB out of: %s MB",
+            self._convert_bytes_to_megabytes(transferred),
+            self._convert_bytes_to_megabytes(to_be_transferred),
         )
 
     def put_file(
@@ -519,9 +520,8 @@ class SFTP:
         """
         if max_depth > 3:
             logger.warning(
-                f"Calling `walk_tree` with `max_depth` {max_depth}.  "
-                "Recursively walking a remote directory will be much slower than a "
-                "similar operation on a local file system."
+                "Calling `walk_tree` with `max_depth` %s. Recursively walking a remote directory will be much slower than a similar operation on a local file system.",
+                max_depth,
             )
 
         to_return = self._walk_tree(

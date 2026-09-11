@@ -1772,7 +1772,9 @@ class GoogleBigQuery(DatabaseConnector):
                 self.client.create_dataset(dataset, timeout=30)
             else:  # if it doesn't exist and it's not ok to create it, fail
                 logger.error(
-                    f"BigQuery copy failed. Dataset {destination_dataset} does not exist and `if_dataset_not_exists` set to {if_dataset_not_exists}"
+                    "BigQuery copy failed. Dataset %s does not exist and `if_dataset_not_exists` set to %s",
+                    destination_dataset,
+                    if_dataset_not_exists,
                 )
 
         job_config = bigquery.CopyJobConfig()

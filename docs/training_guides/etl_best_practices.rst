@@ -617,7 +617,7 @@ Now let's look inside the except statement. What happens if things go wrong?
 
 .. code-block:: python
 
-   logger.info(f"Error for mobilize user {mobilize_user['mobilizeid']}. Error: {str(e)}"")
+   logger.info("Error for mobilize user %s. Error: %s", mobilize_user['mobilizeid'], e)
 
    # Create a record of our failures
    log_record = {
@@ -642,7 +642,7 @@ Finally, once we've looped through all our Mobilize users, we're ready to save o
       errors_count = logtable.select_rows("{synced} is False").num_rows
       success_count = logtable.select_rows("{synced} is True").num_rows
 
-   logger.info(f'''Successfully synced {success_count} mobilize users and failed to sync {errors_count}''')
+   logger.info("Successfully synced %s mobilize users and failed to sync %s", success_count, errors_count)
 
    my_rs_warehouse.copy(tbl=logtable, table_name='mobilize_schema.mobilize_to_actionnetwork_log', if_exists='append', alter_table=True)
 

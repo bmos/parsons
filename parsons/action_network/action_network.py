@@ -35,8 +35,7 @@ class ActionNetwork:
         if per_page > 25:
             per_page = 25
             logger.info(
-                "Action Network's API will not return more than 25 entries per page. \
-            Changing per_page parameter to 25."
+                "Action Network's API will not return more than 25 entries per page. Changing per_page parameter to 25."
             )
         params = {"page": page, "per_page": per_page, "filter": filter}
         return self.api.get_request(url=object_name, params=params)
@@ -1539,10 +1538,12 @@ class ActionNetwork:
             logger.error("Response gave no valid person_id: %s", identifiers)
         else:
             person_id = person_id[0]
-        if response["created_date"] == response["modified_date"]:
-            logger.info("Entry %s successfully added.", person_id)
-        else:
-            logger.info("Entry %s successfully updated.", person_id)
+        was_added = response["created_date"] == response["modified_date"]
+        logger.info(
+            "Entry %s successfully %s.",
+            person_id,
+            "added" if was_added else "updated",
+        )
         return response
 
     def add_person(

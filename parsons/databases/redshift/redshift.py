@@ -1034,10 +1034,7 @@ class Redshift(
         sortkey = sortkey or primary_key
 
         if not self.table_exists(target_table):
-            logger.info(
-                "Target table does not exist. Copying into newly \
-                         created target table."
-            )
+            logger.info("Target table does not exist. Copying into newly created target table.")
             self.copy(table_obj, target_table, distkey=distkey, sortkey=sortkey)
             return None
 

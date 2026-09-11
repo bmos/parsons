@@ -328,8 +328,9 @@ class DBSync:
         if source_row_count != dest_row_count:
             logger.warning(
                 (
-                    f"Table count mismatch. Source table contains {source_row_count}.",
-                    f" Destination table contains {dest_row_count}.",
+                    "Table count mismatch. Source table contains %s. Destination table contains %s.",
+                    source_row_count,
+                    dest_row_count,
                 )
             )
             return False

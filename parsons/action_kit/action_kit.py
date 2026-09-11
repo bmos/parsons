@@ -1514,8 +1514,9 @@ class ActionKit:
             logger.debug("Column Upload Columns: %s", subset_table.columns)
             if not {"user_id", "email"}.intersection(subset_table.columns):
                 logger.warning(
-                    f"Upload will fail without user_id or email. "
-                    f"Rows: {subset_table.num_rows}, Columns: {subset_table.columns}"
+                    "Upload will fail without user_id or email. Rows: %s, Columns: %s",
+                    subset_table.num_rows,
+                    subset_table.columns,
                 )
             results.append(subset_table)
         return results

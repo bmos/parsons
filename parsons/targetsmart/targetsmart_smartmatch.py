@@ -264,9 +264,8 @@ class SmartMatch:
             Path(tmp.name).unlink()
 
         logger.info(
-            "The SmartMatch workflow execution has been submitted using file"
-            f" name '{submit_filename}'. Now polling for results which can take"
-            " minutes/hours depending on data size and queuing."
+            "The SmartMatch workflow execution has been submitted using file name '%s'. Now polling for results which can take minutes/hours depending on data size and queuing.",
+            submit_filename,
         )
 
         # Poll SmartMatch endpoint waiting for workflow completion

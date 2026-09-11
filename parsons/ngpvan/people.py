@@ -583,13 +583,14 @@ class People:
 
         """
         """
-        response = {"volunteerActivityId": volunteer_activity_id,
-                    "action": self._action_parse(action),
-                    "type": "VolunteerActivity"}
+        response = {
+            "volunteerActivityId": volunteer_activity_id,
+            "action": self._action_parse(action),
+            "type": "VolunteerActivity"
+        }
 
-        logger.info(f'{action} volunteer activity {volunteer_activity_id} to {id_type} {id}')
-        self.apply_response(id, response, id_type, contact_type_id, input_type_id, date_canvassed,
-                            result_code_id)
+        logger.info("%s volunteer activity %s to %s %s", action, volunteer_activity_id, id_type, id)
+        self.apply_response(id, response, id_type, contact_type_id, input_type_id, date_canvassed, result_code_id)
         """
 
     def apply_response(
