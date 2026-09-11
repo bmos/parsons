@@ -29,9 +29,19 @@ warnings.warn(
     stacklevel=2,
 )
 
+# Define the telemetry logging config.
 is_pytest = "PYTEST_VERSION" in os.environ
 telemetry_enabled = os.environ.get("PARSONS_TELEMETRY", "true") == "true" and not is_pytest
 if telemetry_enabled:
+    warnings.warn(
+        (
+            "Parsons telemetry is enabled. For more information, see <parsons telemetry documentation link here>."
+            "To opt-out, set your PARSONS_TELEMETRY environment variable to 'false'."
+        ),  # TODO(bmos): document telemetry on website and add link
+        category=RuntimeWarning,
+        stacklevel=2,
+    )
+
     posthog = ph.Posthog(
         project_api_key="phc_AdyQBW8eUMQAmPFBtgngXHe8WawYAqUXoYdhnH6hM3Qq",
         host="https://us.i.posthog.com",
@@ -140,6 +150,8 @@ def __getattr__(name: str) -> type:
         raise ImportError(err_msg) from e
 
     if telemetry_enabled:
+        # Collect telemetry when users import a connector
+        # This allows the parsons team to understand which connectors are most popular
         posthog.capture(
             "imported_connector",
             distinct_id=telemetry_id,
