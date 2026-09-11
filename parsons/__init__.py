@@ -2,6 +2,9 @@ import importlib
 import logging
 import os
 import warnings
+from uuid import uuid4
+
+import posthog as ph
 
 # Define the default logging config for Parsons and its submodules. For now the
 # logger gets a StreamHandler by default. At some point a NullHandler may be more
@@ -25,6 +28,15 @@ warnings.warn(
     category=RuntimeWarning,
     stacklevel=2,
 )
+
+is_pytest = "PYTEST_VERSION" in os.environ
+telemetry_enabled = os.environ.get("PARSONS_TELEMETRY", "true") == "true" and not is_pytest
+if telemetry_enabled:
+    posthog = ph.Posthog(
+        project_api_key="phc_AdyQBW8eUMQAmPFBtgngXHe8WawYAqUXoYdhnH6hM3Qq",
+        host="https://us.i.posthog.com",
+    )
+    telemetry_id = uuid4()
 
 _CONNECTORS = {
     "ActBlue": "parsons.actblue.actblue",
@@ -100,25 +112,42 @@ _CONNECTORS = {
     "Zoom": "parsons.zoom.zoom",
 }
 
-__all__ = list(_CONNECTORS.keys())  # type: ignore
+__all__ = list(_CONNECTORS.keys())
 
 
-def __getattr__(name):
+def __getattr__(name: str) -> type:
+    """Dynamically import connector only when accessed."""
     if name not in _CONNECTORS:
-        raise AttributeError(f"module {__name__} has no attribute {name}")
+        err_msg = f"module {__name__} has no attribute {name}"
+        raise AttributeError(err_msg)
+
     module_path = _CONNECTORS[name]
+
     try:
         module = importlib.import_module(module_path)
         connector = getattr(module, name)
         globals()[name] = connector
-        return connector
+
     except ImportError as e:
-        logger.error(f"Failed to import {name} from {module_path}.")
-        raise ImportError(
+        warning_msg = f"Failed to import {name} from {module_path}."
+        logger.error(warning_msg)
+        err_msg = (
             "The behavior of 'pip install parsons' has changed. "
             "Only core dependencies are installed by default. Learn more: "
             "https://www.parsonsproject.org/pub/improving-the-parsons-installation-experience"
-        ) from e
+        )
+        raise ImportError(err_msg) from e
+
+    if telemetry_enabled:
+        posthog.capture(
+            "imported_connector",
+            distinct_id=telemetry_id,
+            properties={
+                "$connector_name": name,
+            },
+        )
+
+    return connector
 
 
 def __dir__() -> list[str]:
