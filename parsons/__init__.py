@@ -35,6 +35,7 @@ if telemetry_enabled:
     posthog = ph.Posthog(
         project_api_key="phc_AdyQBW8eUMQAmPFBtgngXHe8WawYAqUXoYdhnH6hM3Qq",
         host="https://us.i.posthog.com",
+        before_send=lambda event: (event.pop("ip", None), event)[1],
     )
     telemetry_id = uuid4()
 
