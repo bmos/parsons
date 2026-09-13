@@ -15,7 +15,6 @@ permissions: read-all
 env:
   CACHE_GLOBS: |
     **/pyproject.toml
-    **/setup.py
     **/uv.lock
   ENDPOINT_WHITELIST: >-
     pypi.org:443
