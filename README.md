@@ -6,7 +6,7 @@
 |---------------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
 | parsons/\_\_init\_\_.py                                   |       29 |        6 |        4 |        2 |     76% |16, 108, 115-117, 125 |
 | parsons/actblue/\_\_init\_\_.py                           |        2 |        0 |        0 |        0 |    100% |           |
-| parsons/actblue/actblue.py                                |       50 |        1 |        6 |        1 |     96% |       157 |
+| parsons/actblue/actblue.py                                |       50 |        1 |        6 |        1 |     96% |       155 |
 | parsons/action\_builder/\_\_init\_\_.py                   |        2 |        0 |        0 |        0 |    100% |           |
 | parsons/action\_builder/action\_builder.py                |      142 |       24 |       50 |       11 |     81% |43, 156-165, 200, 203, 208, 212, 251, 379-388, 391, 394-402, 462, 467 |
 | parsons/action\_kit/\_\_init\_\_.py                       |        2 |        0 |        0 |        0 |    100% |           |
@@ -14,7 +14,7 @@
 | parsons/action\_network/\_\_init\_\_.py                   |        2 |        0 |        0 |        0 |    100% |           |
 | parsons/action\_network/action\_network.py                |      378 |       75 |      128 |       57 |     72% |36-37, 85-87, 128, 154, 267, 336, 364, 400, 443, 487, 598, 641, 684-\>688, 688-\>691, 722, 746, 851, 931, 973, 1017, 1021, 1182, 1218, 1317, 1344, 1460, 1463-1464, 1465-\>1473, 1468, 1475, 1477, 1479-1488, 1494-1495, 1499, 1502, 1510-\>1512, 1513, 1514-\>1516, 1516-\>1518, 1519, 1521, 1523, 1528, 1537, 1543, 1569-1571, 1635, 1666, 1715, 1762, 1792, 1834, 1860, 1974, 2000, 2103, 2199, 2234-2241, 2267, 2318, 2343, 2368, 2410 |
 | parsons/airmeet/\_\_init\_\_.py                           |        2 |        0 |        0 |        0 |    100% |           |
-| parsons/airmeet/airmeet.py                                |       87 |        1 |       18 |        3 |     96% |208-\>212, 423-\>425, 456 |
+| parsons/airmeet/airmeet.py                                |       87 |        1 |       18 |        3 |     96% |208-\>212, 423-\>425, 458 |
 | parsons/airtable/\_\_init\_\_.py                          |        2 |        0 |        0 |        0 |    100% |           |
 | parsons/airtable/airtable.py                              |       70 |        2 |       18 |        5 |     92% |113, 119, 169-\>172, 313-\>320, 320-\>323 |
 | parsons/alchemer/\_\_init\_\_.py                          |        2 |        0 |        0 |        0 |    100% |           |
@@ -93,7 +93,7 @@
 | parsons/freshdesk/\_\_init\_\_.py                         |        2 |        0 |        0 |        0 |    100% |           |
 | parsons/freshdesk/freshdesk.py                            |       67 |        6 |        8 |        3 |     88% |50-54, 80-\>86, 84 |
 | parsons/geocode/\_\_init\_\_.py                           |        2 |        0 |        0 |        0 |    100% |           |
-| parsons/geocode/census\_geocoder.py                       |       41 |        4 |        8 |        3 |     86% |114-118, 135, 150 |
+| parsons/geocode/census\_geocoder.py                       |       41 |        4 |        8 |        3 |     86% |116-120, 137, 152 |
 | parsons/github/\_\_init\_\_.py                            |        2 |        0 |        0 |        0 |    100% |           |
 | parsons/github/github.py                                  |      119 |       28 |       36 |       11 |     74% |36-\>31, 116-118, 134, 148, 180-182, 202-204, 224, 272-\>274, 278, 280, 282, 284, 286, 308, 344-350, 372-374, 417, 427, 429, 459-461 |
 | parsons/google/\_\_init\_\_.py                            |        0 |        0 |        0 |        0 |    100% |           |
@@ -189,7 +189,7 @@
 | parsons/utilities/\_\_init\_\_.py                         |        0 |        0 |        0 |        0 |    100% |           |
 | parsons/utilities/\_api\_connector\_types.py              |       23 |        0 |        0 |        0 |    100% |           |
 | parsons/utilities/api\_connector.py                       |      104 |        3 |       48 |       10 |     91% |146-\>149, 213, 267-\>exit, 310-\>313, 313-\>exit, 365-\>exit, 420-\>423, 423-\>exit, 425, 443 |
-| parsons/utilities/check\_env.py                           |       18 |        4 |       10 |        2 |     79% |78-85, 88-95 |
+| parsons/utilities/check\_env.py                           |       18 |        4 |       10 |        2 |     79% |89-96, 99-106 |
 | parsons/utilities/cloud\_storage.py                       |       11 |        7 |        6 |        0 |     24% |     39-52 |
 | parsons/utilities/credential\_tools.py                    |       68 |       16 |       22 |        2 |     71% |47, 199-214, 218 |
 | parsons/utilities/datetime.py                             |       25 |        2 |       14 |        2 |     90% |    26, 70 |
