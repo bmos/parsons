@@ -1,110 +1,98 @@
+from __future__ import annotations
+
 import logging
-from collections.abc import Callable
-from typing import Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 import petl
+from typing_extensions import Self
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from parsons import Table
+
 
 logger = logging.getLogger(__name__)
 
 
 class ETL:
-    def __init__(self):
-        pass
+    """ETL Methods for parsons Tables."""
 
-    def head(self, n: int = 5):
-        """
-        Return the first n rows of the table
+    columns: list[str]
+    num_rows: int
 
-        Args:
-            n: int
-                The number of rows to return. Defaults to 5.
+    def __init__(self) -> None:
+        """Initialize the instance."""
 
-        Returns:
-            `Parsons Table`
-
-        """
+    def head(self, n: int = 5) -> Self:
+        """Return the first `n` rows of the table."""
         self.table = petl.head(self.table, n)
 
         return self
 
-    def tail(self, n: int = 5):
-        """
-        Return the last n rows of the table
-
-        Args:
-            n: int, optional
-                The number of rows to return.
-                Defaults to 5.
-
-        Returns:
-            Table
-
-        """
+    def tail(self, n: int = 5) -> Self:
+        """Return the last `n` rows of the table."""
         self.table = petl.tail(self.table, n)
 
         return self
 
-    def add_column(self, column, value=None, index=None, if_exists: str = "fail"):
+    def add_column(
+        self,
+        column: str,
+        value: Any | None = None,
+        index: int | None = None,
+        if_exists: Literal["fail", "replace"] = "fail",
+    ) -> Self:
         """
-        Add a column to your table
+        Add a column to your table.
 
         Args:
-            column: str
-                Name of column to add
-            value: optional
-                A fixed or calculated value
-            index: int, optional
-                The position of the new column in the table
-            if_exists: str (options: 'fail', 'replace')
-                If set `replace`, this function will call `fill_column`
-                if the column already exists, rather than raising a `ValueError`
-                Defaults to "fail".
+            column: Name of column to add
+            value: A fixed or calculated value
+            index: The position of the new column in the table
+            if_exists:
+                If ``replace``, this function will call :meth:`fill_column`
+                if the column already exists, rather than raising a :exc:`ValueError`.
 
-        Returns:
-            Table
-                Also updates self
+        Raises:
+            ValueError: If the column already exists and ``if_exists`` is not ``replace``
 
         """
         if column in self.columns:
             if if_exists == "replace":
                 self.fill_column(column, value)
+
                 return self
-            else:
-                raise ValueError(f"Column {column} already exists")
+
+            err_msg = f"Column {column} already exists"
+            raise ValueError(err_msg)
 
         self.table = self.table.addfield(column, value, index)
 
         return self
 
-    def remove_column(self, *columns):
-        r"""
-        Remove a column from your table
+    def remove_column(self, *columns: str) -> Self:
+        """
+        Remove a column from your table.
 
         Args:
-            `*columns`: str
-                Column names
-
-        Returns:
-            Table
-                Also updates self
+            `*columns`: Column names
 
         """
         self.table = petl.cutout(self.table, *columns)
 
         return self
 
-    def rename_column(self, column_name, new_column_name):
+    def rename_column(self, column_name: str, new_column_name: str) -> Self:
         """
-        Rename a column
+        Rename an existing column.
 
         Args:
-            column_name: str
-                The current column name
-            new_column_name: str
-                The new column name
-        Returns:
-            Table
-                Also updates self
+            column_name: The current column name
+            new_column_name: The new column name
+
+        Raises:
+            ValueError: If the new column name already exists
 
         """
         if new_column_name in self.columns:
@@ -114,49 +102,46 @@ class ETL:
 
         return self
 
-    def rename_columns(self, column_map):
+    def rename_columns(self, column_map: dict[str, str]) -> Self:
         """
-        Rename multiple columns
+        Rename multiple columns.
 
         Args:
-            column_map: dict
-                A dictionary of columns and new names.
-                The key is the old name and the value is the new name.
+            column_map:
+                Old and new column names
 
-                Example dictionary:
-                {'old_name': 'new_name',
-                'old_name2': 'new_name2'}
+                .. code-block:: python
 
-        Returns:
-            Table
-                Also updates self
+                    {
+                        'old_name': 'new_name',
+                        'old_name2': 'new_name2',
+                    }
+
+        Raises:
+            KeyError: If the old column name does not exist
+            ValueError: If the new column name already exists
 
         """
-        # Check if old column name exists and new column name does not exist
         for old_name, new_name in column_map.items():
             if old_name not in self.table.columns():
-                raise KeyError(f"Column name {old_name} does not exist")
-            if new_name in self.table.columns():
-                raise ValueError(f"Column name {new_name} already exists")
+                err_msg = f"Column name {old_name} does not exist"
+                raise KeyError(err_msg)
 
-        # Uses the underlying petl method
+            if new_name in self.table.columns():
+                err_msg = f"Column name {new_name} already exists"
+                raise ValueError(err_msg)
+
         self.table = petl.rename(self.table, column_map)
 
         return self
 
-    def fill_column(self, column_name, fill_value):
+    def fill_column(self, column_name: str, fill_value: Any) -> Self:
         """
-        Fill a column in a table
+        Fill all values of a column in a table.
 
         Args:
-            column_name: str
-                The column to fill
-            fill_value:
-                A fixed or calculated value
-
-        Returns:
-            Table
-                Also updates self
+            column_name: The column to fill
+            fill_value: A fixed or calculated value
 
         """
         if callable(fill_value):
@@ -168,19 +153,13 @@ class ETL:
 
         return self
 
-    def fillna_column(self, column_name, fill_value):
+    def fillna_column(self, column_name: str, fill_value: Any) -> Self:
         """
-        Fill None values in a column in a table
+        Fill only ``None`` values of a column in a table.
 
         Args:
-            column_name: str
-                The column to fill
-            fill_value:
-                A fixed or calculated value
-
-        Returns:
-            Table
-                Also updates self
+            column_name: The column to fill
+            fill_value: A fixed or calculated value
 
         """
         if callable(fill_value):
@@ -201,56 +180,43 @@ class ETL:
 
         return self
 
-    def move_column(self, column, index):
+    def move_column(self, column: str, index: int) -> Self:
         """
-        Move a column
+        Move a column to a new index position.
 
         Args:
-            column: str
-                The column name to move
-            index:
-                The new index for the column
-
-        Returns:
-            Table
-                Also updates self
+            column: The column name to move
+            index: The new index for the column
 
         """
         self.table = petl.movefield(self.table, column, index)
 
         return self
 
-    def convert_column(self, *column, **kwargs):
+    def convert_column(self, *column: str, **kwargs) -> Self:
         """
-        Transform values under one or more fields via arbitrary functions, method
-        invocations or dictionary translations. This leverages the petl ``convert()``
-        method. Example usage can be found `here <https://petl.readthedocs.io/latest/transform.html#petl.transform.conversions.convert>`_.
+        Transform values under one or more fields.
+
+        Transformation is possible via arbitrary functions, method invocations or dictionary translations.
+
+        This leverages :func:`petl.convert`. Example usage can be found
+        `here <https://petl.readthedocs.io/latest/transform.html#petl.transform.conversions.convert>`__.
 
         Args:
-            `*column`: str
-                A single column or multiple columns passed as a list
-            `**kwargs`: str, method or variable
-                The update function, method, or variable to process the update
-
-        Returns:
-            Table
-                Also updates self
+            `*column`: Column(s) to convert
+            `**kwargs`: The update function, method, or variable to process the update
 
         """
         self.table = petl.convert(self.table, *column, **kwargs)
 
         return self
 
-    def get_column_max_width(self, column: str):
+    def get_column_max_width(self, column: str) -> int:
         """
         Return the maximum width of the column.
 
         Args:
-            column: str
-                The column name.
-
-        Returns:
-            int
+            column: The column name
 
         """
         max_width = 0
@@ -261,14 +227,11 @@ class ETL:
 
         return max_width
 
-    def convert_columns_to_str(self):
+    def convert_columns_to_str(self) -> Self:
         """
-        Convenience function to convert all non-string or mixed columns in a
-        Parsons table to string (e.g. for comparison)
+        Convert all non-string or mixed columns strings.
 
-        Returns:
-            Table
-                Also updates self
+        Can be very useful for comparison operations.
 
         """
         # If we don't have any rows, don't bother trying to convert things
@@ -277,10 +240,8 @@ class ETL:
 
         cols = self.get_columns_type_stats()
 
-        def str_or_empty(x):
-            if x is None:
-                return ""
-            return str(x)
+        def str_or_empty(x: Any) -> str:
+            return "" if x is None else str(x)
 
         for col in cols:
             # If there's more than one type (or no types), convert to str
@@ -290,41 +251,39 @@ class ETL:
 
         return self
 
-    def coalesce_columns(self, dest_column, source_columns, remove_source_columns=True):
+    def coalesce_columns(
+        self, dest_column: str, source_columns: list[str], remove_source_columns: bool = True
+    ) -> Self:
         """
-        Coalesces values from one or more source columns into a destination column, by selecting
-        the first non-empty value. If the destination column doesn't exist, it will be added.
+        Coalesces values from one or more source columns into a destination column.
+
+        The first non-empty value will be used.
+        If the destination column doesn't exist, it will be added.
 
         Args:
-            dest_column: str
-                Name of destination column
-            source_columns: list
-                List of source column names
-            remove_source_columns: bool
-                Whether to remove the source columns after the coalesce. If the destination
-                column is also one of the source columns, it will not be removed.
-
-        Returns:
-            Table
-                Also updates self
+            dest_column: Name of destination column
+            source_columns: List of source column names
+            remove_source_columns:
+                Whether to remove the source columns after the coalesce.
+                If the destination column is also one of the source columns, it will not be removed.
 
         """
         if dest_column in self.columns:
 
-            def convert_fn(value, row):
+            def convert_fn(_, row: dict[str, Any]) -> Any:
                 for source_col in source_columns:
-                    if row.get(source_col):
-                        return row[source_col]
+                    if column_value := row.get(source_col):
+                        return column_value
 
             logger.debug(f"Coalescing {source_columns} into {dest_column}")
             self.convert_column(dest_column, convert_fn, pass_row=True)
 
         else:
 
-            def add_fn(row):
+            def add_fn(row: dict[str, Any]) -> Any:
                 for source_col in source_columns:
-                    if row.get(source_col):
-                        return row[source_col]
+                    if column_value := row.get(source_col):
+                        return column_value
 
             logger.debug(f"Creating new column {dest_column} from {source_columns}")
             self.add_column(dest_column, add_fn)
@@ -1205,17 +1164,20 @@ class ETL:
         self.table = petl.setheader(self.table, new_header)
         return self
 
-    def use_petl(self, petl_method, *args, **kwargs):
+    def use_petl(self, petl_method: str, *args, **kwargs) -> Table:
         """
         Call a petl function on the current table.
 
         This convenience method exposes the petl functions to the current
         Table. This is useful in cases where one might need a ``petl`` function
-        that has not yet been implemented for :ref:`Table`.
+        that has not yet been implemented for :ref:`Table`. For example,
+        ``skipcomments`` is not yet implemented for :ref:`Table`, but is available
+        via ``use_petl``. See the `reference documentation`__ for more details.
+
+        __ https://petl.readthedocs.io/latest/transform.html#petl.transform.basics.skipcomments
 
         .. code-block:: python
 
-            # https://petl.readthedocs.io/en/v1.6.0/transform.html#petl.transform.basics.skipcomments
             tbl = Table(
                 [
                     ['col1', 'col2'],
@@ -1239,21 +1201,13 @@ class ETL:
             +------+------+
 
         Args:
-            petl_method: str
-                The ``petl`` function to call
-            update_table: bool
-                If ``True``, updates the :ref:`Table`. Defaults to
-                ``False``.
-            to_petl: bool
-                If ``True``, returns a petl table, otherwise a :ref:`Table`.
-                Defaults to ``False``.
+            petl_method: The name of the ``petl`` function to call
             `*args`: Any
                 The arguements to pass to the petl function.
             `**kwargs`: Any
                 The keyword arguements to pass to the petl function.
-
-        Returns:
-            :ref:`Table` or `petl` table
+                update_table (bool) -- If ``True``, updates the :ref:`Table`. Defaults to ``False``.
+                to_petl (bool) -- If ``True``, returns a petl table, otherwise a :ref:`Table`. Defaults to ``False``.
 
         """
         update_table = kwargs.pop("update_table", False)
@@ -1269,17 +1223,17 @@ class ETL:
 
         return Table(getattr(petl, petl_method)(self.table, *args, **kwargs))
 
-    def deduplicate(self, keys=None, presorted=False):
+    def deduplicate(self, keys: str | list[str] | None = None, presorted: bool = False) -> Self:
         """
-        Deduplicates table based on an optional ``keys`` argument,
-        which can contain any number of keys or None.
+        Deduplicate table.
 
-        Method considers all keys specified in the ``keys`` argument
+        All keys specified in the ``keys`` argument are considered
         when deduplicating, not each key individually. For example,
-        if ``keys=['a', 'b']``, the method will not remove a record
-        unless it's identical to another record in both columns ``a`` and ``b``.
+        if ``keys=['a', 'b']``, the method will not remove a record unless
+        it's identical to another record in both columns ``a`` and ``b``.
 
         .. code-block:: python
+            :caption: Remove all subsequent rows with {'a': 1}
 
             tbl = Table([['a', 'b'], [1, 3], [1, 2], [1, 2], [2, 3]])
 
@@ -1296,7 +1250,6 @@ class ETL:
             +---+---+
 
             tbl.deduplicate('a')
-            # removes all subsequent rows with {'a': 1}
 
             +---+---+
             | a | b |
@@ -1306,10 +1259,15 @@ class ETL:
             | 2 | 3 |
             +---+---+
 
+        .. code-block:: python
+            :caption: Remove all subsequent rows with {'a': 1} and {'b': 3}
+
             tbl = Table([['a', 'b'], [1, 3], [1, 2], [1, 2], [2, 3]]) # reset
+
             tbl.deduplicate(['a', 'b'])
-            # sorted on both ('a', 'b') so (1, 2) was placed before (1, 3)
-            # did not remove second instance of {'a': 1} or {'b': 3}
+
+            # Table is deduplicated on both ('a', 'b'), so as (1, 2) was placed
+            # before (1, 3) second instance of {'a': 1} or {'b': 3} was not removed.
 
             +---+---+
             | a | b |
@@ -1321,9 +1279,12 @@ class ETL:
             | 2 | 3 |
             +---+---+
 
-             tbl = Table([['a', 'b'], [1, 3], [1, 2], [1, 2], [2, 3]]) # reset
-             tbl.deduplicate('a').deduplicate('b')
-             # can chain method to sort/dedupe on 'a', then sort/dedupe on 'b'
+        .. code-block:: python
+            :caption: Remove all subsequent rows with {'a': 1} and then all with {'b': 3}
+
+            tbl = Table([['a', 'b'], [1, 3], [1, 2], [1, 2], [2, 3]]) # reset
+
+            tbl.deduplicate('a').deduplicate('b')
 
             +---+---+
             | a | b |
@@ -1331,9 +1292,12 @@ class ETL:
             | 1 | 3 |
             +---+---+
 
+        .. code-block:: python
+            :caption: The order of deduplication matters
+
             tbl = Table([['a', 'b'], [1, 3], [1, 2], [1, 2], [2, 3]]) # reset
+
             tbl.deduplicate('b').deduplicate('a')
-            # Order DOES matter when deduping on one column at a time
 
             +---+---+
             | a | b |
@@ -1342,17 +1306,10 @@ class ETL:
             +---+---+
 
         Args:
-            keys: str or list[str] or None
-                keys to deduplicate (and optionally sort) on.
-            presorted: bool
-                If false, the row will be sorted.
-
-        Returns:
-            Table
-                Also updates self
+            keys: keys to deduplicate (and optionally sort) on.
+            presorted: If ``False``, the row will also be sorted.
 
         """
-        deduped = petl.transform.dedup.distinct(self.table, key=keys, presorted=presorted)
-        self.table = deduped
+        self.table = petl.transform.dedup.distinct(self.table, key=keys, presorted=presorted)
 
         return self
