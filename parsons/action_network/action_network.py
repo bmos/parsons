@@ -2239,12 +2239,8 @@ class ActionNetwork:
             data["add_tags"] = tags
         data["person"]["custom_fields"] = {**kwargs}
 
-        background_processing = background_processing or self._deprecate_pos_arg(
-            bp, "background_processing"
-        )
-        endpoint = (
-            f"{API_URL}/people{'?background_processing=true' if background_processing else ''}"
-        )
+        bg_proc = background_processing or self._deprecate_pos_arg(bp, "background_processing")
+        endpoint = f"{API_URL}/people{'?background_processing=true' if bg_proc else ''}"
         response = cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=data))
 
         person_id = self._extract_identifiers(response).get("action_network")
@@ -2343,11 +2339,9 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/people>`__
 
         """
-        background_processing = background_processing or self._deprecate_pos_arg(
-            bp, "background_processing"
-        )
+        bg_proc = background_processing or self._deprecate_pos_arg(bp, "background_processing")
         data = {**kwargs}
-        endpoint = f"{API_URL}/people/{entry_id}{'?background_processing=true' if background_processing else ''}"
+        endpoint = f"{API_URL}/people/{entry_id}{'?background_processing=true' if bg_proc else ''}"
         response = cast(
             "dict[str, _JsonType]",
             self.api.put_request(endpoint, json=data, success_codes=[204, 201, 200]),
@@ -2461,18 +2455,14 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/petitions>`__
 
         """
-        background_processing = background_processing or self._deprecate_pos_arg(
-            bp, "background_processing"
-        )
+        bg_proc = background_processing or self._deprecate_pos_arg(bp, "background_processing")
         data = {
             "title": title,
             "description": description,
             "petition_text": petition_text,
             "target": target,
         }
-        endpoint = (
-            f"{API_URL}/petitions{'?background_processing=true' if background_processing else ''}"
-        )
+        endpoint = f"{API_URL}/petitions{'?background_processing=true' if bg_proc else ''}"
         response = cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=data))
         logger.info("Petition %s successfully created", title)
         return response
@@ -2510,16 +2500,14 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/petitions>`__
 
         """
-        background_processing = background_processing or self._deprecate_pos_arg(
-            bp, "background_processing"
-        )
+        bg_proc = background_processing or self._deprecate_pos_arg(bp, "background_processing")
         data = {
             "title": title,
             "description": description,
             "petition_text": petition_text,
             "target": target,
         }
-        url = f"{API_URL}/petitions/{petition_id}{'?background_processing=true' if background_processing else ''}"
+        url = f"{API_URL}/petitions/{petition_id}{'?background_processing=true' if bg_proc else ''}"
         response = cast("dict[str, _JsonType]", self.api.put_request(url, json=data))
         logger.info("Petition %s successfully updated", title)
         return response
@@ -3306,10 +3294,8 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/taggings>`__
 
         """
-        background_processing = background_processing or self._deprecate_pos_arg(
-            bp, "background_processing"
-        )
-        endpoint = f"tags/{tag_id}/taggings{'?background_processing=true' if background_processing else ''}"
+        bg_proc = background_processing or self._deprecate_pos_arg(bp, "background_processing")
+        endpoint = f"tags/{tag_id}/taggings{'?background_processing=true' if bg_proc else ''}"
         return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=payload))
 
     def delete_tagging(
@@ -3341,10 +3327,10 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/taggings>`__
 
         """
-        background_processing = background_processing or self._deprecate_pos_arg(
-            bp, "background_processing"
+        bg_proc = background_processing or self._deprecate_pos_arg(bp, "background_processing")
+        endpoint = (
+            f"tags/{tag_id}/taggings/{tagging_id}{'?background_processing=true' if bg_proc else ''}"
         )
-        endpoint = f"tags/{tag_id}/taggings/{tagging_id}{'?background_processing=true' if background_processing else ''}"
         return self.api.delete_request(endpoint)
 
     @overload
