@@ -1,197 +1,424 @@
-import json
 import logging
 import re
 import warnings
-from typing import Literal
+from collections.abc import Mapping
+from datetime import datetime
+from typing import Literal, TypedDict, TypeVar, cast, overload
+
+from typing_extensions import NotRequired
 
 from parsons.etl.table import Table
 from parsons.utilities import check_env
-from parsons.utilities.api_connector import APIConnector
+from parsons.utilities.api_connector import APIConnector, _JsonType
+from parsons.utilities.bearer_auth import BearerAuth
 
 logger = logging.getLogger(__name__)
 
 API_URL = "https://actionnetwork.org/api/v2"
+MAX_PER_PAGE = 25
+
+MobileStatusType = Literal["subscribed", "unsubscribed"]
+
+T = TypeVar("T")
+
+
+class MobileInfo(TypedDict):
+    """Represent the mobile phone information for a person."""
+
+    number: str
+    primary: NotRequired[bool]
+    status: NotRequired[MobileStatusType]
+
+
+class EmailInfo(TypedDict):
+    """Represent the email information for a person."""
+
+    address: str
+    primary: NotRequired[bool]
+    status: NotRequired[
+        MobileStatusType
+        | Literal[
+            "bouncing",
+            "previous bounce",
+            "spam complaint",
+            "previous spam complaint",
+        ]
+    ]
 
 
 class ActionNetwork:
-    """
-    Args:
-        api_token: str
-            OSDI API token
+    """Parsons connector for interacting with Action Network endpoints."""
 
-    """
+    def __init__(self, api_token: str | None = None) -> None:
+        """
+        Instantiate the ActionNetwork class.
 
-    def __init__(self, api_token=None):
-        self.api_token = check_env.check("AN_API_TOKEN", api_token)
-        self.headers = {
-            "Content-Type": "application/json",
-            "OSDI-API-Token": self.api_token,
-        }
-        self.api_url = API_URL
-        self.api = APIConnector(self.api_url, headers=self.headers)
+        Args:
+            api_token:
+                OSDI API token.
+                Can be set with ``AN_API_TOKEN`` environment variable.
 
-    def _get_page(self, object_name, page, per_page=25, filter=None):
-        # returns data from one page of results
-        if per_page > 25:
-            per_page = 25
-            logger.info(
-                "Action Network's API will not return more than 25 entries per page. Changing per_page parameter to 25."
-            )
-        params = {"page": page, "per_page": per_page, "filter": filter}
-        return self.api.get_request(url=object_name, params=params)
+        """
+        headers = {"Content-Type": "application/json"}
+        api_token = check_env.check("AN_API_TOKEN", api_token)
+        auth = BearerAuth(api_token, header_name="OSDI-API-Token", token_name=None)
+        self.api = APIConnector(API_URL, headers=headers, auth=auth)
 
-    def _get_entry_list(self, object_name, limit=None, per_page=25, filter=None):
-        # returns a list of entries for a given object, such as people, tags, or actions
-        # Filter can only be applied to people, petitions, events, forms, fundraising_pages,
-        # event_campaigns, campaigns, advocacy_campaigns, signatures, attendances, submissions,
-        # donations and outreaches.
-        # See Action Network API docs for more info: https://actionnetwork.org/docs/v2/
+    def _get_page(
+        self,
+        object_name: str,
+        page: int,
+        per_page: int = MAX_PER_PAGE,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType]:
+        """
+        Get a single page of records from an endpoint.
+
+        Args:
+            object_name: The name of the endpoint to request data from.
+            page: Which page of results to return.
+            per_page: The number of entries per page. Cannot exceed 25.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
+
+        Returns:
+            The JSON response from the API.
+
+        """
+        if per_page > MAX_PER_PAGE:
+            per_page = MAX_PER_PAGE
+            log_msg = "Action Network's API will not return more than 25 entries per page. Changing per_page parameter to 25."
+            logger.info(log_msg)
+
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        params = {"page": page, "per_page": per_page, "filter": query}
+        return cast("dict[str, _JsonType]", self.api.get_request(object_name, params=params))
+
+    def _get_entry_list(
+        self,
+        object_name: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> Table:
+        """
+        Get a list of records from an endpoint.
+
+        Objects include people, tags, or actions.
+        Filter can only be applied to people, petitions, events, forms, fundraising_pages,
+        event_campaigns, campaigns, advocacy_campaigns, signatures, attendances, submissions,
+        donations and outreaches.
+
+        Args:
+            object_name: The name of the endpoint to request data from.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
+
+        Reference Documentation:
+            `<https://actionnetwork.org/docs/v2/>`__
+
+        """
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
         count = 0
         page = 1
         return_list = []
         while True:
-            response = self._get_page(object_name, page, per_page, filter=filter)
+            response = self._get_page(object_name, page, per_page, query=query)
             page = page + 1
-            response_list = response["_embedded"][list(response["_embedded"])[0]]
+            embedded = cast("list", response["_embedded"])
+            response_list = embedded[next(iter(embedded))]
             if not response_list:
                 return Table(return_list)
+
             return_list.extend(response_list)
             count = count + len(response_list)
             if limit and count >= limit:
                 return Table(return_list[0:limit])
 
-    # Advocacy Campaigns
-    def get_advocacy_campaigns(self, limit=None, per_page=25, page=None, filter=None):
-        """
-        Args:
-            limit:
-               Number of entries to return. When None, returns all entries.
-            per_page:
-               Number of entries per page to return. 25 maximum.
-            page:
-               Which page of results to return
-            filter:
-               OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-               When None, no filter is applied.
+    def _extract_identifiers(self, json_response: Mapping[str, _JsonType]) -> dict[str, str]:
+        """Extract the identifiers from a JSON response."""
+        raw_identifiers = cast("dict[str, str]", json_response["identifiers"])
+        identifiers = {
+            key: val for identifier in raw_identifiers for key, val in [identifier.split(":", 1)]
+        }
+        if "action_network" not in identifiers:
+            logger.error(
+                "Identifiers did not contain `action_network` identifier. Found: %s",
+                identifiers,
+            )
 
-        Returns:
-            A JSON with all of the advocacy_campaigns (letters) entries
+        return identifiers
+
+    @overload
+    def _deprecate_kw_arg(self, value: T, old_name: str, new_name: str) -> T: ...
+
+    @overload
+    def _deprecate_kw_arg(self, value: None, old_name: str, new_name: str) -> None: ...
+
+    def _deprecate_kw_arg(self, value: T | None, old_name: str, new_name: str) -> T | None:
+        """Handle DeprecationWarning when a deprecated keyword argument is used."""
+        if value:
+            warnings.warn(
+                f"The keyword argument `{old_name}` is deprecated, use `{new_name}` instead.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+        return value
+
+    @overload
+    def _deprecate_pos_arg(self, value: T, arg_name: str) -> T: ...
+
+    @overload
+    def _deprecate_pos_arg(self, value: None, arg_name: str) -> None: ...
+
+    def _deprecate_pos_arg(self, value: T | None, arg_name: str) -> T | None:
+        """Handle DeprecationWarning when a positional argument is used that is a keyword-only argument."""
+        if value:
+            warnings.warn(
+                (
+                    f"Passing the argument `{arg_name}` as a positional argument "
+                    "is deprecated, you should pass it as a keyword argument instead."
+                ),
+                DeprecationWarning,
+                stacklevel=3,
+            )
+        return value
+
+    @overload
+    def get_advocacy_campaigns(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_advocacy_campaigns(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = None,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_advocacy_campaigns(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
+        """
+        Get a list of advocacy campaigns.
+
+        Args:
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/advocacy_campaigns>`__
 
         """
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "advocacy_campaigns"
+
         if page:
-            return self._get_page("advocacy_campaigns", page, per_page, filter)
-        return self._get_entry_list("advocacy_campaigns", limit, per_page, filter)
+            return self._get_page(endpoint, page, per_page, query)
 
-    def get_advocacy_campaign(self, advocacy_campaign_id):
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_advocacy_campaign(self, advocacy_campaign_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            advocacy_campaign_id:
-               Unique ID of the advocacy_campaign
+        Get the information for a single advocacy campaign.
 
-        Returns:
-            A JSON with advocacy_campaign entry
+        Args:
+            advocacy_campaign_id: Unique ID of the advocacy_campaign
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/advocacy_campaigns>`__
 
         """
-        return self.api.get_request(url=f"advocacy_campaigns/{advocacy_campaign_id}")
+        endpoint = f"advocacy_campaigns/{advocacy_campaign_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    # Attendances
-    def get_person_attendances(self, person_id, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_person_attendances(
+        self,
+        person_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_person_attendances(
+        self,
+        person_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_person_attendances(
+        self,
+        person_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
-        Args:
-            person_id:
-                Unique ID of the person
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+        Get a list of event attendances, by person.
 
-        Returns:
-            A JSON with all the attendances entries
+        Args:
+            person_id: Unique ID of the person
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/attendances>`__
 
         """
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"people/{person_id}/attendances"
+
         if page:
-            return self._get_page(f"people/{person_id}/attendances", page, per_page, filter)
-        return self._get_entry_list(f"people/{person_id}/attendances", limit, per_page, filter)
+            return self._get_page(endpoint, page, per_page, query)
 
-    def get_event_attendances(self, event_id, limit=None, per_page=25, page=None, filter=None):
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    @overload
+    def get_event_attendances(
+        self,
+        event_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_event_attendances(
+        self,
+        event_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_event_attendances(
+        self,
+        event_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
-        Args:
-            event_id:
-                Unique ID of the event
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+        Get a list of event attendances, by event.
 
-        Returns:
-            A JSON with the attendances entries related to the event
+        Args:
+            event_id: Unique ID of the event
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/attendances>`__
 
         """
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"events/{event_id}/attendances"
+
         if page:
-            return self._get_page(f"events/{event_id}/attendances", page, per_page, filter)
-        return self._get_entry_list(f"events/{event_id}/attendances", limit, per_page, filter)
+            return self._get_page(endpoint, page, per_page, query)
 
-    def get_event_attendance(self, event_id, attendance_id):
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_event_attendance(self, event_id: str, attendance_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            event_id:
-                Unique ID of the event
-            attendance_id:
-                Unique ID of the attendance
+        Get the information for a single event attendance record, by event.
 
-        Returns:
-            A JSON with the attendance entry
+        Args:
+            event_id: Unique ID of the event
+            attendance_id: Unique ID of the attendance
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/attendances>`__
 
         """
-        return self.api.get_request(url=f"events/{event_id}/attendances/{attendance_id}")
+        endpoint = f"events/{event_id}/attendances/{attendance_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def get_person_attendance(self, person_id, attendance_id):
+    def get_person_attendance(self, person_id: str, attendance_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            person_id:
-                Unique ID of the person
-            attendance_id:
-                Unique ID of the attendance
+        Get the information for a single event attendance record, by person.
 
-        Returns:
-            A JSON with the attendance entry
+        Args:
+            person_id: Unique ID of the person
+            attendance_id: Unique ID of the attendance
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/attendances>`__
 
         """
-        return self.api.get_request(url=f"people/{person_id}/attendances/{attendance_id}")
+        endpoint = f"people/{person_id}/attendances/{attendance_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def create_attendance(self, event_id, payload):
+    def create_attendance(
+        self, event_id: str, payload: Mapping[str, _JsonType]
+    ) -> dict[str, _JsonType]:
         """
+        Create a single new event attendance record.
+
         Args:
-            event_id:
-                Unique ID of the event
+            event_id: Unique ID of the event
             payload:
                 Payload for creating the event attendance
 
@@ -204,21 +431,24 @@ class ActionNetwork:
                     }
 
         Returns:
-            A JSON response after creating the event attendance
+            Newly created attendance entry
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/attendances>`__
 
         """
-        return self.api.post_request(url=f"events/{event_id}/attendances", params=payload)
+        endpoint = f"events/{event_id}/attendances"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=payload))
 
-    def update_attendance(self, event_id, attendance_id, payload):
+    def update_attendance(
+        self, event_id: str, attendance_id: str, payload: Mapping[str, _JsonType]
+    ) -> dict[str, _JsonType]:
         """
+        Update the information for a single event attendance record.
+
         Args:
-            event_id:
-                Unique ID of the event
-            attendance_id:
-                Unique ID of the attendance
+            event_id: Unique ID of the event
+            attendance_id: Unique ID of the attendance
             payload:
                 Payload for updating the event attendance
 
@@ -237,40 +467,69 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/attendances>`__
 
         """
-        return self.api.put_request(
-            url=f"events/{event_id}/attendances/{attendance_id}", data=payload
-        )
+        endpoint = f"events/{event_id}/attendances/{attendance_id}"
+        return cast("dict[str, _JsonType]", self.api.put_request(endpoint, json=payload))
 
-    # Campaigns
-    def get_campaigns(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_campaigns(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_campaigns(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_campaigns(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of campaigns.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
-
-        Returns:
-            A JSON with all of the campaigns entries
-
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/campaigns>`__
 
         """
-        if page:
-            return self._get_page("campaigns", page, per_page, filter)
-        return self._get_entry_list("campaigns", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "campaigns"
 
-    def get_campaign(self, campaign_id):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_campaign(self, campaign_id: str) -> dict[str, _JsonType]:
         """
+        Get information on a single campaign.
+
         Args:
-            campaign_id:
-               Unique ID of the campaign
+            campaign_id: Unique ID of the campaign
 
         Returns:
             A JSON with the campaign entry
@@ -279,13 +538,12 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/campaigns>`__
 
         """
-        return self.api.get_request(url=f"campaigns/{campaign_id}")
+        endpoint = f"campaigns/{campaign_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    # Custom Fields
-    def get_custom_fields(self):
+    def get_custom_fields(self) -> dict[str, _JsonType]:
         """
-        Args:
-            None
+        Get a list of custom fields.
 
         Returns:
             A JSON with the custom_fields associated with your API key.
@@ -294,11 +552,13 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/custom_fields>`__
 
         """
-        return self.api.get_request(url="metadata/custom_fields")
+        endpoint = "metadata/custom_fields"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    # Donations
-    def get_donation(self, donation_id):
+    def get_donation(self, donation_id: str) -> dict[str, _JsonType]:
         """
+        Get information on a single donation.
+
         Args:
             donation_id: Unique ID of the donation
 
@@ -309,20 +569,51 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/donations>`__
 
         """
-        return self.api.get_request(url=f"donations/{donation_id}")
+        endpoint = f"donations/{donation_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def get_donations(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_donations(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_donations(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_donations(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of donations.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the donations entries
@@ -331,26 +622,60 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/donations>`__
 
         """
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "donations"
+
         if page:
-            return self._get_page("donations", page, per_page, filter)
-        return self._get_entry_list("donations", limit, per_page, filter)
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    @overload
+    def get_fundraising_page_donations(
+        self,
+        fundraising_page_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_fundraising_page_donations(
+        self,
+        fundraising_page_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
 
     def get_fundraising_page_donations(
-        self, fundraising_page_id, limit=None, per_page=25, page=None, filter=None
-    ):
+        self,
+        fundraising_page_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of donations, by fundraising page.
+
         Args:
-            fundraising_page_id:
-                The ID of the fundraiser
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            fundraising_page_id: The ID of the fundraiser
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with fundraising_page entry
@@ -359,34 +684,60 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/donations>`__
 
         """
-        if page:
-            return self._get_page(
-                f"fundraising_pages/{fundraising_page_id}/donations",
-                page,
-                per_page,
-                filter,
-            )
-        return self._get_entry_list(
-            f"fundraising_pages/{fundraising_page_id}/donations",
-            limit,
-            per_page,
-            filter,
-        )
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"fundraising_pages/{fundraising_page_id}/donations"
 
-    def get_person_donations(self, person_id, limit=None, per_page=25, page=None, filter=None):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    @overload
+    def get_person_donations(
+        self,
+        person_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_person_donations(
+        self,
+        person_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_person_donations(
+        self,
+        person_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of donations, by person.
+
         Args:
-            person_id:
-                The ID of the person
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            person_id: The ID of the person
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all donations related to person
@@ -395,25 +746,22 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/donations>`__
 
         """
-        if page:
-            return self._get_page(
-                f"people/{person_id}/donations",
-                page,
-                per_page,
-                filter,
-            )
-        return self._get_entry_list(
-            f"people/{person_id}/donations",
-            limit,
-            per_page,
-            filter,
-        )
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"people/{person_id}/donations"
 
-    def create_donation(self, fundraising_page_id, donation_payload):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def create_donation(
+        self, fundraising_page_id: str, donation_payload: Mapping[str, _JsonType]
+    ) -> dict[str, _JsonType]:
         """
+        Create a single new donation record.
+
         Args:
-            fundraising_page_id:
-                The ID of the fundraising page
+            fundraising_page_id: The ID of the fundraising page
             donation_payload:
                 Payload containing donation details
 
@@ -439,18 +787,16 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/donations>`__
 
         """
-        return self.api.post_request(
-            url=f"fundraising_pages/{fundraising_page_id}/donations", params=donation_payload
-        )
+        endpoint = f"fundraising_pages/{fundraising_page_id}/donations"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=donation_payload))
 
-    # Embeds
-    def get_embeds(self, action_type, action_id):
+    def get_embeds(self, action_type: str, action_id: str) -> dict[str, _JsonType]:
         """
+        Get a list of embeds.
+
         Args:
-            action_type:
-              Action type (petition, events, etc.)
-            action_id:
-              Unique ID of the action
+            action_type: Action type (petition, events, etc.)
+            action_id: Unique ID of the action
 
         Returns:
             A JSON with the embeds (for you to be able to embed action outside of ActionNetwork).
@@ -459,21 +805,51 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/embeds>`__
 
         """
-        return self.api.get_request(url=f"{action_type}/{action_id}/embed")
+        endpoint = f"{action_type}/{action_id}/embed"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    # Event Campaigns
-    def get_event_campaigns(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_event_campaigns(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_event_campaigns(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_event_campaigns(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of event campaigns.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the event_campaigns entries
@@ -482,15 +858,20 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/event_campaigns>`__
 
         """
-        if page:
-            return self._get_page("event_campaigns", page, per_page, filter)
-        return self._get_entry_list("event_campaigns", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "event_campaigns"
 
-    def get_event_campaign(self, event_campaign_id):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_event_campaign(self, event_campaign_id: str) -> dict[str, _JsonType]:
         """
+        Get the information for a single event campaign.
+
         Args:
-            event_campaign_id:
-                Unique ID of the event_campaign
+            event_campaign_id: Unique ID of the event_campaign
 
         Returns:
             A JSON with event_campaign entry
@@ -499,10 +880,13 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/event_campaigns>`__
 
         """
-        return self.api.get_request(url=f"event_campaigns/{event_campaign_id}")
+        endpoint = f"event_campaigns/{event_campaign_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def create_event_campaign(self, payload):
+    def create_event_campaign(self, payload: Mapping[str, _JsonType]) -> dict[str, _JsonType]:
         """
+        Create a single new event campaign record.
+
         Args:
             payload:
                 Payload containing event campaign details
@@ -521,13 +905,17 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/event_campaigns>`__
 
         """
-        return self.api.post_request(url="event_campaigns", params=payload)
+        endpoint = "event_campaigns"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=payload))
 
-    def create_event_in_event_campaign(self, event_campaign_id, payload):
+    def create_event_in_event_campaign(
+        self, event_campaign_id: str, payload: Mapping[str, _JsonType]
+    ) -> dict[str, _JsonType]:
         """
+        Create a single new event record, within an event campaign.
+
         Args:
-            event_campaign_id:
-                Unique ID of the event_campaign
+            event_campaign_id: Unique ID of the event_campaign
             payload:
                 Payload containing event details
 
@@ -545,15 +933,17 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/event_campaigns>`__
 
         """
-        return self.api.post_request(
-            url=f"event_campaigns/{event_campaign_id}/events", params=payload
-        )
+        endpoint = f"event_campaigns/{event_campaign_id}/events"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=payload))
 
-    def update_event_campaign(self, event_campaign_id, payload):
+    def update_event_campaign(
+        self, event_campaign_id: str, payload: Mapping[str, _JsonType]
+    ) -> dict[str, _JsonType]:
         """
+        Update the information for a single event campaign.
+
         Args:
-            event_campaign_id:
-                Unique ID of the event_campaign
+            event_campaign_id: Unique ID of the event_campaign
             payload:
                 Payload containing event campaign details
 
@@ -570,21 +960,51 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/event_campaigns>`__
 
         """
-        return self.api.put_request(url=f"event_campaigns/{event_campaign_id}", data=payload)
+        endpoint = f"event_campaigns/{event_campaign_id}"
+        return cast("dict[str, _JsonType]", self.api.put_request(endpoint, json=payload))
 
-    # Events
-    def get_events(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_events(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_events(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_events(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of events.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
              A JSON with all the events entries
@@ -593,15 +1013,17 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/events>`__
 
         """
-        if page:
-            return self._get_page("events", page, per_page, filter)
-        return self._get_entry_list("events", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "events"
 
-    def get_event(self, event_id):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_event(self, event_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            event_id:
-                Unique ID of the event
+        Get a single event, by ID.
 
         Returns:
             A JSON with event entry
@@ -610,24 +1032,55 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/events>`__
 
         """
-        return self.api.get_request(url=f"events/{event_id}")
+        endpoint = f"events/{event_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
+
+    @overload
+    def get_event_campaign_events(
+        self,
+        event_campaign_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_event_campaign_events(
+        self,
+        event_campaign_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
 
     def get_event_campaign_events(
-        self, event_campaign_id, limit=None, per_page=25, page=None, filter=None
-    ):
+        self,
+        event_campaign_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of events, for an event campaign, by ID.
+
         Args:
-            event_campaign_id:
-               Unique ID of the event_campaign
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            event_campaign_id: Unique ID of the event_campaign
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the eventes related to the event_campaign entry
@@ -636,26 +1089,30 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/events>`__
 
         """
-        if page:
-            return self._get_page(
-                f"event_campaigns/{event_campaign_id}/events", page, per_page, filter
-            )
-        return self._get_entry_list(
-            f"event_campaigns/{event_campaign_id}/events", limit, per_page, filter
-        )
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"event_campaigns/{event_campaign_id}/events"
 
-    def create_event(self, title, start_date=None, location=None):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def create_event(
+        self, title: str, start_date: datetime | str | None = None, location: dict | None = None
+    ) -> dict[str, _JsonType]:
         """
-        Create an event in Action Network
+        Create a single new event.
 
         Args:
-            title: str
+            title:
                 Public title of the event
-            start_date: str OR datetime
-                OPTIONAL: The starting date & time. If a string, use format "YYYY-MM-DD HH:MM:SS"
-                (hint: the default format you get when you use `str()` on a datetime)
-            location: dict
-                OPTIONAL: A dict of location details. Can include any combination of the types of
+            start_date:
+                Starting date & time.
+                If a string, use format ``YYYY-MM-DD HH:MM:SS``
+                (hint: the default format you get when you use ``str()`` on a datetime)
+            location:
+                Location details.
+                Can include any combination of the types of
                 values in the following example:
 
                 .. code-block:: python
@@ -681,28 +1138,28 @@ class ActionNetwork:
         data = {"title": title}
 
         if start_date:
-            start_date = str(start_date)
-            data["start_date"] = start_date
+            data["start_date"] = str(start_date)
 
         if isinstance(location, dict):
             data["location"] = location
 
-        event_dict = self.api.post_request(url=f"{self.api_url}/events", data=json.dumps(data))
+        endpoint = "events"
+        event_dict = cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=data))
 
-        an_event_id = event_dict["_links"]["self"]["href"].split("/")[-1]
-        event_dict["event_id"] = an_event_id
+        # Get Event ID from URL
+        event_dict["event_id"] = event_dict["_links"]["self"]["href"].split("/")[-1]  # type:ignore[ty:unresolved-attribute, ty:invalid-argument-type, ty:not-subscriptable]
 
         return event_dict
 
-    def update_event(self, event_id, payload):
+    def update_event(self, event_id: str, payload: Mapping[str, _JsonType]) -> dict[str, _JsonType]:
         """
-        Update an event in Action Network
+        Update the information for a single event.
 
         Args:
-            event_id: str
-                Unique ID of the event
-            payload: dict
-                Payload containing event data (see `<https://actionnetwork.org/docs/v2/events>`__)
+            event_id: Unique ID of the event
+            payload:
+                Payload containing event data.
+                See `<https://actionnetwork.org/docs/v2/events>`__
 
                 .. code-block::python
 
@@ -718,21 +1175,51 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/events>`__
 
         """
-        return self.api.put_request(url=f"events/{event_id}", data=payload)
+        endpoint = f"events/{event_id}"
+        return cast("dict[str, _JsonType]", self.api.put_request(endpoint, json=payload))
 
-    # Forms
-    def get_forms(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_forms(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_forms(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_forms(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of forms.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the forms entries
@@ -741,15 +1228,20 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/forms>`__
 
         """
-        if page:
-            return self._get_page("forms", page, per_page, filter)
-        return self._get_entry_list("forms", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "forms"
 
-    def get_form(self, form_id):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_form(self, form_id: str) -> dict[str, _JsonType]:
         """
+        Get a single form, by ID.
+
         Args:
-            form_id:
-               Unique ID of the form
+            form_id: Unique ID of the form
 
         Returns:
             A JSON with form entry
@@ -758,14 +1250,15 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/forms>`__
 
         """
-        return self.api.get_request(url=f"forms/{form_id}")
+        endpoint = f"forms/{form_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def create_form(self, payload):
+    def create_form(self, payload: Mapping[str, _JsonType]) -> dict[str, _JsonType]:
         """
-        Create a form in Action Network
+        Create a single new form.
 
         Args:
-            payload: dict
+            payload:
                 Payload containing form details
 
                 .. code-block::python
@@ -782,16 +1275,16 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/forms>`__
 
         """
-        return self.api.post_request(url="forms", params=payload)
+        endpoint = "forms"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=payload))
 
-    def update_form(self, form_id, payload):
+    def update_form(self, form_id: str, payload: Mapping[str, _JsonType]) -> dict[str, _JsonType]:
         """
-        Update a form in Action Network
+        Update the information for a single form, by ID.
 
         Args:
-            form_id:
-                Unique ID of the form
-            payload: dict
+            form_id: Unique ID of the form
+            payload:
                 Payload containing form data (see `<https://actionnetwork.org/docs/v2/forms>`__)
 
                 .. code-block::python
@@ -808,14 +1301,15 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/forms>`__
 
         """
-        return self.api.put_request(url=f"forms/{form_id}", data=payload)
+        endpoint = f"forms/{form_id}"
+        return cast("dict[str, _JsonType]", self.api.put_request(endpoint, json=payload))
 
-    # Fundraising Pages
-    def get_fundraising_page(self, fundraising_page_id):
+    def get_fundraising_page(self, fundraising_page_id: str) -> dict[str, _JsonType]:
         """
+        Get a single fundraising page, by ID.
+
         Args:
-            fundraising_page_id:
-                The ID of the fundraiser
+            fundraising_page_id: The ID of the fundraiser
 
         Returns:
             A JSON with fundraising_page entry
@@ -824,20 +1318,51 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/fundraising_pages>`__
 
         """
-        return self.api.get_request(url=f"fundraising_pages/{fundraising_page_id}")
+        endpoint = f"fundraising_pages/{fundraising_page_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def get_fundraising_pages(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_fundraising_pages(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_fundraising_pages(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_fundraising_pages(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of fundraising pages.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the fundraising_pages entries
@@ -846,19 +1371,20 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/fundraising_pages>`__
 
         """
-        if page:
-            return self._get_page("fundraising_pages", page, per_page, filter)
-        return self._get_entry_list(
-            "fundraising_pages",
-            limit,
-        )
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "fundraising_pages"
 
-    def create_fundraising_page(self, payload):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit)
+
+    def create_fundraising_page(self, payload: Mapping[str, _JsonType]) -> dict[str, _JsonType]:
         """
-        Create a fundraising page in Action Network
+        Create a single new fundraising page.
 
         Args:
-            payload: dict
+            payload:
                 Payload containing fundraising page details
 
                 .. code-block::python
@@ -875,16 +1401,18 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/fundraising_pages>`__
 
         """
-        return self.api.post_request(url="fundraising_pages", params=payload)
+        endpoint = "fundraising_pages"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=payload))
 
-    def update_fundraising_page(self, fundraising_page_id, payload):
+    def update_fundraising_page(
+        self, fundraising_page_id: str, payload: Mapping[str, _JsonType]
+    ) -> dict[str, _JsonType]:
         """
-        Update a fundraising page in Action Network
+        Update the information for a single fundraising page, by ID.
 
         Args:
-            fundraising_page_id:
-                The ID of the fundraiser
-            payload: dict
+            fundraising_page_id: The ID of the fundraiser
+            payload:
                 Payload containing updated fundraising page details
 
                 .. code-block::python
@@ -901,23 +1429,55 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/fundraising_pages>`__
 
         """
-        return self.api.put_request(url=f"fundraising_pages/{fundraising_page_id}", data=payload)
+        endpoint = f"fundraising_pages/{fundraising_page_id}"
+        return cast("dict[str, _JsonType]", self.api.put_request(endpoint, json=payload))
 
-    # Items
-    def get_items(self, list_id, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_items(
+        self,
+        list_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_items(
+        self,
+        list_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_items(
+        self,
+        list_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a single list, by ID.
+
         Args:
-            list_id:
-                Unique ID of the list
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            list_id: Unique ID of the list
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the list item entries
@@ -926,17 +1486,21 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/items>`__
 
         """
-        if page:
-            return self._get_page(f"lists/{list_id}/items", page, per_page, filter)
-        return self._get_entry_list(f"lists/{list_id}/items", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"lists/{list_id}/items"
 
-    def get_item(self, list_id, item_id):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_item(self, list_id: str, item_id: str) -> dict[str, _JsonType]:
         """
+        Get a single item, by ID, from a list, by ID.
+
         Args:
-            list_id:
-                Unique ID of the list
-            item_id:
-                Unique ID of the item
+            list_id: Unique ID of the list
+            item_id: Unique ID of the item
 
         Returns:
             A JSON with the item entry
@@ -945,21 +1509,29 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/items>`__
 
         """
-        return self.api.get_request(url=f"lists/{list_id}/items/{item_id}")
+        endpoint = f"lists/{list_id}/items/{item_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    # Lists
-    def get_lists(self, limit=None, per_page=25, page=None, filter=None):
+    def get_lists(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of lists.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the list entries
@@ -968,15 +1540,20 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/lists>`__
 
         """
-        if page:
-            return self._get_page("lists", page, per_page, filter)
-        return self._get_entry_list("lists", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "lists"
 
-    def get_list(self, list_id):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_list(self, list_id: str) -> dict[str, _JsonType]:
         """
+        Get a single list, by ID.
+
         Args:
-           list_id:
-              Unique ID of the list
+           list_id: Unique ID of the list
 
         Returns:
             A JSON with the list entry
@@ -985,25 +1562,55 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/lists>`__
 
         """
-        return self.api.get_request(url=f"lists/{list_id}")
+        endpoint = f"lists/{list_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    # Messages
+    @overload
     def get_messages(
-        self, limit=None, per_page=25, page=None, filter=None, unpack_statistics=False
-    ):
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+        unpack_statistics: bool,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_messages(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+        unpack_statistics: bool = ...,
+    ) -> Table: ...
+
+    def get_messages(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+        unpack_statistics: bool = False,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of messages.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
-            unpack_statistics:
-                Whether to unpack the statistics dictionary into the table. Default to False.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
+            unpack_statistics: Whether to unpack the statistics dictionary into the table.
 
         Returns:
             A Parsons Table with all the messages related entries
@@ -1012,19 +1619,24 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/messages>`__
 
         """
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "messages"
+
         if page:
-            return self._get_page("messages", page, per_page, filter)
-        tbl = self._get_entry_list("messages", limit, per_page, filter)
-        # Unpack statistics
+            return self._get_page(endpoint, page, per_page, query)
+
+        tbl = self._get_entry_list(endpoint, limit, per_page, query)
         if unpack_statistics:
             tbl.unpack_dict("statistics", prepend=False, include_original=True)
+
         return tbl
 
-    def get_message(self, message_id):
+    def get_message(self, message_id: str) -> dict[str, _JsonType]:
         """
+        Get a single message, by ID.
+
         Args:
-            message_id:
-               Unique ID of the message
+            message_id: Unique ID of the message
 
         Returns:
             A JSON with the signature entry.
@@ -1033,14 +1645,15 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/messages>`__
 
         """
-        return self.api.get_request(url=f"messages/{message_id}")
+        endpoint = f"messages/{message_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def create_message(self, payload):
+    def create_message(self, payload: Mapping[str, _JsonType]) -> dict[str, _JsonType]:
         """
-        Create a message in Action Network
+        Create a single new message.
 
         Args:
-            payload: dict
+            payload:
                 Payload containing message details
 
                 .. code-block::python
@@ -1069,16 +1682,18 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/messages>`__
 
         """
-        return self.api.post_request(url="messages", json=payload)
+        endpoint = "messages"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=payload))
 
-    def update_message(self, message_id, payload):
+    def update_message(
+        self, message_id: str, payload: Mapping[str, _JsonType]
+    ) -> dict[str, _JsonType]:
         """
-        Update a message in Action Network
+        Update the information for a single message, by ID.
 
         Args:
-            message_id:
-               Unique ID of the message
-            payload: dict
+            message_id: Unique ID of the message
+            payload:
                 Payload containing message details to be updated
 
                 .. code-block::python
@@ -1095,15 +1710,15 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/messages>`__
 
         """
-        return self.api.put_request(url=f"messages/{message_id}", json=payload)
+        endpoint = f"messages/{message_id}"
+        return cast("dict[str, _JsonType]", self.api.put_request(endpoint, json=payload))
 
-    def schedule_message(self, message_id, scheduled_start_date):
+    def schedule_message(self, message_id: str, scheduled_start_date: str) -> dict[str, _JsonType]:
         """
-        Schedule a message in Action Network
+        Schedule sending a message, by ID.
 
         Args:
-            message_id:
-               Unique ID of the message
+            message_id: Unique ID of the message
             scheduled_start_date:
                 UTC timestamp to schedule the message at in ISO8601 format.
                 e.g. "2015-03-14T12:00:00Z"
@@ -1115,18 +1730,16 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/schedule_helper>`__
 
         """
-        return self.api.post_request(
-            url=f"messages/{message_id}/schedule/",
-            params={"scheduled_start_date": scheduled_start_date},
-        )
+        endpoint = f"messages/{message_id}/schedule/"
+        date_query = {"scheduled_start_date": scheduled_start_date}
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=date_query))
 
-    def send_message(self, message_id):
+    def send_message(self, message_id: str) -> dict[str, _JsonType]:
         """
-        Send a message in Action Network
+        Immediately send a message, by ID.
 
         Args:
-            message_id:
-               Unique ID of the message
+            message_id: Unique ID of the message
 
         Returns:
             A JSON response confirming the message was sent
@@ -1135,13 +1748,12 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/send_helper>`__
 
         """
-        return self.api.post_request(url=f"messages/{message_id}/send/", params={})
+        endpoint = f"messages/{message_id}/send/"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint))
 
-    # Metadata
-    def get_metadata(self):
+    def get_metadata(self) -> dict[str, _JsonType]:
         """
-        Args:
-           None
+        Get all metadata.
 
         Returns:
             A JSON with the metadata entry
@@ -1150,25 +1762,55 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/metadata>`__
 
         """
-        return self.api.get_request(url="metadata")
+        endpoint = "metadata"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    # Outreaches
+    @overload
     def get_advocacy_campaign_outreaches(
-        self, advocacy_campaign_id, limit=None, per_page=25, page=None, filter=None
-    ):
+        self,
+        advocacy_campaign_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_advocacy_campaign_outreaches(
+        self,
+        advocacy_campaign_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_advocacy_campaign_outreaches(
+        self,
+        advocacy_campaign_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of outreaches, for a single advocacy campaign, by ID.
+
         Args:
-            advocacy_campaign_id:
-                Unique ID of the advocacy_campaign
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            advocacy_campaign_id: Unique ID of the advocacy_campaign
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
            A JSON with all the outreaches entries related to the advocacy_campaign_id
@@ -1177,34 +1819,60 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/outreaches>`__
 
         """
-        if page:
-            return self._get_page(
-                f"advocacy_campaigns/{advocacy_campaign_id}/outreaches",
-                page,
-                per_page,
-                filter,
-            )
-        return self._get_entry_list(
-            f"advocacy_campaigns/{advocacy_campaign_id}/outreaches",
-            limit,
-            per_page,
-            filter,
-        )
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"advocacy_campaigns/{advocacy_campaign_id}/outreaches"
 
-    def get_person_outreaches(self, person_id, limit=None, per_page=25, page=None, filter=None):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    @overload
+    def get_person_outreaches(
+        self,
+        person_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_person_outreaches(
+        self,
+        person_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_person_outreaches(
+        self,
+        person_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of outreaches, for a single person, by ID.
+
         Args:
-            person_id:
-                Unique ID of the person
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            person_id: Unique ID of the person
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the outreaches entries related to our group
@@ -1213,17 +1881,23 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/outreaches>`__
 
         """
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"people/{person_id}/outreaches"
+
         if page:
-            return self._get_page(f"people/{person_id}/outreaches", page, per_page, filter)
-        return self._get_entry_list(f"people/{person_id}/outreaches", limit, per_page, filter)
+            return self._get_page(endpoint, page, per_page, query)
 
-    def get_advocacy_campaign_outreach(self, advocacy_campaign_id, outreach_id):
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_advocacy_campaign_outreach(
+        self, advocacy_campaign_id: str, outreach_id: str
+    ) -> dict[str, _JsonType]:
         """
+        Get a single outreach, by ID, for an advocacy campaign, by ID.
+
         Args:
-            advocacy_campaign_id:
-                Unique ID of the campaign
-            outreach_id:
-                Unique ID of the outreach
+            advocacy_campaign_id: Unique ID of the campaign
+            outreach_id: Unique ID of the outreach
 
         Returns:
             A JSON with the outreach entry
@@ -1232,17 +1906,16 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/outreaches>`__
 
         """
-        return self.api.get_request(
-            url=f"advocacy_campaigns/{advocacy_campaign_id}/outreaches/{outreach_id}"
-        )
+        endpoint = f"advocacy_campaigns/{advocacy_campaign_id}/outreaches/{outreach_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def get_person_outreach(self, person_id, outreach_id):
+    def get_person_outreach(self, person_id: str, outreach_id: str) -> dict[str, _JsonType]:
         """
+        Get a single outreach, by ID, for an person, by ID.
+
         Args:
-            person_id:
-                Unique ID of the campaign
-            outreach_id:
-                Unique ID of the outreach
+            person_id: Unique ID of the campaign
+            outreach_id: Unique ID of the outreach
 
         Returns:
             A JSON with the outreach entry
@@ -1251,15 +1924,17 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/outreaches>`__
 
         """
-        return self.api.get_request(url=f"people/{person_id}/outreaches/{outreach_id}")
+        endpoint = f"people/{person_id}/outreaches/{outreach_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def create_outreach(self, advocacy_campaign_id, payload):
+    def create_outreach(
+        self, advocacy_campaign_id: str, payload: Mapping[str, _JsonType]
+    ) -> dict[str, _JsonType]:
         """
-        Create an outreach in Action Network
+        Create a single new outreach, for an advocacy campaign, by ID.
 
         Args:
-            advocacy_campaign_id:
-                Unique ID of the campaign
+            advocacy_campaign_id: Unique ID of the campaign
             payload:
                 Payload containing outreach details
 
@@ -1284,27 +1959,24 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/outreaches>`__
 
         """
-        return self.api.post_request(
-            url=f"advocacy_campaigns/{advocacy_campaign_id}/outreaches", params=payload
-        )
+        endpoint = f"advocacy_campaigns/{advocacy_campaign_id}/outreaches"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=payload))
 
-    def update_outreach(self, advocacy_campaign_id, outreach_id, payload):
+    def update_outreach(
+        self, advocacy_campaign_id: str, outreach_id: str, payload: Mapping[str, _JsonType]
+    ) -> dict[str, _JsonType]:
         """
-        Update an outreach in Action Network
+        Update the information for a single outreach, by ID, for an advocacy campaign, by ID.
 
         Args:
-            advocacy_campaign_id:
-                Unique ID of the campaign
-            outreach_id:
-                Unique ID of the outreach
+            advocacy_campaign_id: Unique ID of the campaign
+            outreach_id: Unique ID of the outreach
             payload:
                 Payload containing outreach details to be updated
 
                 .. code-block::python
 
-                    {
-                        "subject": "Please vote no!"
-                    }
+                    {"subject": "Please vote no!"}
 
         Returns:
             A JSON response confirming Update of the outreach
@@ -1313,78 +1985,149 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/outreaches>`__
 
         """
-        return self.api.put_request(
-            url=f"advocacy_campaigns/{advocacy_campaign_id}/outreaches/{outreach_id}",
-            data=payload,
-        )
+        endpoint = f"advocacy_campaigns/{advocacy_campaign_id}/outreaches/{outreach_id}"
+        return cast("dict[str, _JsonType]", self.api.put_request(endpoint, json=payload))
 
-    # People
-    def get_people(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_people(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_people(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_people(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
-        Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+        Get a list of people.
 
-        Returns:
-            A list of JSONs of people stored in Action Network.
+        Args:
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/people>`__
 
         """
-        if page:
-            return self._get_page("people", page, per_page, filter=filter)
-        return self._get_entry_list("people", limit, per_page, filter=filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "people"
 
-    def get_person(self, person_id):
+        if page:
+            return self._get_page(endpoint, page, per_page, query=query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query=query)
+
+    def get_person(self, person_id: str) -> dict[str, _JsonType]:
         """
+        Get a single person, by ID.
+
         Args:
-            person_id:
-                ID of the person.
+            person_id: ID of the person.
 
         Returns:
-            A  JSON of the entry. If the entry doesn't exist, Action Network returns
+            A  JSON of the entry.
+            If the entry doesn't exist, Action Network returns
             ``{'error': 'Couldn't find person with id = <id>'}``.
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/people>`__
 
         """
-        return self.api.get_request(url=f"people/{person_id}")
+        endpoint = f"people/{person_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
+
+    def _handle_upsert_email_address(
+        self, email_address: list[EmailInfo] | list[str] | str | None = None
+    ) -> list[EmailInfo] | None:
+        if email_address is None:
+            return None
+        if isinstance(email_address, str):
+            return [EmailInfo({"address": email_address})]
+        if isinstance(email_address, list):
+            email_addresses = []
+            for email in email_address:
+                if isinstance(email, str):
+                    email_addresses.append(EmailInfo({"address": email}))
+                elif isinstance(email, dict) and "address" in email:
+                    email_addresses.append(email)
+                else:
+                    err_msg = f"Unexpected type in `email_address` list. Got {type(email)}."
+                    raise TypeError(err_msg)
+            if not any(email["primary"] for email in email_addresses):
+                email_addresses[0]["primary"] = True
+            return email_addresses
+
+        err_msg = f"Unexpected type for `email_address`. Got {type(email_address)}."
+        raise TypeError(err_msg)
+
+    def _handle_upsert_mobile_number(
+        self, mobile_number: MobileInfo | str | int | list[str | int] | None = None
+    ) -> list[MobileInfo] | None:
+        if mobile_number is None:
+            return None
+        if isinstance(mobile_number, dict) and "number" in mobile_number:
+            mobile_number["number"] = re.sub("[^0-9]", "", mobile_number["number"])
+            return [mobile_number]
+        if isinstance(mobile_number, str):
+            return [MobileInfo({"number": re.sub("[^0-9]", "", mobile_number)})]
+        if isinstance(mobile_number, int):
+            return [MobileInfo({"number": str(mobile_number)})]
+        if isinstance(mobile_number, list):
+            if len(mobile_number) > 1:
+                err_msg = "Action Network allows only 1 phone number per activist"
+                raise ValueError(err_msg)
+            if isinstance(first_cell := mobile_number[0], (str, int)):
+                return [MobileInfo({"number": str(first_cell), "primary": True})]
+
+        err_msg = f"Unexpected type for `mobile_number`. Got {type(mobile_number)}."
+        raise TypeError(err_msg)
 
     def upsert_person(
         self,
-        email_address: str
-        | list[str]
-        | list[dict[Literal["address", "primary", "status"], str | bool]]
-        | None = None,
-        given_name=None,
-        family_name=None,
-        tags=None,
-        languages_spoken=None,
-        postal_addresses=None,
-        mobile_number: (
-            str
-            | int
-            | list[str | int]
-            | list[dict[Literal["address", "primary", "status"], str | bool]]
-            | None
-        ) = None,
-        mobile_status: Literal["subscribed", "unsubscribed"] | None = None,
-        background_processing=False,
+        email_address: list[EmailInfo] | list[str] | str | None = None,
+        given_name: str | None = None,
+        family_name: str | None = None,
+        tags: list[str] | None = None,
+        languages_spoken: list[str] | None = None,
+        postal_addresses: list[dict] | None = None,
+        mobile_number: MobileInfo | str | int | list[str | int] | None = None,
+        mobile_status: MobileStatusType | None = None,
+        bp: bool = False,
+        *,
+        background_processing: bool = False,
         **kwargs,
-    ):
+    ) -> dict[str, _JsonType]:
         """
-        Creates or updates a person record. In order to update an existing record instead of
-        creating a new one, you must supply an email or mobile number which matches a record
-        in the database.
+        Create or update a person record.
+
+        In order to update an existing record instead of creating a new one,
+        you must supply an email or mobile number which matches a record in the database.
 
         Identifiers are intentionally not included as an option on
         this method, because their use can cause buggy behavior if
@@ -1403,23 +2146,23 @@ class ActionNetwork:
                     - primary (OPTIONAL): Boolean indicating User's primary email address
                     - status (OPTIONAL): can taken on any of these values
 
-                        - "subscribed"
-                        - "unsubscribed"
-                        - "bouncing"
-                        - "previous bounce"
-                        - "spam complaint"
-                        - "previous spam complaint"
+                        - ``subscribed``
+                        - ``unsubscribed``
+                        - ``bouncing``
+                        - ``previous bounce``
+                        - ``spam complaint``
+                        - ``previous spam complaint``
 
             given_name:
                 Person's given name
             family_name:
                 Person's family name
             tags:
-                Optional field. A list of strings of pre-existing tags to be applied to the person.
+                A list of strings of pre-existing tags to be applied to the person.
             languages_spoken:
-                Optional field. A list of strings of the languages spoken by the person
+                A list of strings of the languages spoken by the person
             postal_addresses:
-                Optional field. A list of dictionaries.
+                A list of dictionaries.
                 For details, see Action Network's documentation:
                 `<https://actionnetwork.org/docs/v2/person_signup_helper>`__
             mobile_number:
@@ -1427,66 +2170,38 @@ class ActionNetwork:
 
                 - a string with the person's cell phone number
                 - an integer with the person's cell phone number
-                - a list of strings with the person's cell phone numbers
-                - a list of integers with the person's cell phone numbers
+                - a list of strings with the person's cell phone numbers (can only contain 1 number)
+                - a list of integers with the person's cell phone numbers (can only contain 1 number)
                 - a dictionary with the following fields
 
                     - number (REQUIRED)
                     - primary (OPTIONAL): Boolean indicating User's primary mobile number
                     - status (OPTIONAL): can taken on any of these values
 
-                        - "subscribed"
-                        - "unsubscribed"
+                        - ``subscribed``
+                        - ``unsubscribed``
 
             mobile_status:
-                None, 'subscribed' or 'unsubscribed'. If included, will update the SMS opt-in
-                status of the phone in ActionNetwork. If not included, won't update the status.
-                None by default, causes no updates to mobile number status. New numbers are set
-                to "unsubscribed" by default.
-            background_processing: bool
-                If set `true`, utilize ActionNetwork's "background processing". This will return
-                an immediate success, with an empty JSON body, and send your request to the
-                background queue for eventual processing.
+                If included, will update the SMS opt-in status of the phone in ActionNetwork.
+                If not included, won't update the status.
+                New numbers are set to ``unsubscribed`` by default.
+
+        Keyword Args:
+            background_processing:
+                Whether to utilize ActionNetwork's ``background processing``.
+                This will return an immediate success, with an empty JSON body.
+                Your request will be sent to the background queue for eventual processing.
                 `<https://actionnetwork.org/docs/v2/#background-processing>`__
             `**kwargs`:
-                Any additional fields to store about the person. Action Network allows
-                any custom field.
+                Any additional fields to store about the person.
+                Action Network allows any custom field.
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/people>`__
 
         """
-        email_addresses_field: list[dict] | None = None
-        if isinstance(email_address, str):
-            email_addresses_field = [{"address": email_address}]
-        elif isinstance(email_address, list):
-            if isinstance(email_address[0], str):
-                email_addresses_field = [{"address": email} for email in email_address]
-                email_addresses_field[0]["primary"] = True
-            elif isinstance(email_address[0], dict):
-                email_addresses_field = email_address
-        else:
-            raise ValueError(
-                f"Unexpected type for email_address. Got {type(email_address)}, "
-                "expected str or list."
-            )
-
-        mobile_numbers_field: list[dict] | None = None
-        if isinstance(mobile_number, str):
-            mobile_numbers_field = [{"number": re.sub("[^0-9]", "", mobile_number)}]
-        elif isinstance(mobile_number, int):
-            mobile_numbers_field = [{"number": str(mobile_number)}]
-        elif isinstance(mobile_number, list):
-            if len(mobile_number) > 1:
-                raise Exception("Action Network allows only 1 phone number per activist")
-            if isinstance(mobile_number[0], list):
-                mobile_numbers_field = [
-                    {"number": re.sub("[^0-9]", "", cell)} for cell in mobile_number
-                ]
-                mobile_numbers_field[0]["primary"] = True
-            if isinstance(mobile_number[0], int):
-                mobile_numbers_field = [{"number": cell} for cell in mobile_number]
-                mobile_numbers_field[0]["primary"] = True
+        email_addresses_field = self._handle_upsert_email_address(email_address)
+        mobile_numbers_field = self._handle_upsert_mobile_number(mobile_number)
 
         # Including status in this field changes the opt-in status in
         # ActionNetwork. This is not always desireable, so we should
@@ -1500,14 +2215,14 @@ class ActionNetwork:
             mobile_numbers_field = mobile_number
 
         if not email_addresses_field and not mobile_numbers_field:
-            raise Exception(
+            err_msg = (
                 "Either email_address or mobile_number is required and can be formatted "
                 "as a string, list of strings, a dictionary, a list of dictionaries, or "
-                "(for mobile_number only) an integer or list of integers"
+                "(for mobile_number only) an integer or list of integers."
             )
+            raise ValueError(err_msg)
 
         data = {"person": {}}
-
         if email_addresses_field is not None:
             data["person"]["email_addresses"] = email_addresses_field
         if mobile_numbers_field is not None:
@@ -1522,61 +2237,48 @@ class ActionNetwork:
             data["person"]["postal_addresses"] = postal_addresses
         if tags is not None:
             data["add_tags"] = tags
-
         data["person"]["custom_fields"] = {**kwargs}
-        url = f"{self.api_url}/people"
-        if background_processing:
-            url = f"{url}?background_processing=true"
 
-        response = self.api.post_request(url=url, data=json.dumps(data))
-
-        identifiers = response["identifiers"]
-        person_id = [
-            entry_id.split(":")[1] for entry_id in identifiers if "action_network:" in entry_id
-        ]
-        if not person_id:
-            logger.error("Response gave no valid person_id: %s", identifiers)
-        else:
-            person_id = person_id[0]
-        was_added = response["created_date"] == response["modified_date"]
-        logger.info(
-            "Entry %s successfully %s.",
-            person_id,
-            "added" if was_added else "updated",
+        background_processing = background_processing or self._deprecate_pos_arg(
+            bp, "background_processing"
         )
+        endpoint = (
+            f"{API_URL}/people{'?background_processing=true' if background_processing else ''}"
+        )
+        response = cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=data))
+
+        person_id = self._extract_identifiers(response).get("action_network")
+        was_added = response["created_date"] == response["modified_date"]
+        logger.info("Entry %s successfully %s.", person_id, "added" if was_added else "updated")
+
         return response
 
     def add_person(
         self,
-        email_address: str
-        | list[str]
-        | list[dict[Literal["address", "primary", "status"], str | bool]]
-        | None = None,
-        given_name=None,
-        family_name=None,
-        tags=None,
-        languages_spoken=None,
-        postal_addresses=None,
-        mobile_number: (
-            str
-            | int
-            | list[str | int]
-            | list[dict[Literal["address", "primary", "status"], str | bool]]
-            | None
-        ) = None,
-        mobile_status: Literal["subscribed", "unsubscribed"] | None = "subscribed",
+        email_address: list[EmailInfo] | str | list[str] | None = None,
+        given_name: str | None = None,
+        family_name: str | None = None,
+        tags: list[str] | None = None,
+        languages_spoken: list[str] | None = None,
+        postal_addresses: list[dict] | None = None,
+        mobile_number: MobileInfo | str | int | list[str | int] | None = None,
+        mobile_status: MobileStatusType | None = "subscribed",
         **kwargs,
-    ):
+    ) -> dict[str, _JsonType]:
         """
-        Creates a person in the database. WARNING: this endpoint has been deprecated in favor of
-        upsert_person.
+        Create a single new person.
+
+        .. version-deprecated:: v0.21.0
+
+            Deprecated in favor of :meth:`upsert_person`.
+
         """
         logger.warning("Method 'add_person' has been deprecated. Please use 'upsert_person'.")
-        # Pass inputs to preferred method:
-        self.upsert_person(
+        return self.upsert_person(
             email_address=email_address,
             given_name=given_name,
             family_name=family_name,
+            tags=tags,
             languages_spoken=languages_spoken,
             postal_addresses=postal_addresses,
             mobile_number=mobile_number,
@@ -1584,18 +2286,25 @@ class ActionNetwork:
             **kwargs,
         )
 
-    def update_person(self, entry_id, background_processing=False, **kwargs):
+    def update_person(
+        self, entry_id: str, bp: bool = False, *, background_processing: bool = False, **kwargs
+    ) -> dict[str, _JsonType]:
         """
-        Updates a person's data in Action Network, given their Action Network ID. Note that you
-        can't alter a person's tags with this method. Instead, use upsert_person.
+        Update the information for a single person, by ID.
+
+        .. note::
+
+            You can't alter a person's tags with this method.
+            Use :meth:`upsert_person` instead.
 
         Args:
-            entry_id:
-                Person's Action Network id
-            background_processing: bool
-                If set `true`, utilize ActionNetwork's "background processing". This will return
-                an immediate success, with an empty JSON body, and send your request to the
-                background queue for eventual processing.
+            entry_id: Person's Action Network id
+
+        Keyword Args:
+            background_processing:
+                Whether to utilize ActionNetwork's ``background processing``.
+                This will return an immediate success, with an empty JSON body.
+                Your request will be sent to the background queue for eventual processing.
                 `<https://actionnetwork.org/docs/v2/#background-processing>`__
             `**kwargs`:
                 Fields to be updated. The possible fields are
@@ -1634,31 +2343,60 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/people>`__
 
         """
+        background_processing = background_processing or self._deprecate_pos_arg(
+            bp, "background_processing"
+        )
         data = {**kwargs}
-        url = f"{self.api_url}/people/{entry_id}"
-        if background_processing:
-            url = f"{url}?background_processing=true"
-        response = self.api.put_request(
-            url=url,
-            data=json.dumps(data),
-            success_codes=[204, 201, 200],
+        endpoint = f"{API_URL}/people/{entry_id}{'?background_processing=true' if background_processing else ''}"
+        response = cast(
+            "dict[str, _JsonType]",
+            self.api.put_request(endpoint, json=data, success_codes=[204, 201, 200]),
         )
         logger.info("Person %s successfully updated", entry_id)
         return response
 
-    # Petitions
-    def get_petitions(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_petitions(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_petitions(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_petitions(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of petitions.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all of the petitions entries
@@ -1667,15 +2405,20 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/petitions>`__
 
         """
-        if page:
-            return self._get_page("petitions", page, per_page, filter)
-        return self._get_entry_list("petitions", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "petitions"
 
-    def get_petition(self, petition_id):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_petition(self, petition_id: str) -> dict[str, _JsonType]:
         """
+        Get a single petition, by ID.
+
         Args:
-            petition_id:
-               Unique ID of the petition
+            petition_id: Unique ID of the petition
 
         Returns:
             A JSON with the petition entry
@@ -1684,23 +2427,32 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/petitions>`__
 
         """
-        return self.api.get_request(url=f"petitions/{petition_id}")
+        endpoint = f"petitions/{petition_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
     def create_petition(
-        self, title, description, petition_text, target, background_processing=False
-    ):
+        self,
+        title: str,
+        description: str,
+        petition_text: str,
+        target: str,
+        bp: bool = False,
+        *,
+        background_processing: bool = False,
+    ) -> dict[str, _JsonType]:
         """
+        Create a single new petition.
+
         Args:
-            title:
-                Title of the petition
-            description:
-                Description of the petition
-            petition_text:
-                Text of the petition
-            target:
-                Target of the petition
+            title: Title of the petition
+            description: Description of the petition
+            petition_text: Text of the petition
+            target: Target of the petition
             background_processing:
-                Whether to process the request in the background
+                Whether to utilize ActionNetwork's ``background processing``.
+                This will return an immediate success, with an empty JSON body.
+                Your request will be sent to the background queue for eventual processing.
+                `<https://actionnetwork.org/docs/v2/#background-processing>`__
 
         Returns:
             A JSON with the response from the API
@@ -1709,45 +2461,47 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/petitions>`__
 
         """
+        background_processing = background_processing or self._deprecate_pos_arg(
+            bp, "background_processing"
+        )
         data = {
             "title": title,
             "description": description,
             "petition_text": petition_text,
             "target": target,
         }
-        url = f"{self.api_url}/petitions"
-        if background_processing:
-            url = f"{url}?background_processing={background_processing}"
-        response = self.api.post_request(
-            url=url,
-            data=json.dumps(data),
+        endpoint = (
+            f"{API_URL}/petitions{'?background_processing=true' if background_processing else ''}"
         )
+        response = cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=data))
         logger.info("Petition %s successfully created", title)
         return response
 
     def update_petition(
         self,
-        petition_id,
-        title,
-        description,
-        petition_text,
-        target,
-        background_processing=False,
-    ):
+        petition_id: str,
+        title: str,
+        description: str,
+        petition_text: str,
+        target: str,
+        bp: bool = False,
+        *,
+        background_processing: bool = False,
+    ) -> dict[str, _JsonType]:
         """
+        Update the information for a single petition, by ID.
+
         Args:
-            petition_id:
-                Unique ID of the petition to be updated
-            title:
-                Updated title of the petition
-            description:
-                Updated description of the petition
-            petition_text:
-                Updated text of the petition
-            target:
-                Updated target of the petition
+            petition_id: Unique ID of the petition to be updated
+            title: Updated title of the petition
+            description: Updated description of the petition
+            petition_text: Updated text of the petition
+            target: Updated target of the petition
             background_processing:
-                Whether to process the request in the background
+                Whether to utilize ActionNetwork's ``background processing``.
+                This will return an immediate success, with an empty JSON body.
+                Your request will be sent to the background queue for eventual processing.
+                `<https://actionnetwork.org/docs/v2/#background-processing>`__
 
         Returns:
             A JSON with the response from the API
@@ -1756,35 +2510,62 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/petitions>`__
 
         """
+        background_processing = background_processing or self._deprecate_pos_arg(
+            bp, "background_processing"
+        )
         data = {
             "title": title,
             "description": description,
             "petition_text": petition_text,
             "target": target,
         }
-        url = f"{self.api_url}/petitions/{petition_id}"
-        if background_processing:
-            url = f"{url}?background_processing={background_processing}"
-        response = self.api.put_request(
-            url=url,
-            data=json.dumps(data),
-        )
+        url = f"{API_URL}/petitions/{petition_id}{'?background_processing=true' if background_processing else ''}"
+        response = cast("dict[str, _JsonType]", self.api.put_request(url, json=data))
         logger.info("Petition %s successfully updated", title)
         return response
 
-    # Queries
-    def get_queries(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_queries(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_queries(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_queries(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of queries.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the query entries
@@ -1793,15 +2574,17 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/queries>`__
 
         """
-        if page:
-            return self._get_page("queries", page, per_page, filter)
-        return self._get_entry_list("queries", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "queries"
 
-    def get_query(self, query_id):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_query(self, query_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            query_id:
-                Unique ID of the query
+        Get a single query, by ID.
 
         Returns:
             A JSON with the query entry
@@ -1810,23 +2593,55 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/queries>`__
 
         """
-        return self.api.get_request(url=f"queries/{query_id}")
+        endpoint = f"queries/{query_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    # Signatures
-    def get_petition_signatures(self, petition_id, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_petition_signatures(
+        self,
+        petition_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_petition_signatures(
+        self,
+        petition_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_petition_signatures(
+        self,
+        petition_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of signatures, for a petition, by ID.
+
         Args:
-            petition_id:
-                Unique ID of the petition
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            petition_id: Unique ID of the petition
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the signatures related to the petition entry
@@ -1835,24 +2650,60 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/signatures>`__
 
         """
-        if page:
-            return self._get_page(f"petitions/{petition_id}/signatures", page, per_page, filter)
-        return self._get_entry_list(f"petitions/{petition_id}/signatures", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"petitions/{petition_id}/signatures"
 
-    def get_person_signatures(self, person_id, limit=None, per_page=25, page=None, filter=None):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    @overload
+    def get_person_signatures(
+        self,
+        person_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_person_signatures(
+        self,
+        person_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_person_signatures(
+        self,
+        person_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of signatures, for a person, by ID.
+
         Args:
-            person_id:
-                Unique ID of the person
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            person_id: Unique ID of the person
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the signatures related to the petition entry
@@ -1861,17 +2712,17 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/signatures>`__
 
         """
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"people/{person_id}/signatures"
+
         if page:
-            return self._get_page(f"people/{person_id}/signatures", page, per_page, filter)
-        return self._get_entry_list(f"people/{person_id}/signatures", limit, per_page, filter)
+            return self._get_page(endpoint, page, per_page, query)
 
-    def get_petition_signature(self, petition_id, signature_id):
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_petition_signature(self, petition_id: str, signature_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            petition_id:
-                Unique ID of the petition
-            signature_id:
-                Unique ID of the signature
+        Get a single signature, by ID, for a petition, by ID.
 
         Returns:
             A JSON with the signature entry
@@ -1880,15 +2731,12 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/signatures>`__
 
         """
-        return self.api.get_request(url=f"petitions/{petition_id}/signatures/{signature_id}")
+        endpoint = f"petitions/{petition_id}/signatures/{signature_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def get_person_signature(self, person_id, signature_id):
+    def get_person_signature(self, person_id: str, signature_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            person_id:
-               Unique ID of the person
-            signature_id:
-               Unique ID of the signature
+        Get a single signature, by ID, for a person, by ID.
 
         Returns:
             A JSON with the signature entry
@@ -1897,13 +2745,15 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/signatures>`__
 
         """
-        return self.api.get_request(url=f"people/{person_id}/signatures/{signature_id}")
+        endpoint = f"people/{person_id}/signatures/{signature_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def create_signature(self, petition_id, data):
+    def create_signature(self, petition_id: str, data: dict) -> dict[str, _JsonType]:
         """
+        Create a single new signature, for a petition, by ID.
+
         Args:
-            petition_id:
-               Unique ID of the petition
+            petition_id: Unique ID of the petition
             data:
                Payload for creating the signature
 
@@ -1923,15 +2773,18 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/signatures>`__
 
         """
-        return self.api.post_request(url=f"petitions/{petition_id}/signatures", params=data)
+        endpoint = f"petitions/{petition_id}/signatures"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=data))
 
-    def update_signature(self, petition_id, signature_id, data):
+    def update_signature(
+        self, petition_id: str, signature_id: str, data: dict
+    ) -> dict[str, _JsonType]:
         """
+        Update the information for a single signature, by ID, for a petition, by ID.
+
         Args:
-            petition_id:
-                Unique ID of the petition
-            signature_id:
-                Unique ID of the signature
+            petition_id: Unique ID of the petition
+            signature_id: Unique ID of the signature
             data:
                 Signature payload to update
 
@@ -1948,25 +2801,55 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/signatures>`__
 
         """
-        return self.api.put_request(
-            url=f"petitions/{petition_id}/signatures/{signature_id}", data=data
-        )
+        endpoint = f"petitions/{petition_id}/signatures/{signature_id}"
+        return cast("dict[str, _JsonType]", self.api.put_request(endpoint, json=data))
 
-    # Submissions
-    def get_form_submissions(self, form_id, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_form_submissions(
+        self,
+        form_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_form_submissions(
+        self,
+        form_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_form_submissions(
+        self,
+        form_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of submissions, for a form, by ID.
+
         Args:
-            form_id:
-                Unique ID of the form
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            form_id: Unique ID of the form
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the submissions entries related to the form
@@ -1975,24 +2858,60 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/submissions>`__
 
         """
-        if page:
-            return self._get_page(f"forms/{form_id}/submissions", page, per_page, filter)
-        return self._get_entry_list(f"forms/{form_id}/submissions", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"forms/{form_id}/submissions"
 
-    def get_person_submissions(self, person_id, limit=None, per_page=25, page=None, filter=None):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    @overload
+    def get_person_submissions(
+        self,
+        person_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_person_submissions(
+        self,
+        person_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_person_submissions(
+        self,
+        person_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of submissions, for a person, by ID.
+
         Args:
-            person_id:
-                Unique ID of the person
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            person_id: Unique ID of the person
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the submissions entries related with our group
@@ -2001,17 +2920,17 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/submissions>`__
 
         """
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"people/{person_id}/submissions"
+
         if page:
-            return self._get_page(f"people/{person_id}/submissions", page, per_page, filter)
-        return self._get_entry_list(f"people/{person_id}/submissions", limit, per_page, filter)
+            return self._get_page(endpoint, page, per_page, query)
 
-    def get_form_submission(self, form_id, submission_id):
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_form_submission(self, form_id: str, submission_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            form_id:
-                Unique ID of the form
-            submission_id:
-                Unique ID of the submission
+        Get a single submission, by ID, for a form, by ID.
 
         Returns:
             A JSON with the submission entry
@@ -2020,15 +2939,12 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/submissions>`__
 
         """
-        return self.api.get_request(url=f"forms/{form_id}/submissions/{submission_id}")
+        endpoint = f"forms/{form_id}/submissions/{submission_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def get_person_submission(self, person_id, submission_id):
+    def get_person_submission(self, person_id: str, submission_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            person_id:
-                Unique ID of the submission
-            submission_id:
-                Unique ID of the submission
+        Get a single form submission, by ID, for a person, by ID.
 
         Returns:
             A JSON with the submission entry
@@ -2037,15 +2953,12 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/submissions>`__
 
         """
-        return self.api.get_request(url=f"people/{person_id}/submissions/{submission_id}")
+        endpoint = f"people/{person_id}/submissions/{submission_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def create_submission(self, form_id, person_id):
+    def create_submission(self, form_id: str, person_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            form_id:
-                Unique ID of the form
-            person_id:
-                Unique ID of the person
+        Create a single new submission, for a form, by ID, for a person, by ID.
 
         Returns:
             A JSON response indicating the success or failure of the submission creation
@@ -2059,15 +2972,18 @@ class ActionNetwork:
                 "osdi:person": {"href": f"https://actionnetwork.org/api/v2/people/{person_id}"}
             }
         }
-        return self.api.post_request(url=f"forms/{form_id}/submissions", data=json.dumps(payload))
+        endpoint = f"forms/{form_id}/submissions"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=payload))
 
-    def update_submission(self, form_id, submission_id, data):
+    def update_submission(
+        self, form_id: str, submission_id: str, data: dict
+    ) -> dict[str, _JsonType]:
         """
+        Update the information for a single submission, by ID, for a form, by ID.
+
         Args:
-            form_id:
-                Unique ID of the form
-            submission_id:
-                Unique ID of the submission
+            form_id: Unique ID of the form
+            submission_id: Unique ID of the submission
             data:
                 Payload for updating the submission
 
@@ -2086,33 +3002,64 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/submissions>`__
 
         """
-        return self.api.put_request(
-            url=f"forms/{form_id}/submissions/{submission_id}", data=json.dumps(data)
-        )
+        endpoint = f"forms/{form_id}/submissions/{submission_id}"
+        return cast("dict[str, _JsonType]", self.api.put_request(endpoint, json=data))
 
-    # Surveys
-    def get_surveys(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_surveys(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_surveys(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_surveys(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
-        Survey resources are sometimes presented as collections of surveys.
-        For example, calling the surveys endpoint will return a collection
-        of all the surveys associated with your API key.
+        Get a list of surveys.
 
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         """
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "surveys"
+
         if page:
-            return self._get_page("surveys", page, per_page, filter)
-        return self._get_entry_list("surveys", limit, per_page, filter)
+            return self._get_page(endpoint, page, per_page, query)
 
-    def get_survey(self, survey_id):
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_survey(self, survey_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            survey_id:
-                Unique ID of the survey
+        Get a single survey, by ID.
 
         Returns:
             A JSON with the survey entry
@@ -2121,10 +3068,13 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/surveys>`__
 
         """
-        return self.api.get_request(url=f"surveys/{survey_id}")
+        endpoint = f"surveys/{survey_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def create_survey(self, data):
+    def create_survey(self, data: dict) -> dict[str, _JsonType]:
         """
+        Create a single new survey.
+
         Args:
             data:
 
@@ -2158,13 +3108,15 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/surveys>`__
 
         """
-        return self.api.post_request(url="surveys", data=json.dumps(data))
+        endpoint = "surveys"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=data))
 
-    def update_survey(self, survey_id, data):
+    def update_survey(self, survey_id: str, data: dict) -> dict[str, _JsonType]:
         """
+        Update the information for a survey, by ID.
+
         Args:
-            survey_id:
-                Unique ID of the survey
+            survey_id: Unique ID of the survey
             data:
                 Payload for updating the survey
 
@@ -2182,16 +3134,19 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/surveys>`__
 
         """
-        return self.api.post_request(url=f"surveys/{survey_id}", data=json.dumps(data))
+        endpoint = f"surveys/{survey_id}"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=data))
 
-    # Tags
-    def get_tags(self, limit=None, per_page=None):
+    def get_tags(
+        self,
+        limit: int | None = None,
+        per_page: int | None = None,
+    ) -> Table:
         """
+        Get a list of tags.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                This is a deprecated argument.
+            limit: The maximum number of entries to retrieve.
 
         Returns:
             A list of JSONs of tags in Action Network.
@@ -2206,13 +3161,12 @@ class ActionNetwork:
                 DeprecationWarning,
                 stacklevel=2,
             )
+
         return self._get_entry_list("tags", limit)
 
-    def get_tag(self, tag_id):
+    def get_tag(self, tag_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            tag_id:
-                ID of the tag.
+        Get a single tag, by ID.
 
         Returns:
             A  JSON of the entry. If the entry doesn't exist, Action Network returns
@@ -2222,44 +3176,74 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/tags>`__
 
         """
-        return self.api.get_request(url=f"tags/{tag_id}")
+        endpoint = f"tags/{tag_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def add_tag(self, name):
+    def add_tag(self, name: str) -> dict[str, _JsonType]:
         """
-        Adds a tag to Action Network. Once created, tags CANNOT be edited or deleted.
+        Create a single new tag.
 
-        Args:
-            name:
-                Tag's name. This is the ONLY editable field
+        .. warning::
+
+            Once created, tags **cannot** be edited or deleted.
 
         Documentation Reference:
             `<https://actionnetwork.org/docs/v2/tags>`__
 
         """
+        endpoint = f"{API_URL}/tags"
         data = {"name": name}
-        response = self.api.post_request(url=f"{self.api_url}/tags", data=json.dumps(data))
-        identifiers = response["identifiers"]
-        person_id = [
-            entry_id.split(":")[1] for entry_id in identifiers if "action_network:" in entry_id
-        ][0]
+        response = cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=data))
+        person_id = self._extract_identifiers(response).get("action_network")
         logger.info("Tag %s successfully added to tags.", person_id)
         return response
 
-    # Taggings
-    def get_taggings(self, tag_id, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_taggings(
+        self,
+        tag_id: str,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_taggings(
+        self,
+        tag_id: str,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_taggings(
+        self,
+        tag_id: str,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of taggings, for a tag, by ID.
+
         Args:
-            tag_id:
-                Unique ID of the tag
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            tag_id: Unique ID of the tag
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the tagging entries associated with the tag_id
@@ -2268,17 +3252,17 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/taggings>`__
 
         """
-        if page:
-            return self._get_page(f"tags/{tag_id}/taggings", page, per_page, filter)
-        return self._get_entry_list(f"tags/{tag_id}/taggings", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = f"tags/{tag_id}/taggings"
 
-    def get_tagging(self, tag_id, tagging_id):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_tagging(self, tag_id: str, tagging_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-           tag_id:
-              Unique ID of the tag
-           tagging_id:
-              Unique ID of the tagging
+        Get a single tagging, by ID, for a tag, by ID.
 
         Returns:
             A JSON with the tagging entry
@@ -2287,13 +3271,17 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/taggings>`__
 
         """
-        return self.api.get_request(url=f"tags/{tag_id}/taggings/{tagging_id}")
+        endpoint = f"tags/{tag_id}/taggings/{tagging_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def create_tagging(self, tag_id, payload, background_processing=False):
+    def create_tagging(
+        self, tag_id: str, payload: dict, bp: bool = False, *, background_processing: bool = False
+    ) -> dict[str, _JsonType]:
         """
+        Create a single new tagging, for a tag, by ID.
+
         Args:
-            tag_id:
-                Unique ID of the tag
+            tag_id: Unique ID of the tag
             payload:
                 Payload for creating the tagging
 
@@ -2305,10 +3293,10 @@ class ActionNetwork:
                         }
                     }
 
-            background_processing: bool
-                If set `true`, utilize ActionNetwork's "background processing". This will return
-                an immediate success, with an empty JSON body, and send your request to the
-                background queue for eventual processing.
+            background_processing:
+                Whether to utilize ActionNetwork's ``background processing``.
+                This will return an immediate success, with an empty JSON body.
+                Your request will be sent to the background queue for eventual processing.
                 `<https://actionnetwork.org/docs/v2/#background-processing>`__
 
         Returns:
@@ -2318,22 +3306,32 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/taggings>`__
 
         """
-        url = f"tags/{tag_id}/taggings"
-        if background_processing:
-            url = f"{url}?background_processing=true"
-        return self.api.post_request(url=url, data=json.dumps(payload))
+        background_processing = background_processing or self._deprecate_pos_arg(
+            bp, "background_processing"
+        )
+        endpoint = f"tags/{tag_id}/taggings{'?background_processing=true' if background_processing else ''}"
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=payload))
 
-    def delete_tagging(self, tag_id, tagging_id, background_processing=False):
+    def delete_tagging(
+        self,
+        tag_id: str,
+        tagging_id: str,
+        bp: bool = False,
+        *,
+        background_processing: bool = False,
+    ) -> _JsonType:
         """
+        Delete a single tagging, by ID, for a tag, by ID.
+
         Args:
-            tag_id:
-                Unique ID of the tag
-            tagging_id:
-                Unique ID of the tagging to be deleted
-            background_processing: bool
-                If set `true`, utilize ActionNetwork's "background processing". This will return
-                an immediate success, with an empty JSON body, and send your request to the
-                background queue for eventual processing.
+            tag_id: Unique ID of the tag
+            tagging_id: Unique ID of the tagging to be deleted
+
+        Keyword Args:
+            background_processing:
+                Whether to utilize ActionNetwork's ``background processing``.
+                This will return an immediate success, with an empty JSON body.
+                Your request will be sent to the background queue for eventual processing.
                 `<https://actionnetwork.org/docs/v2/#background-processing>`__
 
         Returns:
@@ -2343,24 +3341,54 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/taggings>`__
 
         """
-        url = f"tags/{tag_id}/taggings/{tagging_id}"
-        if background_processing:
-            url = f"{url}?background_processing=true"
-        return self.api.delete_request(url=url)
+        background_processing = background_processing or self._deprecate_pos_arg(
+            bp, "background_processing"
+        )
+        endpoint = f"tags/{tag_id}/taggings/{tagging_id}{'?background_processing=true' if background_processing else ''}"
+        return self.api.delete_request(endpoint)
 
-    # Wrappers
-    def get_wrappers(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_wrappers(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_wrappers(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_wrappers(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of wrappers.
+
         Args:
-            limit:
-                Number of entries to return. When None, returns all entries.
-            per_page:
-                Number of entries per page to return. 25 maximum.
-            page:
-                Which page of results to return
-            filter:
-                OData query for filtering results. E.g. "modified_date gt '2014-03-25'".
-                When None, no filter is applied.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON with all the wrapper entries
@@ -2369,17 +3397,17 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/wrappers>`__
 
         """
-        if page:
-            return self._get_page("wrappers", page, per_page, filter)
-        return self._get_entry_list("wrappers", limit, per_page, filter)
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "wrappers"
 
-    def get_wrapper(self, wrapper_id):
+        if page:
+            return self._get_page(endpoint, page, per_page, query)
+
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_wrapper(self, wrapper_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-           wrapper_id:
-              Unique ID of the wrapper
-           tagging_id:
-              Unique ID of the tagging
+        Get a single wrapper, by ID.
 
         Returns:
             A JSON with the wrapper entry
@@ -2388,21 +3416,51 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/wrappers>`__
 
         """
-        return self.api.get_request(url=f"wrappers/{wrapper_id}")
+        endpoint = f"wrappers/{wrapper_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    # Unique ID Lists
-    def get_unique_id_lists(self, limit=None, per_page=25, page=None, filter=None):
+    @overload
+    def get_unique_id_lists(
+        self,
+        limit: int | None,
+        per_page: int,
+        page: int,
+        query: str | None,
+        *,
+        filter: str | None,
+    ) -> dict[str, _JsonType]: ...
+
+    @overload
+    def get_unique_id_lists(
+        self,
+        limit: int | None = ...,
+        per_page: int = ...,
+        page: None = ...,
+        query: str | None = ...,
+        *,
+        filter: str | None = ...,
+    ) -> Table: ...
+
+    def get_unique_id_lists(
+        self,
+        limit: int | None = None,
+        per_page: int = MAX_PER_PAGE,
+        page: int | None = None,
+        query: str | None = None,
+        *,
+        filter: str | None = None,
+    ) -> dict[str, _JsonType] | Table:
         """
+        Get a list of Unique ID lists.
+
         Args:
-            limit:
-                The maximum number of unique ID lists to return.
-                When None, returns all unique ID lists.
-            per_page:
-                Number of unique ID lists to return per page. Default is 25.
-            page:
-                The specific page of unique ID lists to return.
-            filter:
-                The filter criteria to apply when retrieving unique ID lists.
+            limit: The maximum number of entries to retrieve.
+            per_page: The number of entries per page. Cannot exceed 25.
+            page: Which page of results to return.
+            query:
+                OData query for filtering results.
+                E.g. ``modified_date gt '2014-03-25'``.
+                If ``None``, no filter is applied.
 
         Returns:
             A JSON response with Unique ID lists.
@@ -2411,15 +3469,17 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/unique_id_lists>`__
 
         """
+        query = query or self._deprecate_kw_arg(filter, "filter", "query")
+        endpoint = "unique_id_lists"
+
         if page:
-            return self._get_page("unique_id_lists", page, per_page, filter)
-        return self._get_entry_list("unique_id_lists", limit, per_page, filter)
+            return self._get_page(endpoint, page, per_page, query)
 
-    def get_unique_id_list(self, unique_id_list_id):
+        return self._get_entry_list(endpoint, limit, per_page, query)
+
+    def get_unique_id_list(self, unique_id_list_id: str) -> dict[str, _JsonType]:
         """
-        Args:
-            unique_id_list_id:
-                Unique ID of Unique ID list
+        Get a single Unique ID list, by ID.
 
         Returns:
             A JSON response with Unique ID list details
@@ -2428,15 +3488,16 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/unique_id_lists>`__
 
         """
-        return self.api.get_request(url=f"unique_id_lists/{unique_id_list_id}")
+        endpoint = f"unique_id_lists/{unique_id_list_id}"
+        return cast("dict[str, _JsonType]", self.api.get_request(endpoint))
 
-    def create_unique_id_list(self, list_name, unique_ids):
+    def create_unique_id_list(self, list_name: str, unique_ids: list[str]) -> dict[str, _JsonType]:
         """
+        Create a single new Unique ID list.
+
         Args:
-            list_name:
-                Name for the new list
-            unique_ids:
-                An array of unique IDs to upload
+            list_name: Name for the new list
+            unique_id: An array of unique IDs to upload
 
         Returns:
             A JSON response with Unique ID list details
@@ -2445,7 +3506,6 @@ class ActionNetwork:
             `<https://actionnetwork.org/docs/v2/unique_id_lists>`__
 
         """
-        return self.api.post_request(
-            url="unique_id_lists",
-            data=json.dumps({"name": list_name, "unique_ids": unique_ids}),
-        )
+        endpoint = "unique_id_lists"
+        payload = {"name": list_name, "unique_ids": unique_ids}
+        return cast("dict[str, _JsonType]", self.api.post_request(endpoint, json=payload))

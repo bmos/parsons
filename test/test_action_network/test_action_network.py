@@ -1,5 +1,6 @@
 import json
 
+import pytest
 from requests_mock import Mocker
 
 from parsons import ActionNetwork, Table
@@ -47,7 +48,13 @@ def test_filter_get_entry_list(
         req_url = f"{API_URL}/people?page={pg_no + 1}&per_page=25&filter={fake_filter_by_email_1}"
         requests_mock.get(req_url, text=json.dumps(pg_data))
 
-    res_json = an._get_entry_list("people", filter=fake_filter_by_email_1)
+    res_json = an._get_entry_list("people", query=fake_filter_by_email_1)
+
+    assert isinstance(res_json, Table)
+    assert_matching_tables(res_json, Table(fake_people_list))
+
+    with pytest.deprecated_call():
+        res_json = an._get_entry_list("people", filter=fake_filter_by_email_1)
 
     assert isinstance(res_json, Table)
     assert_matching_tables(res_json, Table(fake_people_list))
@@ -61,7 +68,13 @@ def test_filter_on_get_unsupported_entry(
         req_url = f"{API_URL}/tags?page={pg_no + 1}&per_page=25&filter={fake_tag_filter}"
         requests_mock.get(req_url, text=json.dumps(pg_data))
 
-    res_json = an._get_entry_list("tags", filter=fake_tag_filter)
+    res_json = an._get_entry_list("tags", query=fake_tag_filter)
+
+    assert isinstance(res_json, Table)
+    assert_matching_tables(res_json, Table(fake_tag_list["_embedded"]["osdi:tags"]))
+
+    with pytest.deprecated_call():
+        res_json = an._get_entry_list("tags", filter=fake_tag_filter)
 
     assert isinstance(res_json, Table)
     assert_matching_tables(res_json, Table(fake_tag_list["_embedded"]["osdi:tags"]))
@@ -678,7 +691,13 @@ class TestPeople:
             req_url = f"{API_URL}/people?page={pg_no + 1}&per_page=25"
             requests_mock.get(req_url, text=json.dumps(pg_data))
 
-        res_json = an.get_people(filter=fake_filter_by_email_1)
+        res_json = an.get_people(query=fake_filter_by_email_1)
+
+        assert isinstance(res_json, Table)
+        assert_matching_tables(res_json, Table(fake_people_list))
+
+        with pytest.deprecated_call():
+            res_json = an.get_people(filter=fake_filter_by_email_1)
 
         assert isinstance(res_json, Table)
         assert_matching_tables(res_json, Table(fake_people_list))
