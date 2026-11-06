@@ -44,10 +44,10 @@ class ActionKit:
         self.conn = self._conn()
 
     def _conn(self, default_headers=_default_headers):
-        client = requests.Session()
-        client.auth = HTTPBasicAuth(self.username, self.password)
-        client.headers.update(default_headers)
-        return client
+        session = requests.Session()
+        session.auth = HTTPBasicAuth(self.username, self.password)
+        session.headers.update(default_headers)
+        return session
 
     def _base_endpoint(self, endpoint, entity_id=None):
         # Create the base endpoint URL

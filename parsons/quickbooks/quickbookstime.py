@@ -1,6 +1,9 @@
 import logging
 from typing import Literal
 
+import pyrate_limiter
+import requests_ratelimiter
+
 from parsons.etl.table import Table
 from parsons.utilities import check_env
 from parsons.utilities.api_connector import APIConnector
@@ -28,7 +31,10 @@ class QuickBooksTime:
     def __init__(self, token=None):
         self.token = check_env.check("QB_AUTH_TOKEN", token)
         self.headers = {"Authorization": "Bearer " + self.token}
-        self.client = APIConnector(QB_URI, headers=self.headers)
+        ratelimit = requests_ratelimiter.Limiter(
+            pyrate_limiter.Rate(300, pyrate_limiter.Duration.MINUTE * 5)
+        )
+        self.client = APIConnector(QB_URI, headers=self.headers, ratelimit=ratelimit)
 
     # Helper functions
 

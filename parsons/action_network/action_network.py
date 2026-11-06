@@ -4,6 +4,8 @@ import re
 import warnings
 from typing import Literal
 
+import pyrate_limiter
+import requests_ratelimiter
 from typing_extensions import deprecated
 
 from parsons.etl.table import Table
@@ -25,12 +27,12 @@ class ActionNetwork:
 
     def __init__(self, api_token=None):
         self.api_token = check_env.check("AN_API_TOKEN", api_token)
-        self.headers = {
-            "Content-Type": "application/json",
-            "OSDI-API-Token": self.api_token,
-        }
+        self.headers = {"Content-Type": "application/json", "OSDI-API-Token": self.api_token}
         self.api_url = API_URL
-        self.api = APIConnector(self.api_url, headers=self.headers)
+        ratelimit = requests_ratelimiter.Limiter(
+            pyrate_limiter.Rate(4, pyrate_limiter.Duration.SECOND)
+        )
+        self.api = APIConnector(self.api_url, headers=self.headers, ratelimit=ratelimit)
 
     def _get_page(self, object_name, page, per_page=25, filter=None):
         # returns data from one page of results

@@ -1,6 +1,8 @@
 import re
 from datetime import datetime, timedelta
 
+import pyrate_limiter
+import requests_ratelimiter
 from requests.auth import HTTPBasicAuth
 
 from parsons.etl.table import Table
@@ -36,12 +38,7 @@ class Shopify:
     """
 
     def __init__(
-        self,
-        subdomain=None,
-        password=None,
-        api_key=None,
-        api_version=None,
-        access_token=None,
+        self, subdomain=None, password=None, api_key=None, api_version=None, access_token=None
     ):
         self.subdomain = check_env.check("SHOPIFY_SUBDOMAIN", subdomain)
         self.access_token = check_env.check("SHOPIFY_ACCESS_TOKEN", access_token, optional=True)
@@ -49,16 +46,17 @@ class Shopify:
         self.api_key = check_env.check("SHOPIFY_API_KEY", api_key, optional=True)
         self.api_version = check_env.check("SHOPIFY_API_VERSION", api_version)
         self.base_url = f"https://{self.subdomain}.myshopify.com/admin/api/{self.api_version}/"
+        ratelimit = requests_ratelimiter.Limiter(
+            pyrate_limiter.Rate(40, pyrate_limiter.Duration.MINUTE)
+        )
         if self.access_token is None and (self.password is None or self.api_key is None):
             raise KeyError("Must set either access_token or both api_key and password.")
         if self.access_token is not None:
-            self.client = APIConnector(
-                self.base_url, headers={"X-Shopify-Access-Token": access_token}
-            )
+            headers = {"X-Shopify-Access-Token": access_token}
+            self.client = APIConnector(self.base_url, headers=headers, ratelimit=ratelimit)
         else:
-            self.client = APIConnector(
-                self.base_url, auth=HTTPBasicAuth(self.api_key, self.password)
-            )
+            auth = HTTPBasicAuth(self.api_key, self.password)
+            self.client = APIConnector(self.base_url, auth=auth, ratelimit=ratelimit)
 
     def get_count(self, query_date=None, since_id=None, table_name=None):
         """

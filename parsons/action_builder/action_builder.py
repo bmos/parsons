@@ -2,6 +2,9 @@ import json
 import logging
 from typing import Any
 
+import pyrate_limiter
+import requests_ratelimiter
+
 from parsons.etl.table import Table
 from parsons.utilities import check_env
 from parsons.utilities.api_connector import APIConnector
@@ -27,12 +30,12 @@ class ActionBuilder:
 
     def __init__(self, api_token=None, subdomain=None, campaign=None):
         self.api_token = check_env.check("ACTION_BUILDER_API_TOKEN", api_token)
-        self.headers = {
-            "Content-Type": "application/json",
-            "OSDI-API-Token": self.api_token,
-        }
+        self.headers = {"Content-Type": "application/json", "OSDI-API-Token": self.api_token}
         self.api_url = API_URL.format(subdomain=subdomain)
-        self.api = APIConnector(self.api_url, headers=self.headers)
+        ratelimit = requests_ratelimiter.Limiter(
+            pyrate_limiter.Rate(4, pyrate_limiter.Duration.SECOND)
+        )
+        self.api = APIConnector(self.api_url, headers=self.headers, ratelimit=ratelimit)
         self.campaign = campaign
 
     def _campaign_check(self, campaign):

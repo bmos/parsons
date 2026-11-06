@@ -27,7 +27,6 @@ class Airmeet:
         airmeet_secret_key: string
             The Airmeet API secret key.
 
-
     """
 
     def __init__(self, airmeet_uri=None, airmeet_access_key=None, airmeet_secret_key=None):
@@ -48,7 +47,7 @@ class Airmeet:
         self.client = APIConnector(self.uri)
         self.airmeet_client_key = check_env.check("AIRMEET_ACCESS_KEY", airmeet_access_key)
         self.airmeet_client_secret = check_env.check("AIRMEET_SECRET_KEY", airmeet_secret_key)
-        self.client.headers = {
+        self.client.session.headers = {
             "X-Airmeet-Access-Key": self.airmeet_client_key,
             "X-Airmeet-Secret-Key": self.airmeet_client_secret,
         }
@@ -56,7 +55,7 @@ class Airmeet:
         self.token = response["token"]
 
         # API calls expect the token in the header.
-        self.client.headers = {
+        self.client.session.headers = {
             "Content-Type": "application/json",
             "X-Airmeet-Access-Token": self.token,
         }
