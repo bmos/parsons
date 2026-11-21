@@ -1,6 +1,6 @@
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest import mock
 
 import pytest
 import requests_mock
@@ -36,7 +36,7 @@ class TestActBlue(unittest.TestCase):
         test_csv_data = Table.from_csv_string(
             Path("test/test_actblue/test_csv_data.csv").read_text()
         )
-        Table.from_csv = MagicMock(name="mocked from_csv", return_value=test_csv_data)
+        Table.from_csv = mock.MagicMock(name="mocked from_csv", return_value=test_csv_data)
 
     def tearDown(self):
         Table.from_csv = self.from_csv
@@ -55,8 +55,10 @@ class TestActBlue(unittest.TestCase):
         assert self.ab.get_download_url(csv_id=TEST_ID) == TEST_DOWNLOAD_URL
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_successful_poll_for_download_url(self, m: requests_mock.Mocker, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_successful_poll_for_download_url(
+        self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock
+    ):
         mocked_get_response_no_download_url = {
             "id": TEST_ID,
             "download_url": None,
@@ -75,8 +77,10 @@ class TestActBlue(unittest.TestCase):
         assert mock_sleep.called
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_successful_get_contributions(self, m: requests_mock.Mocker, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_successful_get_contributions(
+        self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock
+    ):
         m.post(f"{TEST_URI}/csvs", json=TEST_POST_RESPONSE)
         m.get(f"{TEST_URI}/csvs/{TEST_ID}", json=TEST_GET_RESPONSE)
 

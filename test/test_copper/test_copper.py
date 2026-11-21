@@ -3,7 +3,7 @@ import logging
 import sys
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest import mock
 
 import requests_mock
 
@@ -236,8 +236,8 @@ class TestCopper(unittest.TestCase):
             return response
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_paginate_request(self, m, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_paginate_request(self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock):
         # Anonymized real output with nested columns
         self.blob = [
             {
@@ -527,8 +527,8 @@ class TestCopper(unittest.TestCase):
             )
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_get_standard_object(self, m, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_get_standard_object(self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock):
         processed_people_emails = Table(
             [
                 {
@@ -567,8 +567,8 @@ class TestCopper(unittest.TestCase):
         assert mock_sleep.called
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_get_people(self, m, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_get_people(self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock):
         processed_people_emails = Table(
             [
                 {
@@ -610,8 +610,8 @@ class TestCopper(unittest.TestCase):
         assert mock_sleep.called
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_get_opportunities(self, m, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_get_opportunities(self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock):
         processed_opps = Table(
             [
                 {
@@ -756,8 +756,8 @@ class TestCopper(unittest.TestCase):
         assert mock_sleep.called
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_get_opportunities2(self, m, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_get_opportunities2(self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock):
         processed_opps = Table(
             [
                 {
@@ -902,8 +902,8 @@ class TestCopper(unittest.TestCase):
         assert mock_sleep.called
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_get_companies(self, m, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_get_companies(self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock):
         processed_companies = Table(
             [
                 {
@@ -1022,8 +1022,8 @@ class TestCopper(unittest.TestCase):
         assert mock_sleep.called
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_get_activities(self, m, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_get_activities(self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock):
         processed_activities = Table(
             [
                 {
@@ -1086,8 +1086,8 @@ class TestCopper(unittest.TestCase):
         assert mock_sleep.called
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_get_custom_fields(self, m, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_get_custom_fields(self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock):
         m.get(
             self.cp.uri + "/custom_field_definitions/",
             json=self.paginate_callback,
@@ -1105,8 +1105,8 @@ class TestCopper(unittest.TestCase):
         assert mock_sleep.called
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_get_activity_types(self, m, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_get_activity_types(self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock):
         processed_at = Table(
             [
                 {
@@ -1169,8 +1169,8 @@ class TestCopper(unittest.TestCase):
         assert mock_sleep.called
 
     @requests_mock.Mocker()
-    @patch("time.sleep")
-    def test_get_contact_types(self, m, mock_sleep):
+    @mock.patch("time.sleep")
+    def test_get_contact_types(self, m: requests_mock.Mocker, mock_sleep: mock.MagicMock):
         processed_ct = Table(
             [
                 {"id": 501947, "name": "Potential Customer"},
